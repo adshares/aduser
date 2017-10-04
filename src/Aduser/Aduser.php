@@ -1,9 +1,8 @@
 <?php
-
-namespace AppBundle;
+namespace Aduser;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class AppBundle extends Bundle
+class Aduser extends Bundle
 {
 }
