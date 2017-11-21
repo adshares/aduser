@@ -8,6 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Aduser\Helper\Utils;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Aduser\Entity\User;
+use Aduser\Entity\RequestLog;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DefaultController extends Controller
 {
@@ -39,6 +42,43 @@ class DefaultController extends Controller
             $response->headers->set('Content-Type', 'image/gif');
         }
         
+        $encodedId = Utils::attachTrackingCookie($this->getParameter('secret'), $request, $response, "", new \DateTime());
+        $uid = Utils::getRawTrackingId($encodedId);
+        
+        $id = Utils::getRawTrackingId($id);
+        
+//         var_dump($id);
+//         exit;
+        
+        $em = $this->getDoctrine()->getManager();
+        $user = User::getRepository($em)->find($uid);
+        
+        if(!$user) {
+            $user = new User();
+            $user->setUid($uid);
+            $em->persist($user);
+        }
+        
+        $user->setVisits($user->getVisits()+1);
+        
+        $log = new RequestLog();
+        $log->setId($id);
+        $log->setUid($uid);
+        $log->setUserAgent($request->headers->get('User-Agent'));
+        $log->setReferer($request->headers->get('Referer'));
+        $log->setHeaders($request->headers->__toString());
+        
+        $logIp = bin2hex(inet_pton($request->getClientIp()));
+        $log->setIp($logIp);
+        $log->setTimestamp(time());
+        
+        $em->persist($log);
+        
+        try {
+            $em->flush();
+        } catch(\Exception $e) {}
+        
+        
         return $response;
     }
 
@@ -49,10 +89,34 @@ class DefaultController extends Controller
     {
         $response = new JsonResponse();
         
+        $decodedId = Utils::getRawTrackingId($id);
+        
+//         var_dump($decodedId);
+//         exit;
+        
+        $em = $this->getDoctrine()->getManager();
+        $log = RequestLog::getRepository($em)->find($decodedId);
+        
+        if(!$log) {
+            throw new NotFoundHttpException();
+        }
+        
+        $user = User::getRepository($em)->find($log->getUid());
+        $user instanceof User;
+        
+        if(!$user) {
+            throw new NotFoundHttpException();
+        }
+        
         $response->setData([
-            'id' => $id,
-            'uid' => uniqid(),
-            'tor' => 0
+            'user_id' => $user->getUid(),
+            'request_id' => $id,
+            'human_score' => 0.5,
+            'keywords' => [
+                'tor' => 0, 
+                'age' => 24,
+                'visits' => $user->getVisits(),
+            ],
         ]);
         
         return $response;
