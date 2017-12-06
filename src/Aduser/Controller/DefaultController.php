@@ -113,9 +113,48 @@ class DefaultController extends Controller
             'request_id' => $id,
             'human_score' => 0.5,
             'keywords' => [
-                'tor' => 0, 
+                'tor' => false, 
                 'age' => 24,
                 'visits' => $user->getVisits(),
+            ],
+        ]);
+        
+        return $response;
+    }
+    
+    /**
+     * @Route("/schema")
+     */
+    public function schemaAction(Request $request)
+    {
+        $response = new JsonResponse();
+        
+        $response->setData([
+            [
+                "label" => "Use Tor network",
+                "key" => "tor",
+                "values" => [
+                    ["label" =>  "Yes", "value" => true],
+                    ["label" => "No", "value" => false]
+                ],
+                "value_type" => "boolean",
+                "allow_input" => false
+            ],
+            [
+                "label" => "User age",
+                "key" => "age",
+                "values" => [
+                    ["label" => "19 - 35", "value" => "19,36"],
+                    ["label" => "over 65", "value" => "65,"],
+                ],
+                "value_type" => "number",
+                "allow_input" => true
+            ],
+            [
+                "label" => "Number of visits",
+                "key" => "visits",
+                "value_type" => "number",
+                "allow_input" => true
             ],
         ]);
         
