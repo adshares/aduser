@@ -21,6 +21,9 @@ sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 sudo apt-get install nginx
 
 sudo apt-get install -y percona-server-server
+
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y nodejs
 ```
 
 ## aduser
