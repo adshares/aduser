@@ -39,7 +39,7 @@ tee /etc/nginx/sites-enabled/aduser <<'ADSHARES'
 server {
         listen                  80;
 
-        server_name             aduser.dev;
+        server_name             aduser.test aduser.dev;
         root    /home/adshares/aduser/web;
 
         index                   index.htm index.html index.php;
