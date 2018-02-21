@@ -57,7 +57,7 @@ server {
 
         location ~ ^/(app|app_dev|config|test)\.php(/|$) {
                 include snippets/fastcgi-php.conf;
-                fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+                fastcgi_pass unix:/run/php/php7.2-fpm.sock;
         }
 }
 ADSHARES
