@@ -141,8 +141,8 @@ class DefaultController extends Controller
                 "label": "Site domain",
                 "key": "domain",
                 "values": [
-                {"label": "coinmarketcap.com", "value": "coinmarketcap.com", "key": "domain_coinmarketcap.com", "parent_label": "Site domain"},
-                {"label": "icoalert.com", "value": "icoalert.com", "key": "domain_icoalert.com", "parent_label": "Site domain"}
+                {"label": "coinmarketcap.com", "value": "coinmarketcap.com"},
+                {"label": "icoalert.com", "value": "icoalert.com"}
                 ],
                 "value_type": "string",
                 "allow_input": true
@@ -152,8 +152,8 @@ class DefaultController extends Controller
                 "key": "inframe",
                 "value_type": "boolean",
                 "values": [
-                {"label": "Yes", "value": "true", "key": "inframe_yes", "parent_label": "Inside frame"},
-                {"label": "No", "value": "false", "key": "inframe_no", "parent_label": "Inside frame"}
+                {"label": "Yes", "value": "true"},
+                {"label": "No", "value": "false"}
                 ],
                 "allow_input": false
             },
@@ -161,10 +161,10 @@ class DefaultController extends Controller
                 "label": "Language",
                 "key": "lang",
                 "values": [
-                {"label": "Polish", "value": "pl", "key": "site_lang_pol", "parent_label": "Site Language"},
-                {"label": "English", "value": "en", "key": "site_lang_en", "parent_label": "Site Language"},
-                {"label": "Italian", "value": "it", "key": "site_lang_it", "parent_label": "Site Language"},
-                {"label": "Japanese", "value": "jp", "key": "site_lang_jp", "parent_label": "Site Language"}
+                {"label": "Polish", "value": "pl"},
+                {"label": "English", "value": "en"},
+                {"label": "Italian", "value": "it"},
+                {"label": "Japanese", "value": "jp"}
                 ],
                 "value_type": "string",
                 "allow_input": false
@@ -173,8 +173,8 @@ class DefaultController extends Controller
                 "label": "Content keywords",
                 "key": "keywords",
                 "values": [
-                {"label": "blockchain", "value": "blockchain", "key": "keywords_blockchain", "parent_label": "Content keywords"},
-                {"label": "ico", "value": "ico", "key": "keywords_ico", "parent_label": "Content keywords"}
+                {"label": "blockchain", "value": "blockchain"},
+                {"label": "ico", "value": "ico"}
                 ],
                 "value_type": "string",
                 "allow_input": true
@@ -189,8 +189,8 @@ class DefaultController extends Controller
                 "label": "Age",
                 "key": "age",
                 "values": [
-                {"label": "18-35", "value": "18,35", "key": "user_age_18", "parent_label": "Age"},
-                {"label": "36-65", "value": "36,65", "key": "user_age_35", "parent_label": "Age"}
+                {"label": "18-35", "value": "18,35"},
+                {"label": "36-65", "value": "36,65"}
                 ],
                 "value_type": "number",
                 "allow_input": true
@@ -199,8 +199,8 @@ class DefaultController extends Controller
                 "label": "Interest keywords",
                 "key": "keywords",
                 "values": [
-                {"label": "blockchain", "value": "blockchain", "key": "keywords_blockchain", "parent_label": "Interest keywords"},
-                {"label": "ico", "value": "ico", "key": "keywords_ico", "parent_label": "Interest keywords"}
+                {"label": "blockchain", "value": "blockchain"},
+                {"label": "ico", "value": "ico"}
                 ],
                 "value_type": "string",
                 "allow_input": true
@@ -209,10 +209,10 @@ class DefaultController extends Controller
                 "label": "Language",
                 "key": "lang",
                 "values": [
-                {"label": "Polish", "value": "pl", "key": "user_lang_pol", "parent_label": "User Language"},
-                {"label": "English", "value": "en", "key": "user_lang_en", "parent_label": "User Language"},
-                {"label": "Italian", "value": "it", "key": "user_lang_it", "parent_label": "User Language"},
-                {"label": "Japanese", "value": "jp", "key": "user_lang_jp", "parent_label": "User Language"}
+                {"label": "Polish", "value": "pl"},
+                {"label": "English", "value": "en"},
+                {"label": "Italian", "value": "it"},
+                {"label": "Japanese", "value": "jp"}
                 ],
                 "value_type": "string",
                 "allow_input": false
@@ -221,8 +221,8 @@ class DefaultController extends Controller
                 "label": "Gender",
                 "key": "gender",
                 "values": [
-                {"label": "Male", "value": "pl", "key": "gender_female", "parent_label": "Gender"},
-                {"label": "Female", "value": "en", "key": "gender_male", "parent_label": "Gender"}
+                {"label": "Male", "value": "pl"},
+                {"label": "Female", "value": "en"}
                 ],
                 "value_type": "string",
                 "allow_input": false
@@ -235,13 +235,13 @@ class DefaultController extends Controller
                     "label": "Continent",
                     "key": "continent",
                     "values": [
-                    {"label": "Africa", "value": "af", "key": "user_continent_af", "parent_label": "User Continent"},
-                    {"label": "Asia", "value": "as", "key": "user_continent_as", "parent_label": "User Continent"},
-                    {"label": "Europe", "value": "eu", "key": "user_continent_eu", "parent_label": "User Continent"},
-                    {"label": "North America", "value": "na", "key": "user_continent_na", "parent_label": "User Continent"},
-                    {"label": "South America", "value": "sa", "key": "user_continent_sa", "parent_label": "User Continent"},
-                    {"label": "Oceania", "value": "oc", "key": "user_continent_oc", "parent_label": "User Continent"},
-                    {"label": "Antarctica", "value": "an", "key": "user_continent_an", "parent_label": "User Continent"}
+                    {"label": "Africa", "value": "af"},
+                    {"label": "Asia", "value": "as"},
+                    {"label": "Europe", "value": "eu"},
+                    {"label": "North America", "value": "na"},
+                    {"label": "South America", "value": "sa"},
+                    {"label": "Oceania", "value": "oc"},
+                    {"label": "Antarctica", "value": "an"}
                     ],
                     "value_type": "string",
                     "allow_input": false
@@ -250,10 +250,10 @@ class DefaultController extends Controller
                     "label": "Country",
                     "key": "country",
                     "values": [
-                    {"label": "United States", "value": "us", "key": "user_country_us", "parent_label": "User Country"},
-                    {"label": "Poland", "value": "pl", "key": "user_country_pl", "parent_label": "User Country"},
-                    {"label": "Spain", "value": "eu", "key": "user_country_spain", "parent_label": "User Country"},
-                    {"label": "China", "value": "cn", "key": "user_country_cn", "parent_label": "User Country"}
+                    {"label": "United States", "value": "us"},
+                    {"label": "Poland", "value": "pl"},
+                    {"label": "Spain", "value": "eu"},
+                    {"label": "China", "value": "cn"}
                     ],
                     "value_type": "string",
                     "allow_input": false
@@ -274,8 +274,8 @@ class DefaultController extends Controller
                     "label": "Width",
                     "key": "width",
                     "values": [
-                    {"label": "1200 or more", "value": "<1200,>", "key": "width_1200", "parent_label": "Width"},
-                    {"label": "between 1200 and 1800", "value": "<1200,1800>", "key": "width_1200_1800", "parent_label": "Width"}
+                    {"label": "1200 or more", "value": "<1200,>"},
+                    {"label": "between 1200 and 1800", "value": "<1200,1800>"}
                     ],
                     "value_type": "number",
                     "allow_input": true
@@ -284,8 +284,8 @@ class DefaultController extends Controller
                     "label": "Height",
                     "key": "height",
                     "values": [
-                    {"label": "1200 or more", "value": "<1200,>", "key": "height_1200", "parent_label": "Height"},
-                    {"label": "between 1200 and 1800", "value": "<1200,1800>", "key": "height_1200_1800", "parent_label": "Height"}
+                    {"label": "1200 or more", "value": "<1200,>"},
+                    {"label": "between 1200 and 1800", "value": "<1200,1800>"}
                     ],
                     "value_type": "number",
                     "allow_input": true
@@ -296,10 +296,10 @@ class DefaultController extends Controller
                 "label": "Language",
                 "key": "lang",
                 "values": [
-                {"label": "Polish", "value": "pl", "key": "device_lang_pol", "parent_label": "Device Language"},
-                {"label": "English", "value": "en", "key": "device_lang_en", "parent_label": "Device Language"},
-                {"label": "Italian", "value": "it", "key": "device_lang_it", "parent_label": "Device Language"},
-                {"label": "Japanese", "value": "jp", "key": "device_lang_jp", "parent_label": "Device Language"}
+                {"label": "Polish", "value": "pl"},
+                {"label": "English", "value": "en"},
+                {"label": "Italian", "value": "it"},
+                {"label": "Japanese", "value": "jp"}
                 ],
                 "value_type": "string",
                 "allow_input": false
@@ -308,9 +308,9 @@ class DefaultController extends Controller
                 "label": "Browser",
                 "key": "browser",
                 "values": [
-                {"label": "Chrome", "value": "Chrome", "key": "browser_chrome", "parent_label": "Browser"},
-                {"label": "Edge", "value": "Edge", "key": "browser_edge", "parent_label": "Browser"},
-                {"label": "Firefox", "value": "Firefox", "key": "browser_firefox", "parent_label": "Browser"}
+                {"label": "Chrome", "value": "Chrome"},
+                {"label": "Edge", "value": "Edge"},
+                {"label": "Firefox", "value": "Firefox"}
                 ],
                 "value_type": "string",
                 "allow_input": false
@@ -319,9 +319,9 @@ class DefaultController extends Controller
                 "label": "Operating system",
                 "key": "os",
                 "values": [
-                {"label": "Linux", "value": "Linux", "key": "os_linux", "parent_label": "Operating system"},
-                {"label": "Mac", "value": "Mac", "key": "os_mac", "parent_label": "Operating system"},
-                {"label": "Windows", "value": "Windows", "key": "os_windows", "parent_label": "Operating system"}
+                {"label": "Linux", "value": "Linux"},
+                {"label": "Mac", "value": "Mac"},
+                {"label": "Windows", "value": "Windows"}
                 ],
                 "value_type": "string",
                 "allow_input": false
@@ -334,13 +334,13 @@ class DefaultController extends Controller
                     "label": "Continent",
                     "key": "continent",
                     "values": [
-                    {"label": "Africa", "value": "af", "key": "device_continent_af", "parent_label": "Device Continent"},
-                    {"label": "Asia", "value": "as", "key": "device_continent_as", "parent_label": "Device Continent"},
-                    {"label": "Europe", "value": "eu", "key": "device_continent_eu", "parent_label": "Device Continent"},
-                    {"label": "North America", "value": "na", "key": "device_continent_na", "parent_label": "Device Continent"},
-                    {"label": "South America", "value": "sa", "key": "device_continent_sa", "parent_label": "Device Continent"},
-                    {"label": "Oceania", "value": "oc", "key": "device_continent_oc", "parent_label": "Device Continent"},
-                    {"label": "Antarctica", "value": "an", "key": "device_continent_an", "parent_label": "Device Continent"}
+                    {"label": "Africa", "value": "af"},
+                    {"label": "Asia", "value": "as"},
+                    {"label": "Europe", "value": "eu"},
+                    {"label": "North America", "value": "na"},
+                    {"label": "South America", "value": "sa"},
+                    {"label": "Oceania", "value": "oc"},
+                    {"label": "Antarctica", "value": "an"}
                     ],
                     "value_type": "string",
                     "allow_input": false
@@ -349,10 +349,10 @@ class DefaultController extends Controller
                     "label": "Country",
                     "key": "country",
                     "values": [
-                    {"label": "United States", "value": "us", "key": "device_country_us", "parent_label": "Device Country"},
-                    {"label": "Poland", "value": "pl", "key": "device_country_pl", "parent_label": "Device Country"},
-                    {"label": "Spain", "value": "eu", "key": "device_country_spain", "parent_label": "Device Country"},
-                    {"label": "China", "value": "cn", "key": "device_country_cn", "parent_label": "Device Country"}
+                    {"label": "United States", "value": "us"},
+                    {"label": "Poland", "value": "pl"},
+                    {"label": "Spain", "value": "eu"},
+                    {"label": "China", "value": "cn"}
                     ],
                     "value_type": "string",
                     "allow_input": false
@@ -364,8 +364,8 @@ class DefaultController extends Controller
                 "key": "js_enabled",
                 "value_type": "boolean",
                 "values": [
-                {"label": "Yes", "value": "true", "key": "js_enabled_yes", "parent_label": "Javascript support"},
-                {"label": "No", "value": "false", "key": "js_enabled_no", "parent_label": "Javascript support"}
+                {"label": "Yes", "value": "true"},
+                {"label": "No", "value": "false"}
                 ],
                 "allow_input": false
             }
