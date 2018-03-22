@@ -39,12 +39,22 @@ class AppKernel extends Kernel
 
     public function getCacheDir()
     {
-        return dirname(__DIR__).'/var/cache/'.$this->getEnvironment();
+        if(isset($_SERVER['SYMFONY_VAR_DIR'])) {
+            $dir = $_SERVER['SYMFONY_VAR_DIR'];
+        } else {
+            $dir = dirname(__DIR__).'/var';
+        }
+        return $dir .'/cache/'.$this->getEnvironment();
     }
 
     public function getLogDir()
     {
-        return dirname(__DIR__).'/var/logs';
+        if(isset($_SERVER['SYMFONY_VAR_DIR'])) {
+            $dir = $_SERVER['SYMFONY_VAR_DIR'];
+        } else {
+            $dir = dirname(__DIR__).'/var';
+        }
+        return $dir .'/logs';
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader)
