@@ -15,13 +15,10 @@
 	"autoload-dev" : {
 		"psr-4" : {
 			"Tests\\" : "tests/"
-		},
-		"files" : [
-			"vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php"
-		]
+		}
 	},
 	"require" : {
-		"php" : ">=5.5.9",
+		"php" : ">=7.0",
 		"doctrine/doctrine-bundle" : "^1.6",
 		"doctrine/orm" : "^2.5",
 		"incenteev/composer-parameter-handler" : "^2.0",
@@ -34,8 +31,7 @@
 		"twig/twig" : "^1.0||^2.0"
 	},
 	"require-dev" : {
-		"sensio/generator-bundle" : "^3.0",
-		"symfony/phpunit-bridge" : "^3.0"
+		"sensio/generator-bundle" : "^3.0"
 	},
 	"scripts" : {
 		"symfony-scripts" : [
@@ -51,7 +47,7 @@
 	},
 	"config" : {
 		"platform" : {
-			"php" : "5.5.9"
+			"php" : "7.1"
 		},
 		"sort-packages" : true
 	},
