@@ -11,7 +11,7 @@ import const
 class SimpleProviderClient(ProviderClient):
 
     def pixel(self, request):
-        tid = '1'
+        tid = request.cookies[-1]
         return redirectTo("{0}/{1}".format(const.DATA_PROVIDER, urllib.quote(tid)), request)
 
     @defer.inlineCallbacks
