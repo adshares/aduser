@@ -15,7 +15,6 @@ class TestRequest(TestCase):
     def test_pixel(self):
         req = Request(channel=MagicMock())
         req.setResponseCode = MagicMock()
-        req.addCookie = MagicMock()
 
         resource = server.PixelRequest()
         response = yield resource.render_GET(req)
@@ -27,7 +26,6 @@ class TestRequest(TestCase):
         response = yield resource.render_GET(req)
         self.assertIsNotNone(response)
         req.setResponseCode.assert_called_with(302)
-        req.addCookie.assert_called()
 
     @defer.inlineCallbacks
     def test_get_data(self):
