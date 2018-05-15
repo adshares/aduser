@@ -22,6 +22,7 @@ class TestRequest(TestCase):
     def test_pixel(self):
         req = Request(channel=MagicMock())
         req.setResponseCode = MagicMock()
+        req.cookies = ['test_cookie']
 
         response = yield self.client.pixel(req)
         self.assertIsNotNone(response)
