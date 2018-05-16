@@ -1,5 +1,5 @@
-from aduser.simple_provider.client import SimpleProviderClient
 from datetime import timedelta
+from aduser.simple_provider.client import SimpleProviderClient
 
 #: Twisted TCP port number
 SERVER_PORT = 8081

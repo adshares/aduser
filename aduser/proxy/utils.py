@@ -1,5 +1,7 @@
 import time
 import os
+import logging
+
 from hashlib import sha1
 from base64 import b64encode, b64decode
 from random import getrandbits
@@ -9,6 +11,8 @@ import const
 
 
 def create_tracking_id(request):
+    logger = logging.getLogger(__name__)
+    logger.info("Creating new tracking id.")
 
     tid_elements = [int(time.time() * 1000 * 1000),                                       # Microsecond epoch time
                     request.getClientIP() if request.getClientIP() else getrandbits(64),  # Client IP
@@ -39,10 +43,14 @@ def is_tracking_id_valid(tid):
 
 def attach_tracking_cookie(request):
 
+    logger = logging.getLogger(__name__)
     tid = request.getCookie(const.COOKIE_NAME)
 
     if not (tid and is_tracking_id_valid(tid)):
+        logger.warning("Needs new tracking id.")
         tid = create_tracking_id(request)
+
+    logger.info("Attaching tracking id.")
 
     request.addCookie(const.COOKIE_NAME, tid, expires=str(datetime.now() + const.EXPIRY_PERIOD))
 
