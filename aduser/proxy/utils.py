@@ -11,6 +11,12 @@ import const
 
 
 def create_tracking_id(request):
+    """
+    Create the tracking id based on some request data.
+
+    :param request: Twisted request.
+    :return: Base64 encoded tracking id with checksum.
+    """
     logger = logging.getLogger(__name__)
     logger.info("Creating new tracking id.")
 
@@ -28,12 +34,23 @@ def create_tracking_id(request):
 
 
 def tracking_id_checksum(uid):
+    """
+
+    :param uid: Tracking id.
+    :return: Checksum for uid tracking id.
+    """
     checksum_sha1 = sha1()
     checksum_sha1.update(uid + const.SECRET)
     return checksum_sha1.digest()[:6]
 
 
 def is_tracking_id_valid(tid):
+    """
+    Validates the tracking id with its' checksum.
+
+    :param tid: tid to check
+    :return: True or False
+    """
     tid = b64decode(tid)
     uid = tid[:16]
     checksum = tid[16:22]
@@ -42,7 +59,12 @@ def is_tracking_id_valid(tid):
 
 
 def attach_tracking_cookie(request):
+    """
+    Attach the cookie to request. Create it, if it doesn't exist.
 
+    :param request: Request to attach the cookie to.
+    :return: Tracking id.
+    """
     logger = logging.getLogger(__name__)
     tid = request.getCookie(const.COOKIE_NAME)
 

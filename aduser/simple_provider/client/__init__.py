@@ -15,13 +15,24 @@ class SimpleProviderClient(ProviderClient):
         self.logger = logging.getLogger(__name__)
 
     def pixel(self, request):
+        """
+        Use the last cookie as our tracking id aka user id.
+
+        :param request:
+        :return: 302 Redirect to a data probiver server.
+        """
         tid = request.cookies[-1]
         self.logger.info("Redirecting to {0}".format("{0}/{1}".format(const.DATA_PROVIDER, urllib.quote(tid))))
         return redirectTo("{0}/{1}".format(const.DATA_PROVIDER, urllib.quote(tid)), request)
 
     @defer.inlineCallbacks
     def get_data(self, user_identifier):
+        """
+        Get user profile from provider server.
 
+        :param user_identifier: User identifier
+        :return: User profile dictionary.
+        """
         agent = Agent(reactor)
         data_url = '{0}/get_data/{1}'.format(const.DATA_PROVIDER_CONSUMER_INFO, user_identifier)
 

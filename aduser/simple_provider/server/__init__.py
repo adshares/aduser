@@ -10,6 +10,9 @@ import db
 
 
 class ChildRequest(Resource):
+    """
+    Common base class for pixel and userdata requests.
+    """
     isLeaf = True
 
     def __init__(self, path=None):
@@ -19,7 +22,9 @@ class ChildRequest(Resource):
 
 
 class ChildFactory(Resource):
-
+    """
+    Common base class for routing pixel and user data requests.
+    """
     def render_GET(self, request):  # NOSONAR
         request.setResponseCode(404)
         return ''
@@ -29,7 +34,9 @@ class ChildFactory(Resource):
 
 
 class PixelRequest(ChildRequest):
-
+    """
+    Router handler for endpoints of pixel requests. This is a Twisted Resource.
+    """
     def render_GET(self, request):  # NOSONAR
         if not self.path:
             request.setResponseCode(404)
@@ -43,7 +50,9 @@ class PixelRequest(ChildRequest):
 
 @defer.inlineCallbacks
 class UserRequest(ChildRequest):
-
+    """
+    Router handler for endpoints of pixel requests. This is a Twisted Resource.
+    """
     def render_GET(self, request):  # NOSONAR
         if not self.path:
             request.setResponseCode(404)
@@ -63,23 +72,36 @@ class UserRequest(ChildRequest):
         defer.returnValue(json.dumps([]))
 
 
-class PixelFactory(ChildFactory):
-    child = PixelRequest
-
-
-class UserFactory(ChildFactory):
-    child = UserRequest
-
-
 class Info(Resource):
+    """
+    Router handler for endpoints of pixel requests. This is a Twisted Resource.
+    """
     isLeaf = True
 
     def render_GET(self, request):  # NOSONAR
         return ''
 
 
-def configure_server():
+class PixelFactory(ChildFactory):
+    """
+    Routing class for pixels.
+    """
+    child = PixelRequest
 
+
+class UserFactory(ChildFactory):
+    """
+    Routing class for user data.
+    """
+    child = UserRequest
+
+
+def configure_server():
+    """
+    Initialize the server.
+
+    :return:
+    """
     root = Resource()
     root.putChild("pixel", PixelFactory())
     root.putChild("getData", UserFactory())
