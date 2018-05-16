@@ -51,9 +51,10 @@ class UserRequest(ChildRequest):
         # Load from db
         consumer = yield db.load_consumer(tid)
 
-        # Not found? Ask the provider
+        if consumer:
+            defer.returnValue(json.dumps(consumer))
 
-        defer.returnValue(json.dumps(consumer))
+        defer.returnValue(json.dumps([]))
 
 
 class PixelFactory(ChildFactory):
