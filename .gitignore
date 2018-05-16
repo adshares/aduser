@@ -104,4 +104,5 @@ deploy.sh
 # Sonar scanner
 .scannerwork
 
-*/_trial_temp/
+_trial_temp/
+*/_trial_temp
