@@ -5,7 +5,7 @@ from twisted.internet.protocol import Protocol
 from twisted.internet import reactor, defer
 from twisted.web.client import Agent
 
-from aduser.simple_provider.server import UserDataSource
+from aduser.simple_provider.server.data_sources import UserDataSource
 
 
 class JsonProtocol(Protocol):
