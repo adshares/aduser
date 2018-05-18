@@ -6,4 +6,3 @@ aduser
 
    aduser
    daemon
-   tests
