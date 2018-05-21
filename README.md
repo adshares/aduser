@@ -1,4 +1,5 @@
 # AdUser
+[![Docs Status](https://readthedocs.org/projects/adshares-aduser/badge/?version=latest)](http://adshares-aduser.readthedocs.io/en/latest/)
 ## Build
 AdUser is fully implemented in python.
 
