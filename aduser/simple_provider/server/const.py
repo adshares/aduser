@@ -29,9 +29,5 @@ MONGO_DB_PORT = 27017
 MONGO_DB_NAME = 'aduser_simple_provider'
 
 #: User DataSource classes
-# USER_DATA_SOURCES = [BrowsCapSource(os.path.join(os.environ["ADUSER_ROOT"], 'aduser', 'data', 'browsercap.csv')),
-#                      GeoIpSource(os.path.join(os.environ["ADUSER_ROOT"], 'aduser', 'data', 'GeoLite2-City.mmdb'))]
-
-#: User DataSource classes
-USER_DATA_SOURCES = [BrowsCapSource(None),
-                     GeoIpSource(None)]
+USER_DATA_SOURCES = [BrowsCapSource(os.path.join(os.environ["ADUSER_ROOT"], 'aduser', 'data', 'browsercap.csv')),
+                     GeoIpSource(os.path.join(os.environ["ADUSER_ROOT"], 'aduser', 'data', 'GeoLite2-City.mmdb'))]

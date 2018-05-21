@@ -62,16 +62,31 @@ class UserRequest(ChildRequest):
 
         tid = request.getCookie(const.REQUEST_COOKIE_NAME)
 
+        data = {'user': {}, 'site': {}}
+
+        data['user'] = {'user_id': None,
+                        'request_id': None,
+                        'client_ip': None,
+                        'cookies': [],
+                        'headers': {},
+                        'human_score': 1.0,
+                        'keywords': {}}
+
         # Load from db
         consumer = yield db.load_consumer(tid)
 
         if consumer:
             yield self.logger.info("Consumer found.")
             yield self.logger.debug(consumer)
-            defer.returnValue(json.dumps(consumer))
+            data['user'].update(consumer)
+            defer.returnValue(json.dumps(data))
 
             yield self.logger.warning("No consumer found.")
-        defer.returnValue(json.dumps([]))
+        else:
+            for source in const.USER_DATA_SOURCES:
+                source.update_user(data['user'])
+
+        defer.returnValue(json.dumps(data))
 
 
 class Info(Resource):
@@ -114,31 +129,10 @@ def configure_server():
     logger.info("Configured with cookie name: '{0}' with expiration of {1}.".format(const.COOKIE_NAME,
                                                                                     const.EXPIRY_PERIOD))
 
-    user = {'user_id': None,
-            'request_id': None,
-            'client_ip': None,
-            'cookies': [],
-            'headers': {},
-            'human_score': 1.0,
-            'keywords': {}}
-
-    #user = {'clientip': request.getClientIP(),
-    #        'cookies': request.cookies,
-    #        'headers': request.getAllHeaders()}
-
-    user.update({'client_ip': '176.221.114.230',
-                 'cookies': [],
-                 'headers': {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0"}})
-
     global DATA_SOURCES
 
     for source in const.USER_DATA_SOURCES:
         source.init()
         DATA_SOURCES.append(source)
-
-    for s in DATA_SOURCES:
-        s.update_user(user)
-
-    print user
 
     return reactor.listenTCP(const.SERVER_PORT, Site(root))
