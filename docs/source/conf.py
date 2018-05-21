@@ -141,7 +141,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'AdUser.tex', u'AdUser Documentation',
-     u'awlodarkiewicz', 'manual'),
+     u'Adshares.net', 'manual'),
 ]
 
 
