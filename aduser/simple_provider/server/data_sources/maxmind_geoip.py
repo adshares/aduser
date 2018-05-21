@@ -1,4 +1,5 @@
 import logging
+import os
 
 from geoip import open_database
 
@@ -16,11 +17,14 @@ class GeoIpSource(UserDataSource):
     def init(self):
         if not self.db:
             self.logger.info("Initializing GeoIP database.")
-            self.db = open_database(self.mmdb_path)
+            if os.path.exists(self.csv_path):
+                self.db = open_database(self.mmdb_path)
+            else:
+                self.logger.error("GeoIP database not found.")
             self.logger.info("GeoIP database initialized.")
 
     def update_user(self, user):
-        if user['client_ip']:
+        if user['client_ip'] and self.db:
             match = self.db.lookup(user['client_ip'])
             if match:
                 user['keywords'].update(match.to_dict())
