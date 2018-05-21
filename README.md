@@ -31,7 +31,7 @@ $ mkdir -p ~/aduser/db/mongo
 
 Create folders for supervisor.
 ```
-$ mkdir -p ~/aduser/log/supervisor ~/aduser/log/aduser ~/aduser/log/mongo
+$ mkdir -p ~/aduser/log
 $ mkdir -p ~/aduser/run/supervisor ~/aduser/run/aduser ~/aduser/run/mongo
 ```
 
@@ -62,7 +62,7 @@ export VIRTUALENV_ROOT=$HOME/aduser
 export PYTHONPATH=$HOME/aduser:$PYTHONPATH
 source ./aduser/bin/activate
 mkdir -p ./aduser/db/mongo
-mkdir -p ./aduser/log/supervisor ./aduser/log/aduser ./aduser/log/mongo
+mkdir -p ./aduser/log
 mkdir -p ./aduser/run/supervisor ./aduser/run/aduser ./aduser/run/mongo
 git clone https://github.com/adshares/aduser.git ./aduser/aduser
 pip install -r ./aduser/aduser/requirements.txt
