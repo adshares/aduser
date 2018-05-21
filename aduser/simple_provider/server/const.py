@@ -1,5 +1,8 @@
+import os
 from base64 import b64decode
 from datetime import timedelta
+from aduser.simple_provider.server.data_sources.browsecap import BrowsCapSource
+from aduser.simple_provider.server.data_sources.maxmind_geoip import GeoIpSource
 
 #: Twisted TCP port number
 SERVER_PORT = 8082
@@ -24,3 +27,11 @@ MONGO_DB_PORT = 27017
 
 #: MONGO DB Name
 MONGO_DB_NAME = 'aduser_simple_provider'
+
+#: User DataSource classes
+# USER_DATA_SOURCES = [BrowsCapSource(os.path.join(os.environ["ADUSER_ROOT"], 'aduser', 'data', 'browsercap.csv')),
+#                      GeoIpSource(os.path.join(os.environ["ADUSER_ROOT"], 'aduser', 'data', 'GeoLite2-City.mmdb'))]
+
+#: User DataSource classes
+USER_DATA_SOURCES = [BrowsCapSource(None),
+                     GeoIpSource(None)]
