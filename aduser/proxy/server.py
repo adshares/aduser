@@ -110,6 +110,6 @@ def configure_server():
     logger = logging.getLogger(__name__)
     logger.info("Initializing server.")
     logger.info("Configured with cookie name: '{0}' with expiration of {1}.".format(proxy_const.COOKIE_NAME,
-                                                                              proxy_const.EXPIRY_PERIOD))
+                                                                                    proxy_const.EXPIRY_PERIOD))
 
     return reactor.listenTCP(proxy_const.SERVER_PORT, Site(root))
