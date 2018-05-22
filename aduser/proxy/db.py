@@ -79,3 +79,20 @@ def load_consumer(consumer_id):
     db = yield get_mongo_db()
     return_value = yield db.get_collection('consumer').find_one({'consumer_id': consumer_id})
     defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def save_adserver_mapping(adserver_tid, aduser_tid):
+    db = yield get_mongo_db()
+    mapping = {'adserver_tid': adserver_tid, 'aduser_tid': aduser_tid}
+    return_value = yield db.get_collection('adserver_mapping').replace_one(mapping, mapping, upsert=True)
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def load_adserver_mapping(adserver_tid, aduser_tid):
+    db = yield get_mongo_db()
+    mapping = {'adserver_tid': adserver_tid, 'aduser_tid': aduser_tid}
+    return_value = yield db.get_collection('adserver_mapping').find_one(mapping)
+    defer.returnValue(return_value)
+
