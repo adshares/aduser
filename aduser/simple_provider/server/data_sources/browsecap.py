@@ -1,6 +1,8 @@
 import logging
 import os
 
+from twisted.internet import defer
+
 from pybrowscap.loader.csv import load_file
 from aduser.simple_provider.server.data_sources import UserDataSource
 
@@ -11,16 +13,19 @@ class BrowsCapSource(UserDataSource):
         self.browscap = None
         self.csv_path = csv_path
         self.data_url = "https://browscap.org/stream?q=BrowsCapCSV"
-        self.logger = logging.getLogger(__name__)
+        self.logger = None
 
+    @defer.inlineCallbacks
     def init(self):
+        self.logger = logging.getLogger(__name__)
         if not self.browscap:
             self.logger.info("Initializing browscap")
             if os.path.exists(self.csv_path):
-                self.browscap = load_file(self.csv_path)
+                self.browscap = yield load_file(self.csv_path)
             else:
                 self.logger.error("Browscap not found.")
-            self.logger.info("Browscap initialized.")
+            if self.browscap:
+                self.logger.info("Browscap initialized.")
 
     def update_user(self, user):
         if self.browscap:
@@ -36,7 +41,9 @@ class BrowsCapSource(UserDataSource):
             except KeyError:
                 self.logger.warning("Missing header user-agent.")
 
+    @defer.inlineCallbacks
     def update_source(self):
         self.logger.info("Udpating browscap")
-        self.browscap = load_file(self.csv_path)
-        self.logger.info("Browscap updated")
+        self.browscap = yield load_file(self.csv_path)
+        if self.browscap:
+            self.logger.info("Browscap updated")
