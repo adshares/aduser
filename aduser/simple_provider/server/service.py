@@ -113,6 +113,19 @@ class UserFactory(ChildFactory):
     child = UserRequest
 
 
+def initialize_sources():
+    """
+    Initialize data sources.
+
+    :return:
+    """
+    global DATA_SOURCES
+
+    for source in const.USER_DATA_SOURCES:
+        source.init()
+        DATA_SOURCES.append(source)
+
+
 def configure_server():
     """
     Initialize the server.
@@ -128,11 +141,5 @@ def configure_server():
     logger.info("Initializing server.")
     logger.info("Configured with cookie name: '{0}' with expiration of {1}.".format(const.COOKIE_NAME,
                                                                                     const.EXPIRY_PERIOD))
-
-    global DATA_SOURCES
-
-    for source in const.USER_DATA_SOURCES:
-        source.init()
-        DATA_SOURCES.append(source)
-
+    initialize_sources()
     return reactor.listenTCP(const.SERVER_PORT, Site(root))
