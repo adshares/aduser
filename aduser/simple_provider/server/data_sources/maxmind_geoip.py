@@ -21,10 +21,7 @@ class GeoIpSource(UserDataSource):
         self.logger = logging.getLogger(__name__)
         if not self.db:
             self.logger.info("Initializing GeoIP database.")
-            if os.path.exists(self.mmdb_path):
-                self.db = yield open_database(self.mmdb_path)
-            else:
-                self.logger.error("GeoIP database not found.")
+            yield self.update_source()
             if self.db:
                 self.logger.info("GeoIP database initialized.")
 
@@ -38,7 +35,10 @@ class GeoIpSource(UserDataSource):
 
     @defer.inlineCallbacks
     def update_source(self):
-        self.logger.info("Udpating GeoIP database.")
-        self.db = yield open_database(self.mmdb_path)
-        if self.db:
-            self.logger.info("GeoIP database updated.")
+        if os.path.exists(self.mmdb_path):
+            self.logger.info("Updating GeoIP database.")
+            self.db = yield open_database(self.mmdb_path)
+            if self.db:
+                self.logger.info("GeoIP database updated.")
+        else:
+            self.logger.error("GeoIP database not found.")

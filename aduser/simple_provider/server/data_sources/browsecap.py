@@ -4,6 +4,7 @@ import os
 from twisted.internet import defer
 
 from pybrowscap.loader.csv import load_file
+
 from aduser.simple_provider.server.data_sources import UserDataSource
 
 
@@ -20,10 +21,7 @@ class BrowsCapSource(UserDataSource):
         self.logger = logging.getLogger(__name__)
         if not self.browscap:
             self.logger.info("Initializing browscap")
-            if os.path.exists(self.csv_path):
-                self.browscap = yield load_file(self.csv_path)
-            else:
-                self.logger.error("Browscap not found.")
+            yield self.update_source()
             if self.browscap:
                 self.logger.info("Browscap initialized.")
 
@@ -43,7 +41,10 @@ class BrowsCapSource(UserDataSource):
 
     @defer.inlineCallbacks
     def update_source(self):
-        self.logger.info("Udpating browscap")
-        self.browscap = yield load_file(self.csv_path)
-        if self.browscap:
-            self.logger.info("Browscap updated")
+        if os.path.exists(self.csv_path):
+            self.logger.info("Udpating browscap")
+            self.browscap = yield load_file(self.csv_path)
+            if self.browscap:
+                self.logger.info("Browscap updated")
+        else:
+            self.logger.error("Browscap not found.")
