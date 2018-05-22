@@ -4,10 +4,11 @@ Welcome to AdUser's documentation!
 What is AdUser?
 ---------------
 
-AdUser is an element in Adshares network. It provides consumer information to the network, through AdServer. Two most important consumer information are:
+AdUser is an element in Adshares network. It provides information about consumers and sites to the ad network, through AdServer. Three most important consumer information are:
 
     * human score - likelihood of this user being a real human and not a bot
-    * keywords - set of keywords describing the consumer, eg. age, country and interests.
+    * consumer keywords - set of keywords describing the consumer, eg. age, country and interests.
+    * site keywords - set of keywords describing the site, eg. cars, sports.
 
 Deployment
 ==========
@@ -60,6 +61,12 @@ Supervisor config
 ^^^^^^^^^^^^^^^^^
 
 Config for supervisor daemon configuration (log and pid file paths) is in *config/supervisord.conf*.
+
+Logging
+-------
+
+Logging config for the Python app can be found in the *config/log_config.json* file. By default, it's captured by supervisor to ``$ADUSER_ROOT/log/aduser.log``. Other logs (MongoDB, supervisord) can also be found in the same directory.
+
 
 User Guide
 ==========
