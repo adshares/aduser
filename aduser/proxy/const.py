@@ -2,7 +2,7 @@ from datetime import timedelta
 from aduser.simple_provider.client import SimpleProviderClient
 
 #: Twisted TCP port number
-SERVER_PORT = 8081
+SERVER_PORT = 80
 
 #: MongoDB instance port
 MONGO_DB_PORT = 27017
