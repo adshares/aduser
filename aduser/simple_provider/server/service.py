@@ -50,11 +50,11 @@ class PixelRequest(ChildRequest):
         return const.PIXEL_GIF
 
 
-@defer.inlineCallbacks
 class UserRequest(ChildRequest):
     """
     Router handler for endpoints of pixel requests. This is a Twisted Resource.
     """
+    @defer.inlineCallbacks
     def render_GET(self, request):  # NOSONAR
         if not self.path:
             request.setResponseCode(404)
@@ -62,7 +62,8 @@ class UserRequest(ChildRequest):
 
         tid = request.getCookie(const.REQUEST_COOKIE_NAME)
 
-        data = {'user': {}, 'site': {}}
+        data = {'user': {},
+                'site': {}}
 
         data['user'] = {'user_id': None,
                         'request_id': None,
