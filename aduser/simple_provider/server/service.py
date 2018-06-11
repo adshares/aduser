@@ -2,7 +2,7 @@ import json
 import logging
 
 from twisted.internet import reactor, defer
-from twisted.web.server import Site
+from twisted.web.server import Site, NOT_DONE_YET
 from twisted.web.resource import Resource
 
 from aduser.simple_provider.server import const
@@ -54,40 +54,54 @@ class UserRequest(ChildRequest):
     """
     Router handler for endpoints of pixel requests. This is a Twisted Resource.
     """
-    @defer.inlineCallbacks
     def render_GET(self, request):  # NOSONAR
         if not self.path:
             request.setResponseCode(404)
-            defer.returnValue('')
+            return ''
 
-        tid = request.getCookie(const.REQUEST_COOKIE_NAME)
+        self.handle_data(request, self.path)
 
-        data = {'user': {},
+        return NOT_DONE_YET
+
+    @defer.inlineCallbacks
+    def handle_data(self, request, tid):
+
+        data = {'user': {'consumer_id': tid,
+                         'request_id': None,
+                         'client_ip': None,
+                         'cookies': [],
+                         'headers': {},
+                         'human_score': 1.0,
+                         'keywords': {}},
                 'site': {}}
 
-        data['user'] = {'user_id': None,
-                        'request_id': None,
-                        'client_ip': None,
-                        'cookies': [],
-                        'headers': {},
-                        'human_score': 1.0,
-                        'keywords': {}}
+        consumer = {}
 
         # Load from db
-        consumer = yield db.load_consumer(tid)
+        if tid:
+            consumer = yield db.load_consumer(tid)
 
         if consumer:
             yield self.logger.info("Consumer found.")
             yield self.logger.debug(consumer)
-            data['user'].update(consumer)
-            defer.returnValue(json.dumps(data))
 
-            yield self.logger.warning("No consumer found.")
+            del consumer['_id']
+
+            data['user'].update(consumer)
+
+            yield self.logger.info(json.dumps(data))
+
         else:
+            yield self.logger.warning("No consumer found.")
             for source in const.USER_DATA_SOURCES:
                 source.update_user(data['user'])
 
-        defer.returnValue(json.dumps(data))
+            yield db.save_consumer(data['user'])
+
+            yield self.logger.info(json.dumps(data))
+
+        yield request.write(json.dumps(data))
+        yield request.finish()
 
 
 class Info(Resource):
@@ -142,5 +156,7 @@ def configure_server():
     logger.info("Initializing server.")
     logger.info("Configured with cookie name: '{0}' with expiration of {1}.".format(const.COOKIE_NAME,
                                                                                     const.EXPIRY_PERIOD))
+    db.configure_db()
     initialize_sources()
+
     return reactor.listenTCP(const.SERVER_PORT, Site(root))
