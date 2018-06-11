@@ -67,7 +67,15 @@ def disconnect():
 
 @defer.inlineCallbacks
 def save_consumer(doc):
-    db = yield get_mongo_db()
-    return_value = yield db.get_collection('consumer').replace_one({'consumer_id': doc['consumer_id']},
+    consumer_db = yield get_mongo_db()
+    return_value = yield consumer_db.get_collection('consumer').replace_one({'consumer_id': doc['consumer_id']},
                                                                    doc, upsert=True)
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def load_consumer(consumer_id):
+
+    consumer_db = yield get_mongo_db()
+    return_value = yield consumer_db.get_collection('consumer').find_one({'consumer_id': consumer_id})
     defer.returnValue(return_value)
