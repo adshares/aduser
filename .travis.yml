@@ -26,6 +26,7 @@ install:
 
 before_script:
   - export PYTHONPATH=$PYTHONPATH:$(pwd)
+  - export ADUSER_ROOT=/
 
 stages:
   - test

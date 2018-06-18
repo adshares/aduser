@@ -12,9 +12,6 @@ if __name__ == "__main__":
 
     logging.basicConfig()
 
-    if 'ADUSER_ROOT' not in os.environ.keys():
-        os.environ["ADUSER_ROOT"] = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-
     logfile_path = os.path.join(os.environ["ADUSER_ROOT"], "aduser", "config", "log_config.json")
 
     with open(logfile_path, "r") as fd:
