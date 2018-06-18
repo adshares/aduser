@@ -28,10 +28,7 @@ before_script:
   - export PYTHONPATH=$PYTHONPATH:$(pwd)
   - export ADUSER_ROOT=/
   - script:
-      - curl -L https://github.com/char0n/pybrowscap/archive/master.zip -o pybrowscap.zip
-      - unzip pybrowscap.zip
-      - rm -rf $ADUSER_ROOT/venv/lib/python2.7/site-packages/pybrowscap
-      - mv -f pybrowscap-master/pybrowscap $ADUSER_ROOT/venv/lib/python2.7/site-packages
+      - curl -L https://github.com/char0n/pybrowscap/archive/master.zip -o pybrowscap.zip && unzip pybrowscap.zip && mv -f pybrowscap-master/pybrowscap $PYTHONPATH
 
 stages:
   - test
