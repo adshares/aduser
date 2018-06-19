@@ -27,7 +27,7 @@ install:
 before_script:
   - export PYTHONPATH=$PYTHONPATH:$(pwd)
   - export ADUSER_ROOT=/
-  - curl -L https://github.com/char0n/pybrowscap/archive/master.zip -o pybrowscap.zip && unzip pybrowscap.zip && mv -f pybrowscap-master/pybrowscap $PYTHONPATH
+  - git clone https://github.com/char0n/pybrowscap.git $PYTHONPATH/pybrowscap
 
 stages:
   - test
