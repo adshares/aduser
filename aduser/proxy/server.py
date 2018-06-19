@@ -2,7 +2,7 @@ import json
 import urllib
 import logging
 
-from twisted.web.server import Site
+from twisted.web.server import Site, NOT_DONE_YET
 from twisted.web.resource import Resource
 from twisted.internet import reactor, defer
 
@@ -53,23 +53,38 @@ class UserRequest(ChildRequest):
     """
     Router handler for endpoints of pixel requests. This is a Twisted Resource.
     """
-    @defer.inlineCallbacks
     def render_GET(self, request):  # NOSONAR
         if not self.path:
             request.setResponseCode(404)
-            defer.returnValue('')
+            return ''
+
+        self.handle_data(request, self.path)
+
+        return NOT_DONE_YET
+
+    @defer.inlineCallbacks
+    def handle_data(self, request, path):
 
         # Load from db
-        consumer = yield db.load_consumer(self.path)
+        consumer = yield db.load_consumer(path)
 
         # Not found? Ask the provider
         if not consumer:
-            yield self.logger.warning("Consumer not found in cache: {0}.".format(self.path))
-            consumer = proxy_const.DATA_PROVIDER_CLIENT.get_data(urllib.unquote(self.path))
-            if consumer:
-                yield db.save_consumer(consumer)
+            yield self.logger.warning("Consumer not found in cache: {0}.".format(path))
+            consumer = yield proxy_const.DATA_PROVIDER_CLIENT.get_data(urllib.unquote(path))
 
-        defer.returnValue(json.dumps(consumer))
+            if consumer:
+                self.logger.info(consumer)
+                consumer['consumer_id'] = path
+                self.logger.info(consumer)
+                yield db.save_consumer(consumer)
+                self.logger.info(consumer)
+
+        else:
+            del consumer['_id']
+
+        yield request.write(json.dumps(consumer))
+        yield request.finish()
 
 
 class Info(Resource):
@@ -112,4 +127,5 @@ def configure_server():
     logger.info("Configured with cookie name: '{0}' with expiration of {1}.".format(proxy_const.COOKIE_NAME,
                                                                                     proxy_const.EXPIRY_PERIOD))
 
+    db.configure_db()
     return reactor.listenTCP(proxy_const.SERVER_PORT, Site(root))

@@ -95,4 +95,3 @@ def load_adserver_mapping(adserver_tid, aduser_tid):
     mapping = {'adserver_tid': adserver_tid, 'aduser_tid': aduser_tid}
     return_value = yield db.get_collection('adserver_mapping').find_one(mapping)
     defer.returnValue(return_value)
-

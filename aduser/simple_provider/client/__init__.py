@@ -1,12 +1,47 @@
-import urllib
+import json
 import logging
+import urllib
 
 from twisted.internet import defer, reactor
-from twisted.web.util import redirectTo
+from twisted.internet.defer import succeed
+from twisted.internet.protocol import Protocol
 from twisted.web.client import Agent
+from twisted.web.iweb import IBodyProducer
+from twisted.web.util import redirectTo
+from zope.interface import implements
 
-from aduser.proxy.client import ProviderClient
 import const
+from aduser.proxy.client import ProviderClient
+
+
+class StringProducer(object):
+    implements(IBodyProducer)
+
+    def __init__(self, body):
+        self.body = body
+        self.length = len(body)
+
+    def startProducing(self, consumer):
+        consumer.write(self.body)
+        return succeed(None)
+
+    def pauseProducing(self):
+        pass
+
+    def stopProducing(self):
+        pass
+
+
+class ReceiverProtocol(Protocol):
+    def __init__(self, finished):
+        self.finished = finished
+        self.body = []
+
+    def dataReceived(self, databytes):
+        self.body.append(databytes)
+
+    def connectionLost(self, reason):
+        self.finished.callback(''.join(self.body))
 
 
 class SimpleProviderClient(ProviderClient):
@@ -39,8 +74,7 @@ class SimpleProviderClient(ProviderClient):
         self.logger.info("Fetching data from {0}".format(data_url))
         response = yield agent.request('GET', data_url)
 
-        defer.returnValue({'user_id': user_identifier,
-                           'request_id': user_identifier,
-                           'human_score': 0.5,
-                           'keywords': {}
-                           })
+        finished = defer.Deferred()
+        response.deliverBody(ReceiverProtocol(finished))
+        data = yield finished
+        defer.returnValue(json.loads(data) if data else None)
