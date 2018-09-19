@@ -1,0 +1,8 @@
+@startuml
+Browser -> AdUser: get pixel
+AdUser -> AdUser: Map tracking cookie tid
+AdUser -> Data_Provider: Redirect
+Browser <-- Data_Provider: Return tracking cookie
+AdServer -> AdUser: Add user identifier
+AdUser -> AdUser: Map this id
+@enduml
