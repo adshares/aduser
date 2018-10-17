@@ -19,7 +19,7 @@ install:
 before_script:
   - export PYTHONPATH=$PYTHONPATH:$(pwd)
   - export ADUSER_ROOT=/
-  - copy .env.dist .env
+  - cp .env.dist .env
   - git clone https://github.com/char0n/pybrowscap.git $PYTHONPATH/pybrowscap
 
 stages:
