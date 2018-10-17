@@ -3,13 +3,13 @@ import re
 from base64 import b64decode
 from datetime import timedelta
 from dotenv import load_dotenv
-from aduser.simple_provider.server.data_sources.browsecap import BrowsCapSource
-from aduser.simple_provider.server.data_sources.maxmind_geoip import GeoIpSource
+#from aduser.simple_provider.server.data_sources.browsecap import BrowsCapSource
+#from aduser.simple_provider.server.data_sources.maxmind_geoip import GeoIpSource
 
 load_dotenv()
 
 #: Twisted TCP port number
-SERVER_PORT = os.getenv('ADUSER_SIMPLE_SERVER_PORT')
+SERVER_PORT = int(os.getenv('ADUSER_SIMPLE_SERVER_PORT'))
 
 #: Secret used for creating a tracking id
 SECRET = os.getenv('ADUSER_SIMPLE_SERVER_SECRET')
@@ -44,7 +44,7 @@ MONGO_DB_PORT = os.getenv('ADUSER_SIMPLE_SERVER_MONGO_DB_PORT')
 MONGO_DB_NAME = os.getenv('ADUSER_SIMPLE_SERVER_MONGO_DB_NAME')
 
 #: User DataSource classes
-USER_DATA_SOURCES = [BrowsCapSource(os.path.join(os.environ["ADUSER_ROOT"], 'aduser', 'data', 'browsercap.csv')),
-                     GeoIpSource(os.path.join(os.environ["ADUSER_ROOT"], 'aduser', 'data', 'GeoLite2-City.mmdb'))]
+#USER_DATA_SOURCES = [BrowsCapSource(os.path.join(os.environ["ADUSER_ROOT"], 'aduser', 'data', 'browsercap.csv')),
+#                     GeoIpSource(os.path.join(os.environ["ADUSER_ROOT"], 'aduser', 'data', 'GeoLite2-City.mmdb'))]
 
 USER_DATA_SOURCES = []

@@ -8,10 +8,10 @@ from aduser.simple_provider.client import SimpleProviderClient
 load_dotenv()
 
 #: Twisted TCP port number
-SERVER_PORT = os.getenv('ADUSER_PORT')
+SERVER_PORT = int(os.getenv('ADUSER_PORT'))
 
 #: MongoDB instance port
-MONGO_DB_PORT = os.getenv('ADUSER_MONGO_DB_PORT')
+MONGO_DB_PORT = int(os.getenv('ADUSER_MONGO_DB_PORT'))
 
 #: MONGO DB Name
 MONGO_DB_NAME = os.getenv('ADUSER_MONGO_DB_NAME')
