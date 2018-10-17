@@ -1,5 +1,6 @@
-Twisted==18.4.0
-txmongo==18.1.0
-supervisor==3.3.4
 pygelf==0.3.3
 python-geoip==1.2
+python-dotenv==0.9.1
+supervisor==3.3.4
+Twisted==18.4.0
+txmongo==18.1.0

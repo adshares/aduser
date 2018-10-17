@@ -11,14 +11,6 @@ sudo: false
 # Cache pip dependencies
 cache: pip
 
-addons:
-  sonarcloud:
-    organization: "adshares-github"
-    token:
-      secure:
-    github_token:
-      secure:
-
 # Install python dependencies
 install:
   - pip install -r requirements.txt
@@ -27,6 +19,7 @@ install:
 before_script:
   - export PYTHONPATH=$PYTHONPATH:$(pwd)
   - export ADUSER_ROOT=/
+  - copy .env.dist .env
   - git clone https://github.com/char0n/pybrowscap.git $PYTHONPATH/pybrowscap
 
 stages:
@@ -46,7 +39,6 @@ jobs:
        - coverage xml -i
        - sonar-scanner
 
-
 # After a build, send email notification with the build results
 notifications:
   email: false
@@ -55,3 +47,11 @@ notifications:
       secure:
     on_success: change
     on_failure: always
+
+addons:
+  sonarcloud:
+    organization: "adshares-github"
+    token:
+      secure:
+    github_token:
+      secure:
