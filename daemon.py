@@ -2,12 +2,16 @@ import logging.config
 import json
 import os
 
+from dotenv import load_dotenv
+
 from twisted.internet import reactor
 
 from aduser.simple_provider.server import service as provider_server
 from aduser.proxy import server as proxy_server
 
 if __name__ == "__main__":
+
+    load_dotenv()
 
     logging.basicConfig()
 
