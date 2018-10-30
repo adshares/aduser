@@ -108,3 +108,5 @@ _trial_temp/
 */_trial_temp
 
 data/
+
+.env

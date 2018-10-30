@@ -7,12 +7,11 @@ from twisted.internet import reactor
 from aduser.simple_provider.server import service as provider_server
 from aduser.proxy import server as proxy_server
 
-
 if __name__ == "__main__":
 
     logging.basicConfig()
 
-    logfile_path = os.path.join(os.environ["ADUSER_ROOT"], "aduser", "config", "log_config.json")
+    logfile_path = os.path.join(os.getenv('ADUSER_LOG_CONFIG_FILE'))
 
     with open(logfile_path, "r") as fd:
         logging.config.dictConfig(json.load(fd))
