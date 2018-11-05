@@ -110,3 +110,11 @@ notifications:
       secure:
     on_success: change
     on_failure: always
+
+addons:
+  sonarcloud:
+    organization: "adshares-github"
+    token:
+      secure:
+    github_token:
+      secure:
