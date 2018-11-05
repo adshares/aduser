@@ -1,9 +1,12 @@
-from aduser.proxy import utils
+from aduser import utils
 from twisted.trial import unittest
 from hashlib import sha1
 from base64 import b64encode, b64decode
-from aduser.proxy.utils import tracking_id_checksum, is_tracking_id_valid
+from aduser.utils import tracking_id_checksum, is_tracking_id_valid
 from mock import MagicMock
+
+import logging
+logging.basicConfig()
 
 
 class TestTrackingId(unittest.TestCase):
@@ -12,7 +15,7 @@ class TestTrackingId(unittest.TestCase):
 
         raised = False
         try:
-            ret = utils.create_tracking_id(MagicMock())
+            utils.create_tracking_id(MagicMock())
         except TypeError:
             raised = True
 
@@ -35,3 +38,7 @@ class TestTrackingId(unittest.TestCase):
         tid = b64encode(uid + tracking_id_checksum(uid))
 
         self.assertTrue(is_tracking_id_valid(tid))
+
+    def test_tracking_id_checksum(self):
+
+        self.assertEqual(6, len(tracking_id_checksum('fake_uid')))

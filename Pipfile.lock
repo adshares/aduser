@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "286b37210f082ba3c500667ff048f0b80274018be4d9448c0dbdaf9ec4f53ea2"
+            "sha256": "e5fc72429304ca82c1f22f8a7c370d414a91f135885f52020d9c333c5c78b335"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -96,14 +96,6 @@
                 "sha256:d7929c513732dff093481f4a0954ed5ff16816365842136b17caa0b4992e49d3"
             ],
             "version": "==3.7.2"
-        },
-        "python-geoip": {
-            "hashes": [
-                "sha256:b7b11dab42bffba56943b3199e3441f41cea145244d215844ecb6de3d5fb2df5",
-                "sha256:fb0fa723d0cef2b52807afb7da154877125e0d40f94ec69707511549a8d431c9"
-            ],
-            "index": "pypi",
-            "version": "==1.2"
         },
         "six": {
             "hashes": [
@@ -283,10 +275,10 @@
         },
         "virtualenv": {
             "hashes": [
-                "sha256:2ce32cd126117ce2c539f0134eb89de91a8413a29baac49cbab3eb50e2026669",
-                "sha256:ca07b4c0b54e14a91af9f34d0919790b016923d157afda5efdde55c96718f752"
+                "sha256:686176c23a538ecc56d27ed9d5217abd34644823d6391cbeb232f42bf722baad",
+                "sha256:f899fafcd92e1150f40c8215328be38ff24b519cd95357fa6e78e006c7638208"
             ],
-            "version": "==16.0.0"
+            "version": "==16.1.0"
         },
         "virtualenv-clone": {
             "hashes": [

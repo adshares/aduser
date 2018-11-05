@@ -1,14 +1,14 @@
-import socket
+from zope.interface import implementer
 
 from twisted.trial.unittest import TestCase
 from twisted.internet.protocol import Protocol
 from twisted.internet import reactor, defer
 from twisted.web.client import Agent
+from twisted.web.iweb import IBodyProducer
 
-from aduser.proxy import const as proxy_const
-from aduser.simple_provider.server import const as provider_const
-from aduser.simple_provider import server as provider_server
-from aduser.proxy import server
+import json
+
+from aduser import server_utils
 
 
 class WebclientTestCase(TestCase):
@@ -24,6 +24,33 @@ class WebclientTestCase(TestCase):
         def connectionLost(self, reason):  # NOSONAR
             self.finished.callback(''.join(self.body))
 
+    class JsonReceiverProtocol(Protocol):
+        def __init__(self, finished):
+            self.finished = finished
+            self.body = []
+
+        def dataReceived(self, databytes):  # NOSONAR
+            self.body.append(databytes)
+
+        def connectionLost(self, reason):  # NOSONAR
+            self.finished.callback(json.loads(''.join(self.body)))
+
+    @implementer(IBodyProducer)
+    class JsonBytesProducer(object):
+        def __init__(self, body):
+            self.body = json.dumps(body)
+            self.length = len(self.body)
+
+        def startProducing(self, consumer):
+            consumer.write(self.body)
+            return defer.succeed(None)
+
+        def pauseProducing(self):
+            pass
+
+        def stopProducing(self):
+            pass
+
     @defer.inlineCallbacks
     def return_response_body(self, response):
         finished = defer.Deferred()
@@ -31,27 +58,20 @@ class WebclientTestCase(TestCase):
         data = yield finished
         defer.returnValue(data)
 
+    @defer.inlineCallbacks
+    def return_response_json(self, response):
+        finished = defer.Deferred()
+        response.deliverBody(WebclientTestCase.JsonReceiverProtocol(finished))
+        data = yield finished
+        defer.returnValue(data)
+
     def setUp(self):  # NOSONAR
         self.agent = Agent(reactor)
-        self.port = server.configure_server()
-        self.provider_port = provider_server.configure_server()
+        self.port = server_utils.configure_server()
 
-        host = socket.gethostbyname(socket.gethostname())
-        self.url = 'http://{0}:{1}'.format(host, self.port_number)
+        self.url = 'http://{0}:{1}'.format(self.port.getHost().host, self.port.getHost().port)
 
         self.timeout = 5
 
     def tearDown(self):  # NOSONAR
         self.port.stopListening()
-        self.provider_port.stopListening()
-
-
-class ProxyWebclientTestCase(WebclientTestCase):
-    port_number = proxy_const.SERVER_PORT
-
-    def setUp(self):  # NOSONAR
-        WebclientTestCase.setUp(self)
-
-
-class ProviderWebclientTestCase(WebclientTestCase):
-    port_number = provider_const.SERVER_PORT

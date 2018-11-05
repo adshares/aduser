@@ -1,4 +1,4 @@
-from twisted.internet import defer
+from utils.internet import defer
 from txmongo import filter
 import txmongo
 import const
