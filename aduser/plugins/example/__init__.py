@@ -29,7 +29,7 @@ def pixel(request):
 
 
 def update_data(data, request_data):
-    # Ignors request_data
+    # Ignore request_data
     global schema
 
     input_choices = ['Professor X', 'Deadpool', 'Aquaman', 'professorX']

@@ -5,9 +5,10 @@ from twisted.internet import defer
 
 import IP2Location
 
-logger = logging.getLogger(__name__)
+schema_name = 'example_ip2location'
+schema_version = '0.0.1'
 
-plugin_name = 'IP2Location'
+logger = logging.getLogger(__name__)
 
 
 @defer.inlineCallbacks
@@ -38,3 +39,7 @@ def update_source(self):
             logger.info("IP2Location database updated.")
     else:
         logger.error("IP2Location database not found.")
+
+
+def normalize(data):
+    return data
