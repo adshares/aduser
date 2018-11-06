@@ -15,3 +15,6 @@ Twisted = "~=18.4.0"
 
 [requires]
 python_version = "2.7"
+
+[scripts]
+install_geoip = "pip install python-geoip"
