@@ -6,6 +6,7 @@ from twisted.internet import reactor
 
 from aduser import plugin, const
 from aduser.server import PixelRequest, DataRequest, NormalizationRequest, SchemaRequest
+import sys
 
 
 class PixelFactory(Resource):
@@ -34,5 +35,9 @@ def configure_server():
                                                                                     const.EXPIRY_PERIOD))
 
     plugin.initialize(const.ADUSER_DATA_PROVIDER)
+
+    if not plugin.data:
+        logger.info("Failed to load data plugin, exiting.")
+        sys.exit(1)
 
     return reactor.listenTCP(const.SERVER_PORT, Site(root))

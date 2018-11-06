@@ -24,5 +24,4 @@ else:
     elif config_period.group(2) == 'd':
         EXPIRY_PERIOD = timedelta(days=count)
 
-ADUSER_PIXEL_PROVIDER = os.getenv('ADUSER_PIXEL_PROVIDER')
 ADUSER_DATA_PROVIDER = os.getenv('ADUSER_DATA_PROVIDER')

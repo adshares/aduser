@@ -52,6 +52,7 @@ class DataRequest(ChildRequest):
             default_data = {'uid': request_data['user']['uid'],
                             'human_score': 1.0,
                             'keywords': {}}
+
             data = yield plugin.data.update_data(default_data, request_data)
 
             yield request.write(json.dumps(data))
