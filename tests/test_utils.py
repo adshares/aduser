@@ -6,7 +6,7 @@ from aduser.utils import tracking_id_checksum, is_tracking_id_valid
 from mock import MagicMock
 
 import logging
-logging.basicConfig()
+logging.disable(logging.WARNING)
 
 
 class TestTrackingId(unittest.TestCase):

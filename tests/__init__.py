@@ -7,11 +7,15 @@ from twisted.web.client import Agent
 from twisted.web.iweb import IBodyProducer
 
 import json
+from mock import patch
+import os
 
-from aduser import server_utils
+from aduser import server_utils, plugin
 
 
 class WebclientTestCase(TestCase):
+
+    data_plugin = os.getenv('ADUSER_DATA_PROVIDER')
 
     class ReceiverProtocol(Protocol):
         def __init__(self, finished):
@@ -66,8 +70,11 @@ class WebclientTestCase(TestCase):
         defer.returnValue(data)
 
     def setUp(self):  # NOSONAR
+
         self.agent = Agent(reactor)
-        self.port = server_utils.configure_server()
+
+        with patch('aduser.const.ADUSER_DATA_PROVIDER', self.data_plugin):
+            self.port = server_utils.configure_server()
 
         self.url = 'http://{0}:{1}'.format(self.port.getHost().host, self.port.getHost().port)
 
@@ -75,3 +82,4 @@ class WebclientTestCase(TestCase):
 
     def tearDown(self):  # NOSONAR
         self.port.stopListening()
+        plugin.data = None

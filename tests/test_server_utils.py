@@ -2,7 +2,7 @@ from twisted.internet import defer
 from tests import WebclientTestCase
 
 
-class TestInitialize(WebclientTestCase):
+class TestServer(WebclientTestCase):
 
     @defer.inlineCallbacks
     def test_pixel(self):
