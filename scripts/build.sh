@@ -12,11 +12,11 @@ if [ ! -v TRAVIS ]; then
 
   git clone \
     --depth=1 \
-    https://github.com/adshares/adpanel.git \
+    https://github.com/adshares/aduser.git \
     --branch ${ADUSER_INSTALLATION_BRANCH} \
-    ${ADUSER_BUILD_PATH}/build
+    ${BUILD_PATH}/build
 
-  cd ${ADUSER_BUILD_PATH}/build
+  cd ${BUILD_PATH}/build
 fi
 
 envsubst < .env.dist | tee .env
