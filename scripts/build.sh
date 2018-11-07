@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-## Shell cosmetics
-bold=$(tput bold)
-normal=$(tput sgr0)
+set -e
 
 env | sort
 

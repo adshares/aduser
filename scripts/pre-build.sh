@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Ubuntu 18.04 only
 
 # Install dependencies for python operations
@@ -8,9 +10,10 @@ apt-get install -y python python-pip
 pip install pipenv
 
 ## Install pybrowscap
-
+CWD=`pwd`
 TEMP_DIR=`mktemp -d`
 
+cd $TEMP_DIR
 python -c "from urllib import urlretrieve; \
            urlretrieve('https://github.com/char0n/pybrowscap/archive/master.zip', \
            '$TEMP_DIR/pybrowscap.zip')"
@@ -19,11 +22,7 @@ python -m zipfile -e $TEMP_DIR/pybrowscap.zip $TEMP_DIR
 
 pipenv run python $TEMP_DIR/pybrowscap-master/setup.py install
 
-## Cleanup
-# Cleanup easyinstall
-
-rm -r dist
-rm -r build
-rm -r pybrowscap.egg-info
-
+cd  $CWD
 rm -r $TEMP_DIR
+
+# http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
