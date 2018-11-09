@@ -9,7 +9,7 @@ apt-get -qq -y install python python-pip
 
 pip install pipenv
 
-if [ -v ${BUILD_WITH_PYBROWSCAP} ]; then
+if [ -v BUILD_WITH_PYBROWSCAP ]; then
 
     ## Install pybrowscap
     echo "Installing pybrowscap"
@@ -30,6 +30,6 @@ if [ -v ${BUILD_WITH_PYBROWSCAP} ]; then
 
 fi
 
-if [ -v ${BUILD_WITH_GEOIP} ]; then
+if [ -v BUILD_WITH_GEOIP ]; then
     pipenv run install_geoip
 fi

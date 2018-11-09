@@ -9,7 +9,7 @@ apt-get -qq -y install python python-pip
 
 pip install pipenv
 
-if [ -v ${INSTALL_GEOLITE_DATA} ]; then
+if [ -v INSTALL_GEOLITE_DATA ]; then
 
     echo "Downloading geolite data"
     CWD=`pwd`
@@ -36,9 +36,9 @@ if [ -v ${INSTALL_GEOLITE_DATA} ]; then
 
 fi
 
-if [ -v ${INSTALL_BROWSCAP_DATA} ]; then
+if [ -v INSTALL_BROWSCAP_DATA ]; then
 
-    echo "Download brwoscap data"
+    echo "Download browscap data"
     mkdir -p ${ADUSER_DATA_PATH}
     python -c "from pybrowscap.loader import Downloader; \
                from pybrowscap.loader.csv import URL; \
