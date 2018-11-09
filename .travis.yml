@@ -65,8 +65,6 @@ jobs:
 
         - in_docker /bin/bash scripts/pre-install.sh"
 
-        - in_docker pipenv run install_geoip"
-
         - in_docker pipenv run tests"
 
         - in_docker pipenv run quality"
