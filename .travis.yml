@@ -9,22 +9,20 @@ services:
 
 env:
   global:
-    - >-
-      DOCKER_IMAGE=awlodarkiewicz/devops:build-latest
-      HOST_PATH=/home/travis/build/adshares/aduser
-      BUILD_PATH=/build/aduser
-      BUILD_NAME=aduser_build
-      PYTHONPATH=$PYTHONPATH:$BUILD_PATH
-      ADUSER_TRACKING_SECRET=NotVerySecret_Proxy
-      ADUSER_COOKIE_NAME=aduser_proxy_tid
-      ADUSER_EXPIRY_PERIOD=4w
-      ADUSER_MONGO_DB_PORT=27017
-      ADUSER_MONGO_DB_NAME=aduser_cache
-      ADUSER_LOG_CONFIG_FILE=$BUILD_PATH/config/log_config.json
-      ADUSER_PLUGINS_PATH=$BUILD_PATH/aduser/plugins
-      ADUSER_DATA_PATH=$BUILD_PATH/aduser/data
-      ADUSER_PORT=9000
-      ADUSER_DATA_PROVIDER=example
+    - DOCKER_IMAGE=awlodarkiewicz/devops:build-latest
+    - HOST_PATH=/home/travis/build/adshares/aduser
+    - BUILD_PATH=/build/aduser
+    - BUILD_NAME=aduser_build
+    - ADUSER_TRACKING_SECRET=NotVerySecret_Proxy
+    - ADUSER_COOKIE_NAME=aduser_proxy_tid
+    - ADUSER_EXPIRY_PERIOD=4w
+    - ADUSER_MONGO_DB_PORT=27017
+    - ADUSER_MONGO_DB_NAME=aduser_cache
+    - ADUSER_LOG_CONFIG_FILE=$BUILD_PATH/config/log_config.json
+    - ADUSER_PLUGINS_PATH=$BUILD_PATH/aduser/plugins
+    - ADUSER_DATA_PATH=$BUILD_PATH/aduser/data
+    - ADUSER_PORT=9000
+    - ADUSER_DATA_PROVIDER=example
 
   matrix:
     - ADUSER_APP_ENV=dev
@@ -52,8 +50,9 @@ jobs:
         - >
           docker run -d
           --mount type=bind,src=$HOST_PATH,dst=$BUILD_PATH
-          -e TRAVIS=true
           -e PYTHONPATH=$BUILD_PATH
+          -e TRAVIS=true
+          -e PIPENV_VENV_IN_PROJECT=1
           --env-file aduser.env
           --name $BUILD_NAME
           $DOCKER_IMAGE
