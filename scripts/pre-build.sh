@@ -20,9 +20,7 @@ python -c "from urllib import urlretrieve; \
 
 python -m zipfile -e $TEMP_DIR/pybrowscap.zip $TEMP_DIR
 
-pipenv run python $TEMP_DIR/pybrowscap-master/setup.py install
+#pipenv run python $TEMP_DIR/pybrowscap-master/setup.py install
 
 cd  $CWD
 rm -r $TEMP_DIR
-
-# http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
