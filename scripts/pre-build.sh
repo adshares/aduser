@@ -9,21 +9,27 @@ apt-get -qq -y install python python-pip
 
 pip install pipenv
 
-## Install pybrowscap
-echo "Installing pybrowscap"
-CWD=`pwd`
-TEMP_DIR=`mktemp -d`
+if [ -v ${BUILD_WITH_PYBROWSCAP} ]; then
 
-cd $TEMP_DIR
-python -c "from urllib import urlretrieve; \
-           urlretrieve('https://github.com/char0n/pybrowscap/archive/master.zip', \
-           '$TEMP_DIR/pybrowscap.zip')"
+    ## Install pybrowscap
+    echo "Installing pybrowscap"
+    CWD=`pwd`
+    TEMP_DIR=`mktemp -d`
 
-python -m zipfile -e $TEMP_DIR/pybrowscap.zip $TEMP_DIR/
-mv -n $TEMP_DIR/pybrowscap-master/pybrowscap $BUILD_PATH/
+    cd $TEMP_DIR
+    python -c "from urllib import urlretrieve; \
+               urlretrieve('https://github.com/char0n/pybrowscap/archive/master.zip', \
+               '$TEMP_DIR/pybrowscap.zip')"
 
-cd $CWD
-rm -r $TEMP_DIR
-echo "Pybrowscap installed to: $BUILD_PATH/pybrowscap"
+    python -m zipfile -e $TEMP_DIR/pybrowscap.zip $TEMP_DIR/
+    mv -n $TEMP_DIR/pybrowscap-master/pybrowscap $BUILD_PATH/
 
-pipenv run install_geoip
+    cd $CWD
+    rm -r $TEMP_DIR
+    echo "Pybrowscap installed to: $BUILD_PATH/pybrowscap"
+
+fi
+
+if [ -v ${BUILD_WITH_GEOIP} ]; then
+    pipenv run install_geoip
+fi
