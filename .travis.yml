@@ -53,6 +53,7 @@ jobs:
           -e PYTHONPATH=$BUILD_PATH
           -e TRAVIS=true
           -e PIPENV_VENV_IN_PROJECT=1
+          -e BUILD_PATH=$BUILD_PATH
           --env-file aduser.env
           --name $BUILD_NAME
           $DOCKER_IMAGE
