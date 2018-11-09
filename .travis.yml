@@ -54,7 +54,7 @@ jobs:
           -e TRAVIS=true
           -e PIPENV_VENV_IN_PROJECT=1
           -e BUILD_PATH=$BUILD_PATH
-          -e ADUSER_BROWSCAP_CSV_PATH=$BUILD_PATH/pybrowscap/test/data/browscap_21_05_2012.csv
+          -e ADUSER_BROWSCAP_CSV_PATH=$BUILD_PATH/pybrowscap/test/data/browscap_14_05_2012.csv
           --env-file aduser.env
           --name $BUILD_NAME
           $DOCKER_IMAGE

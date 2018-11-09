@@ -29,13 +29,12 @@ def init():
 
     if not browscap:
         logger.info("Initializing browscap database.")
-        if os.path.exists(csv_path):
-            browscap = utils.Database(csv_path)
-            browscap.init()
-            if browscap.db:
-                logger.info("Browscap database initialized.")
-            else:
-                browscap = None
+        browscap = utils.Database(csv_path)
+        browscap.init()
+        if browscap.db:
+            logger.info("Browscap database initialized.")
+        else:
+            browscap = None
 
 
 def update_data(user, request_data):
@@ -45,10 +44,12 @@ def update_data(user, request_data):
         try:
             browser_caps = browscap.get_info(request_data['device']['ua'])
             if browser_caps:
-                # user['keywords'].update(browser_caps.items())
+
+                user['keywords'].update(browser_caps.items())
 
                 if browser_caps.is_crawler():
                     user['human_score'] = 0.0
+
             else:
                 logger.warning("User agent not identified.")
         except KeyError:
