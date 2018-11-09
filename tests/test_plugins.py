@@ -33,3 +33,7 @@ class SkeletonTestServer(TestServer):
 
 class IPapiTestServer(TestServer):
     data_plugin = 'example_ipapi'
+
+
+class BrowscapTestServer(TestServer):
+    data_plugin = 'example_browscap'

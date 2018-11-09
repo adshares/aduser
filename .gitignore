@@ -111,3 +111,5 @@ data/
 
 .env
 aduser.env
+
+pybrowscap

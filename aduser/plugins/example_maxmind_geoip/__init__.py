@@ -2,7 +2,7 @@ import logging
 import os
 from base64 import b64decode
 
-import utils
+from aduser.plugins.example_maxmind_geoip import utils
 
 db = None
 mmdb_path = os.getenv('ADUSER_GEOLITE_PATH')
