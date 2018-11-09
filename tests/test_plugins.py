@@ -3,10 +3,10 @@ import logging
 from mock import patch
 from twisted.trial.unittest import TestCase
 
-from aduser.plugins import example_maxmind_geoip, example_browscap
 from test_server_utils import TestServer
 
 logging.disable(logging.WARNING)
+from aduser.plugins import example_maxmind_geoip, example_browscap
 
 
 class MaxmindTestServer(TestServer):
