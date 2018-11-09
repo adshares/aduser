@@ -10,6 +10,7 @@ apt-get -qq -y install python python-pip
 pip install pipenv
 
 ## Install pybrowscap
+echo "Installing pybrowscap"
 CWD=`pwd`
 TEMP_DIR=`mktemp -d`
 
@@ -23,5 +24,6 @@ mv -n $TEMP_DIR/pybrowscap-master/pybrowscap $BUILD_PATH/
 
 cd $CWD
 rm -r $TEMP_DIR
+echo "Pybrowscap installed to: $BUILD_PATH/pybrowscap"
 
 pipenv run install_geoip
