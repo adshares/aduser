@@ -70,6 +70,8 @@ jobs:
 
         - in_docker pipenv run quality"
 
+        - in_docker pipenv run coverage report -m"
+
         - sonar-scanner
 
         # Cleanup
