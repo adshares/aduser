@@ -4,15 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-coverage = "~=4.5.1"
-mock = "~=2.0.0"
-mongomock = "~=3.13.0"
-pipenv = "*"
+coverage = "~=4.5"
+mock = "~=2.0"
+mongomock = "~=3.13"
 
 [packages]
 txmongo = "~=18.1.0"
 Twisted = "~=18.4.0"
-coverage = "*"
 
 [requires]
 python_version = "2.7"
