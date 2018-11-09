@@ -18,11 +18,10 @@ python -c "from urllib import urlretrieve; \
            urlretrieve('https://github.com/char0n/pybrowscap/archive/master.zip', \
            '$TEMP_DIR/pybrowscap.zip')"
 
-python -m zipfile -e $TEMP_DIR/pybrowscap.zip $TEMP_DIR
+python -m zipfile -e $TEMP_DIR/pybrowscap.zip $TEMP_DIR/
+mv -n $TEMP_DIR/pybrowscap-master/pybrowscap $BUILD_PATH/
 
-pipenv run python $TEMP_DIR/pybrowscap-master/setup.py install
-
-cd  $CWD
+cd $CWD
 rm -r $TEMP_DIR
 
 pipenv run install_geoip
