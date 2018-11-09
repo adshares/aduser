@@ -12,9 +12,12 @@ pipenv = "*"
 [packages]
 txmongo = "~=18.1.0"
 Twisted = "~=18.4.0"
+coverage = "*"
 
 [requires]
 python_version = "2.7"
 
 [scripts]
 install_geoip = "pip install python-geoip"
+tests = "coverage run .venv/bin/trial tests"
+quality = "coverage xml -i"
