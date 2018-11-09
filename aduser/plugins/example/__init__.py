@@ -37,6 +37,7 @@ def update_data(data, request_data):
     data['keywords'].update({'0001': random.choice(schema['values']['0001']['values'])['key']})
     data['keywords'].update({'0002': random.randint(0, 100)})
     data['keywords'].update({'0003': random.choice(input_choices)})
+    data['keywords'].update({'0004': bool(random.getrandbits(1))})
     data['keywords'] = normalize(data['keywords'])
 
     data['human_score'] = random.random()
@@ -58,7 +59,10 @@ def generate_schema():
               '0002': {'label': 'Comic books owned',
                        'type': 'num'},
               '0003': {'label': 'Favourite superhero',
-                       'type': 'input'}}
+                       'type': 'input'},
+              '0004': {'label': 'Registered at comicbookheroes.net',
+                       'type': 'bool'}
+              }
 
     schema = {'meta': {'name': schema_name,
                        'ver': schema_version},
@@ -71,5 +75,6 @@ def normalize(data):
             data[key] = int(data[key])
         elif schema['values'][key]['type'] == 'input':
             data[key] = data[key].replace(' ', '').replace('_', '').lower()
-
+        elif schema['values'][key]['type'] == 'bool':
+            data[key] = bool(data[key])
     return data
