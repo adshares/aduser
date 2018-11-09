@@ -110,3 +110,4 @@ _trial_temp/
 data/
 
 .env
+aduser.env
