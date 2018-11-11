@@ -1,9 +1,9 @@
 from __future__ import print_function
 
-import imp
 import glob
+import imp
 import os
-from os.path import dirname, basename
+from os.path import basename, dirname
 
 data = None
 

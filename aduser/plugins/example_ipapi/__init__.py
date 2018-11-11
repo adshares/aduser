@@ -2,8 +2,8 @@ import json
 import logging
 from base64 import b64decode
 
+from twisted.internet import defer, reactor
 from twisted.internet.protocol import Protocol
-from twisted.internet import reactor, defer
 from twisted.web.client import Agent
 
 # http://ip-api.com/docs/api:serialized_php#usage_limits
@@ -14,9 +14,8 @@ schema_name = 'example_ipapi'
 schema_version = '0.0.1'
 schema = {'meta': {'name': schema_name,
                    'ver': schema_version},
-          'values': {'countryCode':
-                         {'label': 'Country',
-                          'type': 'input'}}}
+          'values': {'countryCode': {'label': 'Country',
+                                     'type': 'input'}}}
 
 agent = Agent(reactor)
 

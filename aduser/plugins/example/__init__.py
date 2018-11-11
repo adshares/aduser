@@ -1,5 +1,5 @@
-import random
 import logging
+import random
 from base64 import b64decode
 
 logger = logging.getLogger(__name__)

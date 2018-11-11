@@ -5,9 +5,9 @@ from geoip import open_database
 
 class Database:
 
-    def __init__(self, mmbdb_path):
+    def __init__(self, mmdb_path):
         self.db = None
-        self.mmdb_path = mmbdb_path
+        self.mmdb_path = mmdb_path
 
     def init(self):
         self.load_database()

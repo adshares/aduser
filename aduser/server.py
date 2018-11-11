@@ -1,16 +1,16 @@
 import json
 import logging
 
-from twisted.web.server import NOT_DONE_YET
-from twisted.web.resource import Resource
 from twisted.internet import defer
+from twisted.web.resource import Resource
+from twisted.web.server import NOT_DONE_YET
 
 from aduser import plugin, utils
 
 
 class ChildRequest(Resource):
     """
-    Common base class for pixel and userdata requests.
+    Common base class for pixel and user data requests.
     """
     isLeaf = True
 

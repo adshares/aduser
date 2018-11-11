@@ -1,12 +1,12 @@
 import logging
-
-from twisted.web.server import Site
-from twisted.web.resource import Resource
-from twisted.internet import reactor
-
-from aduser import plugin, const
-from aduser.server import PixelRequest, DataRequest, NormalizationRequest, SchemaRequest
 import sys
+
+from twisted.internet import reactor
+from twisted.web.resource import Resource
+from twisted.web.server import Site
+
+from aduser import const, plugin
+from aduser.server import DataRequest, NormalizationRequest, PixelRequest, SchemaRequest
 
 
 class PixelFactory(Resource):

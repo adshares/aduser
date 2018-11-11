@@ -1,7 +1,6 @@
-import os
-import logging.config
 import json
-
+import logging.config
+import os
 
 from twisted.internet import reactor
 

@@ -1,9 +1,8 @@
 import logging
 import os
 
-from twisted.internet import defer
-
 import IP2Location
+from twisted.internet import defer
 
 schema_name = 'example_ip2location'
 schema_version = '0.0.1'

@@ -1,11 +1,10 @@
-import time
-import os
 import logging
-
-from hashlib import sha1
-from base64 import b64encode, b64decode
-from random import getrandbits
+import os
+import time
+from base64 import b64decode, b64encode
 from datetime import datetime
+from hashlib import sha1
+from random import getrandbits
 
 from aduser import const
 
@@ -66,7 +65,6 @@ def attach_tracking_cookie(request):
     :param request: Request to attach the cookie to.
     :return: Tracking id.
     """
-    logger = logging.getLogger(__name__)
     tid = request.getCookie(const.COOKIE_NAME)
 
     if not (tid and is_tracking_id_valid(tid)):
