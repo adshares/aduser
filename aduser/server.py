@@ -69,7 +69,8 @@ class SchemaRequest(Resource):
     """
     isLeaf = True
 
-    def render_GET(self, request):  # NOSONAR
+    @staticmethod
+    def render_GET(request):  # NOSONAR
 
         request.setHeader(b"content-type", b"text/javascript")
         return json.dumps(plugin.data.schema)
@@ -81,7 +82,8 @@ class NormalizationRequest(Resource):
     """
     isLeaf = True
 
-    def render_POST(self, request):
+    @staticmethod
+    def render_POST(request):
         data_to_normalize = json.loads(request.content.read())
 
         normalized_data = {'ver': plugin.data.schema['meta']['ver'],
