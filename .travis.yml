@@ -58,6 +58,7 @@ jobs:
           -e BUILD_WITH_GEOIP=true
           -e BUILD_WITH_PYBROWSCAP=true
           -e INSTALL_GEOLITE_DATA=true
+          -e INSTALLATION_PATH=/var/www/aduser
           --env-file aduser.env
           --name $BUILD_NAME
           $DOCKER_IMAGE
