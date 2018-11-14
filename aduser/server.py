@@ -22,7 +22,7 @@ class ChildRequest(Resource):
 
 class PixelRequest(ChildRequest):
     """
-    Router handler for endpoints of pixel requests. This is a Twisted Resource.
+    Router handler for endpoints of pixel requests. This is a `twisted.web.resource.Resource`.
     """
     def render_GET(self, request):  # NOSONAR
         if not self.path:
@@ -35,7 +35,7 @@ class PixelRequest(ChildRequest):
 
 class DataRequest(ChildRequest):
     """
-    Router handler for endpoints of pixel requests. This is a Twisted Resource.
+    Router handler for endpoints of data requests. This is a `twisted.web.resource.Resource`.
     """
     def render_POST(self, request):  # NOSONAR
         self.handle_data(request)
@@ -65,7 +65,7 @@ class DataRequest(ChildRequest):
 
 class SchemaRequest(Resource):
     """
-    Router handler for endpoints of pixel requests. This is a Twisted Resource.
+    Router handler for endpoints of schema requests. This is a `twisted.web.resource.Resource`.
     """
     isLeaf = True
 
@@ -78,7 +78,7 @@ class SchemaRequest(Resource):
 
 class NormalizationRequest(Resource):
     """
-    Router handler for normalization of targeting data.
+    Router handler for normalization of targeting data. This is a `twisted.web.resource.Resource`.
     """
     isLeaf = True
 

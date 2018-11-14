@@ -5,11 +5,19 @@ import imp
 import os
 from os.path import basename, dirname
 
+#: Attribute where the data plugin is instantiated.
 data = None
 
 
 def initialize(name):
+    """
+    Initialize the plugin by name.
+    Searches for a package with the same name in ADUSER_PLUGINS_PATH and imports it.
+    Allows access via `data` attribute.
 
+    :param name: Name of the data plugin.
+    :return:
+    """
     global data
 
     plugin_files = glob.glob(os.path.join(os.getenv('ADUSER_PLUGINS_PATH'), "*"))

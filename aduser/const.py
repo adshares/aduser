@@ -11,7 +11,7 @@ SECRET = os.getenv('ADUSER_TRACKING_SECRET')
 #: Cookie key
 COOKIE_NAME = bytes(os.getenv('ADUSER_COOKIE_NAME'))
 
-#: Expiry period
+#: Expiry period, accepts 'w' for weeks and 'd' for days. Format: {num}{format}, eg. 4w for 4 weeks.
 config_period = re.match('^(\d+)(\w)$', os.getenv('ADUSER_EXPIRY_PERIOD'))
 
 if not config_period:
@@ -24,4 +24,5 @@ else:
     elif config_period.group(2) == 'd':
         EXPIRY_PERIOD = timedelta(days=count)
 
+#: Name of AdUser data backend plugin
 ADUSER_DATA_PROVIDER = os.getenv('ADUSER_DATA_PROVIDER')

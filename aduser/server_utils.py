@@ -21,19 +21,21 @@ def configure_server():
     """
     Initialize the server.
 
-    :return:
+    :return: An instance of a class implementing `twisted.internet.interfaces.IListeningPort`.
     """
+    # Set up endpoints.
     root = Resource()
     root.putChild("pixel", PixelFactory())
     root.putChild("getData", DataRequest())
     root.putChild("getSchema", SchemaRequest())
     root.putChild("normalize", NormalizationRequest())
 
+    # Configure logger.
     logger = logging.getLogger(__name__)
     logger.info("Initializing server.")
     logger.info("Configured with cookie name: '{0}' with expiration of {1}.".format(const.COOKIE_NAME,
                                                                                     const.EXPIRY_PERIOD))
-
+    # Initialize the data plugin.
     plugin.initialize(const.ADUSER_DATA_PROVIDER)
 
     if not plugin.data:

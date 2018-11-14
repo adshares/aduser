@@ -15,12 +15,12 @@ def create_tracking_id(request):
     """
     Create the tracking id based on some request data.
 
-    :param request: Twisted request.
+    :param request: Instance of `twisted.web.http.Request`.
     :return: Base64 encoded tracking id with checksum.
     """
     logger.info("Creating new tracking id.")
 
-    tid_elements = [int(time.time()) * 1000 * 1000,                                       # Microsecond epoch time
+    tid_elements = [int(time.time()) * 1000000,                                           # Microsecond epoch time
                     request.getClientIP() if request.getClientIP() else getrandbits(64),  # Client IP
                     None if None else getrandbits(64),                                    # Client port
                     None if None else getrandbits(64),                                    # Client request time (float)
@@ -62,7 +62,7 @@ def attach_tracking_cookie(request):
     """
     Attach the cookie to request. Create it, if it doesn't exist.
 
-    :param request: Request to attach the cookie to.
+    :param request: Instance of `twisted.web.http.Request` to attach the cookie to.
     :return: Tracking id.
     """
     tid = request.getCookie(const.COOKIE_NAME)
