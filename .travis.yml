@@ -34,7 +34,7 @@ before_script:
   # Enable aliases for non-interactive shells
   - shopt -s expand_aliases
   # Set alias - please note the missing quote you need to append.
-  - alias in_docker='docker exec $BUILD_NAME /bin/bash -c "cd $BUILD_PATH && '
+  - alias in_docker='docker exec $BUILD_NAME /bin/bash -c "cd $BUILD_PATH && time'
   # Set alias for cleanup
   - alias cleanup_docker='docker stop $BUILD_NAME && docker rm $BUILD_NAME'
 
@@ -57,7 +57,6 @@ jobs:
           -e ADUSER_BROWSCAP_CSV_PATH=$BUILD_PATH/pybrowscap/test/data/browscap_14_05_2012.csv
           -e BUILD_WITH_GEOIP=true
           -e BUILD_WITH_PYBROWSCAP=true
-          -e INSTALL_GEOLITE_DATA=true
           -e INSTALLATION_PATH=/var/www/aduser
           --env-file aduser.env
           --name $BUILD_NAME
