@@ -65,6 +65,8 @@ jobs:
           sleep infinity
 
         # Run pre-build script
+        - in_docker apt-get -qq update"
+        # Run pre-build script
         - in_docker /bin/bash scripts/pre-build.sh"
 
         # Run build script
