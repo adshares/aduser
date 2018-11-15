@@ -4,8 +4,11 @@ set -e
 
 # Ubuntu 18.04 only
 
+# Ubuntu 18.04 only
+apt-get update
+
 # Install dependencies for python operations
-apt-get -qq -y install --no-install-recommends python python-pip
+apt-get -qq -y install --no-install-recommends python python-pip python-dev libc6-dev
 
 pip install pipenv
 
