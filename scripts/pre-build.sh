@@ -3,8 +3,6 @@
 set -e
 
 # Ubuntu 18.04 only
-
-# Ubuntu 18.04 only
 apt-get update
 
 # Install dependencies for python operations
