@@ -8,11 +8,14 @@ SERVER_PORT = int(os.getenv('ADUSER_PORT'))
 #: Secret used for creating a tracking id
 SECRET = os.getenv('ADUSER_TRACKING_SECRET')
 
+#: Secret used for creating a tracking id
+PIXEL_PATH = os.getenv('ADUSER_PIXEL_PATH')
+
 #: Cookie key
 COOKIE_NAME = bytes(os.getenv('ADUSER_COOKIE_NAME'))
 
 #: Expiry period, accepts 'w' for weeks and 'd' for days. Format: {num}{format}, eg. 4w for 4 weeks.
-config_period = re.match('^(\d+)(\w)$', os.getenv('ADUSER_EXPIRY_PERIOD'))
+config_period = re.match('^(\d+)(\w)$', os.getenv('ADUSER_EXPIRY_PERIOD', '4w'))
 
 if not config_period:
     EXPIRY_PERIOD = timedelta(weeks=4)

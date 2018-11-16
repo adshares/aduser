@@ -2,19 +2,10 @@ import logging
 import sys
 
 from twisted.internet import reactor
-from twisted.web.resource import Resource
 from twisted.web.server import Site
 
 from aduser import const, plugin
-from aduser.server import DataRequest, NormalizationRequest, PixelRequest, SchemaRequest
-
-
-class PixelFactory(Resource):
-    """
-    Routing class for pixels.
-    """
-    def getChild(self, path, request):  # NOSONAR
-        return PixelRequest(path)
+from aduser.api.v1 import configure_entrypoint
 
 
 def configure_server():
@@ -24,11 +15,7 @@ def configure_server():
     :return: An instance of a class implementing `twisted.internet.interfaces.IListeningPort`.
     """
     # Set up endpoints.
-    root = Resource()
-    root.putChild("pixel", PixelFactory())
-    root.putChild("getData", DataRequest())
-    root.putChild("getSchema", SchemaRequest())
-    root.putChild("normalize", NormalizationRequest())
+    root = configure_entrypoint()
 
     # Configure logger.
     logger = logging.getLogger(__name__)
