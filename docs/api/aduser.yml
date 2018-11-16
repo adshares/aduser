@@ -1,0 +1,117 @@
+configuration:
+  title: AdUser
+  description: Api documentation for AdUser
+  uri: https://aduser.example.com:8000
+versions:
+  v0.1:
+    status: current
+    major: 0
+    minor: 1
+    methods:
+      info:
+        label: info
+        method: GET
+        uri: /info
+        description: Return API info.
+        response_body:
+          type: object
+      getPixelPath:
+        label: getPixelPath
+        method: GET
+        uri: /getPixelPath
+        description: Return API info.
+        response_body:
+          type: string
+          sample: "https://aduser.example.com:8000/34hwjkg4324_{server_id}_{user_id}.gif"
+      pixel:
+        label: pixel
+        method: GET
+        uri: /34hwjkg4324_{server_id}_{user_id}.gif
+        description: Return pixel
+      getData:
+        label: getData
+        method: GET
+        uri: /getData
+        description: Get user data.
+        request_parameters:
+          uid:
+            type: string
+          domain:
+            type: string
+          ua:
+            type: string
+        response_body:
+          type: reference
+          reference: UserDataResponse
+      getSchema:
+        label: getSchema
+        method: GET
+        uri: /getSchema
+        description: Return API info.
+        response_body:
+          type: reference
+          reference: schema
+    references:
+      schema_keyword:
+        type: object
+        properties:
+          label:
+            type: string
+          type:
+            type: enum
+            values:
+              - input
+              - num
+              - bool
+              - dict
+          values:
+            description: Only used for dict type.
+            type: object
+            optional: true
+      schema_meta:
+        type: object
+        properties:
+          ver:
+            type: string
+          name:
+            type: string
+      schema:
+        type: object
+        properties:
+          meta:
+            type: reference
+            reference: schema_meta
+          values:
+            type: object
+            additionalProperties:
+              type: reference
+              reference: schema_keyword
+      UserDataRequest:
+        type: object
+        properties:
+          user:
+            type: object
+            properties:
+              uid:
+                type: string
+          site:
+            type: object
+            properties:
+              domain:
+                type: string
+          device:
+            type: object
+            properties:
+              ua:
+                type: string
+      UserDataResponse:
+        type: object
+        properties:
+          uid:
+            type: string
+          human_score:
+            type: number
+            sample: 0.0
+            description: 0.0 to 1.0, bot evaluation
+          keywords:
+            type: object

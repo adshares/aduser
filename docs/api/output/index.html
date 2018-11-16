@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdUser</title>
+    
+<link href="./css/combined.css" rel="stylesheet">
+<script type="text/javascript" src="./js/combined.js"></script>
+     
+</head>
+<body>
+    <div class="jumbotron">
+    <div class="container">
+        <h1>AdUser</h1><p>
+        Api documentation for AdUser
+        </p></div>
+</div><div id="help-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3>Keyboard Shortcuts</h3>
+            </div>
+            <div class="modal-body">
+                <div class="help_row">
+                    <h4>Site wide shortcuts</h4>
+                    <dl class="keyboard-mappings">
+                        <dt>?</dt>
+                        <dd>Bring up this help dialog</dd>
+                    </dl>
+                    <dl class="keyboard-mappings">
+                        <dt>esc</dt>
+                        <dd>Hide this help dialog</dd>
+                    </dl>
+                    <dl class="keyboard-mappings">
+                        <dt>/</dt>
+                        <dd>Focus search bar</dd>
+                    </dl>
+                </div>
+                <div class="help_row">
+                    <h4>Navigation</h4>
+                    <dl class="keyboard-mappings">
+                        <dt>j <em>or</em> n</dt>
+                        <dd>Move to next method or type</dd>
+                    </dl>
+                    <dl class="keyboard-mappings">
+                        <dt>k <em>or</em> p</dt>
+                        <dd>Move to previous method or type</dd>
+                    </dl>
+            
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</div><div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="doc-sidebar"><input type="search" placeholder="search" class="col-md-12 form-control">
+<div class="scroll-spyable">
+    <ul class="nav nav-list doc-sidenav">
+        <li class="nav-header"><h5>Methods</h5></li>
+        <li data-group="None"  data-item="getData"><a href="javascript:navigateTo({category: 'None', method: 'getData'}, ['category', 'method'])" data-target="#m-getData"><span>getData</span></a></li>
+        <li data-group="None"  data-item="getPixelPath"><a href="javascript:navigateTo({category: 'None', method: 'getPixelPath'}, ['category', 'method'])" data-target="#m-getPixelPath"><span>getPixelPath</span></a></li>
+        <li data-group="None"  data-item="getSchema"><a href="javascript:navigateTo({category: 'None', method: 'getSchema'}, ['category', 'method'])" data-target="#m-getSchema"><span>getSchema</span></a></li>
+        <li data-group="None"  data-item="info"><a href="javascript:navigateTo({category: 'None', method: 'info'}, ['category', 'method'])" data-target="#m-info"><span>info</span></a></li>
+        <li data-group="None"  data-item="pixel"><a href="javascript:navigateTo({category: 'None', method: 'pixel'}, ['category', 'method'])" data-target="#m-pixel"><span>pixel</span></a></li>
+    </ul>
+    <ul class="nav nav-list doc-sidenav">
+        <li class="nav-header"><h5>Types</h5></li>
+    </ul>
+</div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div id="item-head" class="item">
+                <h4></h4>
+                <div class="diff-header"></div>
+                <div class="stack">
+                    <h5>hello</h5>
+                </div>
+            </div>
+            <div class="page-header">
+                <h2>Methods</h2>
+            </div>
+            <ul class="list-unstyled">
+    <li class="category" id="c-None">
+        <ul class="list-unstyled">
+            <li class="method item" id="m-getData" data-method="GET">
+                <h4>getData</h4><div class="nocontents">no implementation for this version</div>
+                <div class="contents">
+
+<h5 class="title"></h5>
+
+<div class="description stack">
+    
+    <div class="diff_version" data-version="v0.1">Get user data.</div></div><div class="request stack">
+    <h5><i class="i-request"></i> Request: </h5>
+    <h6>Resource: </h6>
+
+    <code  class="diff_version" data-version="v0.1"><span class="hur">https://aduser.example.com:8000/getData</span></code>
+    <h6>Query String Parameters: </h6><table class="table table-bordered table-hover table-condensed">
+        <colgroup>
+            <col></col>
+            <col width="160px"></col>
+            <col width="70px"></col>
+            <col width="50%"></col>
+        </colgroup>
+        <thead>
+            <tr>
+            <th><span
+            >Parameter</span></th>
+            <th><span
+            >Type</span></th>
+            <th><span
+            >Optional</span></th>
+            <th><span
+            >Description</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="str">domain</span></td>
+            <td><span class="typ">string<td><span class="lit"></span></td>
+            <td><span class="com"></span></td>
+        </tr>
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="str">ua</span></td>
+            <td><span class="typ">string<td><span class="lit"></span></td>
+            <td><span class="com"></span></td>
+        </tr>
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="str">uid</span></td>
+            <td><span class="typ">string<td><span class="lit"></span></td>
+            <td><span class="com"></span></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="response stack">
+    <h5><i class="i-response"></i> Response: </h5>
+    <h6>Body: </h6>
+    <div class="code"><table class="table-hover">
+        <colgroup>
+            <col width="50%%"></col>
+            <col width="50%%"></col>
+        </colgroup>
+        <tbody>
+
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="pun">{</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>  <span class="str">"human_score"</span><span class="pun">: </span><span class="typ">number</span><span class="pun">,</span></td>
+        <td class="com">0.0 to 1.0, bot evaluation</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>  <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>  <span class="pun">}</span><span class="pun">,</span></td>
+        <td></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>  <span class="str">"uid"</span><span class="pun">: </span><span class="typ">string</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="pun">}</span></td>
+        <td></td>
+    </tr>
+        </tbody>
+    </table></div>
+</div><div class="stack sample"><div data-version="v0.1">
+
+<h5><i class="i-sample"></i> Sample: </h5>
+<h6>Request: </h6>
+<div class="code"><span class="hme">GET</span> <span class="hur">/getData?domain=my_domain&amp;ua=my_ua&amp;uid=my_uid</span> <span class="hpr">HTTP/1.1</span>
+<span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
+
+</div>
+        <h6>Response: </h6>
+        <div class="code"><span class="hpr">HTTP/1.1</span> <span class="lit">200</span> <span class="str">OK</span>
+<span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
+
+<span class="pun">{
+</span>  <span class="str">"human_score"</span><span class="pun">: </span><span class="lit">0.0</span><span class="pun">,
+</span>  <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
+</span>
+  <span class="pun">}</span><span class="pun">,
+</span>  <span class="str">"uid"</span><span class="pun">: </span><span class="str">"my_uid"</span>
+<span class="pun">}</span></div></div></div>
+                </div>
+            </li>
+            <li class="method item" id="m-getPixelPath" data-method="GET">
+                <h4>getPixelPath</h4><div class="nocontents">no implementation for this version</div>
+                <div class="contents">
+
+<h5 class="title"></h5>
+
+<div class="description stack">
+    
+    <div class="diff_version" data-version="v0.1">Return API info.</div></div><div class="request stack">
+    <h5><i class="i-request"></i> Request: </h5>
+    <h6>Resource: </h6>
+
+    <code  class="diff_version" data-version="v0.1"><span class="hur">https://aduser.example.com:8000/getPixelPath</span></code>
+</div>
+
+<div class="response stack">
+    <h5><i class="i-response"></i> Response: </h5>
+    <h6>Body: </h6>
+    <div class="code"><table class="table-hover">
+        <colgroup>
+            <col width="50%%"></col>
+            <col width="50%%"></col>
+        </colgroup>
+        <tbody>
+
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="typ">string</span></td>
+        <td class="com"></td>
+    </tr>
+        </tbody>
+    </table></div>
+</div><div class="stack sample"><div data-version="v0.1">
+
+<h5><i class="i-sample"></i> Sample: </h5>
+<h6>Request: </h6>
+<div class="code"><span class="hme">GET</span> <span class="hur">/getPixelPath</span> <span class="hpr">HTTP/1.1</span>
+<span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
+
+</div>
+        <h6>Response: </h6>
+        <div class="code"><span class="hpr">HTTP/1.1</span> <span class="lit">200</span> <span class="str">OK</span>
+<span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
+
+<span class="str">"https://aduser.example.com:8000/34hwjkg4324_{server_id}_{user_id}.gif"</span></div></div></div>
+                </div>
+            </li>
+            <li class="method item" id="m-getSchema" data-method="GET">
+                <h4>getSchema</h4><div class="nocontents">no implementation for this version</div>
+                <div class="contents">
+
+<h5 class="title"></h5>
+
+<div class="description stack">
+    
+    <div class="diff_version" data-version="v0.1">Return API info.</div></div><div class="request stack">
+    <h5><i class="i-request"></i> Request: </h5>
+    <h6>Resource: </h6>
+
+    <code  class="diff_version" data-version="v0.1"><span class="hur">https://aduser.example.com:8000/getSchema</span></code>
+</div>
+
+<div class="response stack">
+    <h5><i class="i-response"></i> Response: </h5>
+    <h6>Body: </h6>
+    <div class="code"><table class="table-hover">
+        <colgroup>
+            <col width="50%%"></col>
+            <col width="50%%"></col>
+        </colgroup>
+        <tbody>
+
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="pun">{</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>  <span class="str">"meta"</span><span class="pun">: </span><span class="pun">{</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>    <span class="str">"name"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>    <span class="str">"ver"</span><span class="pun">: </span><span class="typ">string</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>  <span class="pun">}</span><span class="pun">,</span></td>
+        <td></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>  <span class="str">"values"</span><span class="pun">: </span><span class="pun">{</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>    <span class="typ">string</span><span class="pun">: </span><span class="pun">{</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>      <span class="str">"label"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>      <span class="str">"type"</span><span class="pun">: </span><span class="typ">enum</span><span class="pun">,</span></td>
+        <td class="com"> (<span class="diff_version" data-version="v0.1">bool</span><span class="diff_version" data-version="v0.1">, dict</span><span class="diff_version" data-version="v0.1">, input</span><span class="diff_version" data-version="v0.1">, num</span>)</td>
+    </tr>
+    <tr class="diff_version optional" data-version="v0.1">
+        <td>      <span class="str">"values"</span><span class="pun">: </span><span class="pun">{</span></td>
+        <td class="com">Only used for dict type.</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>      <span class="pun">}</span></td>
+        <td></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>    <span class="pun">}</span></td>
+        <td></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>  <span class="pun">}</span></td>
+        <td></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="pun">}</span></td>
+        <td></td>
+    </tr>
+        </tbody>
+    </table></div>
+</div><div class="stack sample"><div data-version="v0.1">
+
+<h5><i class="i-sample"></i> Sample: </h5>
+<h6>Request: </h6>
+<div class="code"><span class="hme">GET</span> <span class="hur">/getSchema</span> <span class="hpr">HTTP/1.1</span>
+<span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
+
+</div>
+        <h6>Response: </h6>
+        <div class="code"><span class="hpr">HTTP/1.1</span> <span class="lit">200</span> <span class="str">OK</span>
+<span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
+
+<span class="pun">{
+</span>  <span class="str">"meta"</span><span class="pun">: </span><span class="pun">{
+</span>    <span class="str">"name"</span><span class="pun">: </span><span class="str">"my_name"</span><span class="pun">,
+</span>    <span class="str">"ver"</span><span class="pun">: </span><span class="str">"my_ver"</span>
+  <span class="pun">}</span><span class="pun">,
+</span>  <span class="str">"values"</span><span class="pun">: </span><span class="pun">{
+</span>    <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="pun">{
+</span>      <span class="str">"label"</span><span class="pun">: </span><span class="str">"my_label"</span><span class="pun">,
+</span>      <span class="str">"type"</span><span class="pun">: </span><span class="str">"input"</span><span class="pun">,
+</span>      <span class="str">"values"</span><span class="pun">: </span><span class="pun">{
+</span>
+      <span class="pun">}</span>
+    <span class="pun">}</span>
+  <span class="pun">}</span>
+<span class="pun">}</span></div></div></div>
+                </div>
+            </li>
+            <li class="method item" id="m-info" data-method="GET">
+                <h4>info</h4><div class="nocontents">no implementation for this version</div>
+                <div class="contents">
+
+<h5 class="title"></h5>
+
+<div class="description stack">
+    
+    <div class="diff_version" data-version="v0.1">Return API info.</div></div><div class="request stack">
+    <h5><i class="i-request"></i> Request: </h5>
+    <h6>Resource: </h6>
+
+    <code  class="diff_version" data-version="v0.1"><span class="hur">https://aduser.example.com:8000/info</span></code>
+</div>
+
+<div class="response stack">
+    <h5><i class="i-response"></i> Response: </h5>
+    <h6>Body: </h6>
+    <div class="code"><table class="table-hover">
+        <colgroup>
+            <col width="50%%"></col>
+            <col width="50%%"></col>
+        </colgroup>
+        <tbody>
+
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="pun">{</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="pun">}</span></td>
+        <td></td>
+    </tr>
+        </tbody>
+    </table></div>
+</div><div class="stack sample"><div data-version="v0.1">
+
+<h5><i class="i-sample"></i> Sample: </h5>
+<h6>Request: </h6>
+<div class="code"><span class="hme">GET</span> <span class="hur">/info</span> <span class="hpr">HTTP/1.1</span>
+<span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
+
+</div>
+        <h6>Response: </h6>
+        <div class="code"><span class="hpr">HTTP/1.1</span> <span class="lit">200</span> <span class="str">OK</span>
+<span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
+
+<span class="pun">{
+</span>
+<span class="pun">}</span></div></div></div>
+                </div>
+            </li>
+            <li class="method item" id="m-pixel" data-method="GET">
+                <h4>pixel</h4><div class="nocontents">no implementation for this version</div>
+                <div class="contents">
+
+<h5 class="title"></h5>
+
+<div class="description stack">
+    
+    <div class="diff_version" data-version="v0.1">Return pixel</div></div><div class="request stack">
+    <h5><i class="i-request"></i> Request: </h5>
+    <h6>Resource: </h6>
+
+    <code  class="diff_version" data-version="v0.1"><span class="hur">https://aduser.example.com:8000/34hwjkg4324_{server_id}_{user_id}.gif</span></code>
+</div>
+
+<div class="response stack">
+    <h5><i class="i-response"></i> Response: </h5>
+</div><div class="stack sample"><div data-version="v0.1">
+
+<h5><i class="i-sample"></i> Sample: </h5>
+<h6>Request: </h6>
+<div class="code"><span class="hme">GET</span> <span class="hur">/34hwjkg4324_{server_id}_{user_id}.gif</span> <span class="hpr">HTTP/1.1</span>
+<span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
+
+</div>
+        <h6>Response: </h6>
+        <div class="code"><span class="hpr">HTTP/1.1</span> <span class="lit">200</span> <span class="str">OK</span>
+<span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
+
+</div></div></div>
+                </div>
+            </li>
+        </ul>
+    </li>
+            </ul>
+            <div class="page-header">
+                <h2>Types</h2>
+            </div>
+            <ul class="list-unstyled">
+            </ul>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="btn-group">
+        <button class="btn btn-default i-previous" type="button"></button>
+        <button class="btn btn-default i-top" type="button"></button>
+        <button class="btn btn-default i-next" type="button"></button>
+    </div>
+</footer>
+
+</body>
+</html>
