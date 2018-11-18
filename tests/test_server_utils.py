@@ -1,4 +1,5 @@
 from twisted.internet import defer
+
 from tests import WebclientTestCase
 
 
@@ -44,18 +45,5 @@ class TestServer(WebclientTestCase):
         data = yield self.return_response_json(response)
 
         for key in ['meta', 'values']:
-            self.assertIn(key, data.keys())
-            self.assertIsNotNone(data[key])
-
-    @defer.inlineCallbacks
-    def test_normalize(self):
-        response = yield self.agent.request('POST',
-                                            self.url + '/normalize',
-                                            None,
-                                            self.JsonBytesProducer({}))
-        self.assertEquals(200, response.code)
-        data = yield self.return_response_json(response)
-
-        for key in ['ver', 'data', 'name']:
             self.assertIn(key, data.keys())
             self.assertIsNotNone(data[key])
