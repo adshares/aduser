@@ -45,11 +45,16 @@ class DataResource(Resource):
 
     @defer.inlineCallbacks
     def handle_data(self, request):
-        request_data = request.args
 
         # Validate request data
         try:
-            default_data = {'uid': request_data['uid'],
+            request_data = {'site': {},
+                            'device': {}}
+
+            request_data['device']['ip'] = request.args['ip'][0]
+            request_data['device']['ua'] = request.args['ua'][0]
+
+            default_data = {'uid': request.args['uid'][0],
                             'human_score': 1.0,
                             'keywords': {}}
 
