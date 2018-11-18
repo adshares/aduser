@@ -38,7 +38,8 @@ fi
 
 if [ -v INSTALL_BROWSCAP_DATA ]; then
 
-    echo "Download browscap data"
+    echo "Downloading browscap data (this make take a while). \
+          You can find the dataset here: https://browscap.org/"
     mkdir -p ${ADUSER_DATA_PATH}
     python -c "from pybrowscap.loader import Downloader; \
                from pybrowscap.loader.csv import URL; \
