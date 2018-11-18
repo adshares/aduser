@@ -20,8 +20,10 @@ def configure_server():
     # Configure logger.
     logger = logging.getLogger(__name__)
     logger.info("Initializing server.")
-    logger.info("Configured with cookie name: '{0}' with expiration of {1}.".format(const.COOKIE_NAME,
-                                                                                    const.EXPIRY_PERIOD))
+    logger.info("Tracking cookie name: '{0}'".format(const.COOKIE_NAME))
+    logger.info("Tracking cookie expiration: {0}.".format(const.EXPIRY_PERIOD))
+    logger.info("Pixel path: {0}.".format(const.PIXEL_PATH))
+
     # Initialize the data plugin.
     plugin.initialize(const.ADUSER_DATA_PROVIDER)
 
