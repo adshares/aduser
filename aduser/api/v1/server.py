@@ -6,8 +6,6 @@ from twisted.web.server import NOT_DONE_YET
 
 from aduser import const, plugin, utils
 
-path_template = json.dumps({"path": const.PIXEL_PATH + '?{adserver_id}_{user_id}.gif'})
-
 
 class PixelPathResource(Resource):
     """
@@ -17,7 +15,7 @@ class PixelPathResource(Resource):
 
     def render_GET(self, request):  # NOSONAR
         request.setHeader(b"content-type", b"text/javascript")
-        return path_template
+        return '"{0}'.format(const.PIXEL_PATH) + '?{adserver_id_{user_id}.gif"'
 
 
 class PixelResource(Resource):
