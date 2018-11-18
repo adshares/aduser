@@ -1,3 +1,5 @@
+import os
+
 from twisted.internet import defer
 
 from tests import WebclientTestCase
@@ -7,15 +9,12 @@ class TestServer(WebclientTestCase):
 
     @defer.inlineCallbacks
     def test_pixel(self):
-        response = yield self.agent.request('GET', self.url + '/pixel/')
-        self.assertEquals(404, response.code)
-
-        response = yield self.agent.request('GET', self.url + '/pixel/user_identification')
+        response = yield self.agent.request('GET', self.url + '/' + os.getenv('ADUSER_PIXEL_PATH'))
         self.assertEquals(200, response.code)
 
     @defer.inlineCallbacks
     def test_data(self):
-        response = yield self.agent.request('POST',
+        response = yield self.agent.request('GET',
                                             self.url + '/getData',
                                             None,
                                             self.JsonBytesProducer({}))
@@ -27,8 +26,12 @@ class TestServer(WebclientTestCase):
                         'device': {'ua': '',
                                    'ip': '212.212.22.1'}}
 
-        response = yield self.agent.request('POST',
-                                            self.url + '/getData',
+        response = yield self.agent.request('GET',
+                                            self.url + '/getData?'
+                                            + 'uid=111&'
+                                            + 'domain=example.com&'
+                                            + 'ip=212.212.22.1&'
+                                            + 'ua=fake_ua',
                                             None,
                                             self.JsonBytesProducer(request_data))
         self.assertEquals(200, response.code)
