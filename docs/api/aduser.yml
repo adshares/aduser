@@ -28,6 +28,20 @@ versions:
         method: GET
         uri: /34hwjkg4324_{server_id}_{user_id}.gif
         description: Return pixel
+        response_codes:
+          - code: 302
+            message: Redirect to another pixel provider
+        request_parameters:
+          server_id:
+            type: string
+            description: AdServer identifier
+            optional: false
+            sample: 1dsahj32
+          user_id:
+            type: string
+            description: User identifier
+            optional: false
+            sample: 3724gol5
       getData:
         label: getData
         method: GET
@@ -43,6 +57,9 @@ versions:
         response_body:
           type: reference
           reference: UserDataResponse
+        response_codes:
+          - code: 400
+            message: Invalid request (fields missing, etc.)
       getSchema:
         label: getSchema
         method: GET
@@ -110,8 +127,22 @@ versions:
           uid:
             type: string
           human_score:
-            type: number
-            sample: 0.0
-            description: 0.0 to 1.0, bot evaluation
+            type: human_score
           keywords:
-            type: object
+            type: keyword
+
+    types:
+      human_score:
+        item:
+          type: number
+          sample: 0.0
+        format:
+          pretty: 0.0-0.1
+      keyword:
+        item:
+          type: object
+          properties:
+            key:
+              type: string
+            value:
+              type: string

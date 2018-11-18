@@ -69,6 +69,8 @@
     </ul>
     <ul class="nav nav-list doc-sidenav">
         <li class="nav-header"><h5>Types</h5></li>
+        <li data-group="None" data-item="human_score"><a href="javascript:navigateTo({category: 'None', type: 'human_score'}, ['category', 'method'])" data-target="#t-human_score"><span>human_score</span></a></li>
+        <li data-group="None" data-item="keyword"><a href="javascript:navigateTo({category: 'None', type: 'keyword'}, ['category', 'method'])" data-target="#t-keyword"><span>keyword</span></a></li>
     </ul>
 </div>
             </div>
@@ -155,16 +157,12 @@
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>  <span class="str">"human_score"</span><span class="pun">: </span><span class="typ">number</span><span class="pun">,</span></td>
-        <td class="com">0.0 to 1.0, bot evaluation</td>
-    </tr>
-    <tr class="diff_version" data-version="v0.1">
-        <td>  <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{</span></td>
+        <td>  <span class="str">"human_score"</span><span class="pun">: </span><span class="typ"><a href="javascript:navigateTo({type: 'human_score'}, ['category', 'method'])">human_score</a></span><span class="pun">,</span></td>
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>  <span class="pun">}</span><span class="pun">,</span></td>
-        <td></td>
+        <td>  <span class="str">"keywords"</span><span class="pun">: </span><span class="typ"><a href="javascript:navigateTo({type: 'keyword'}, ['category', 'method'])">keyword</a></span><span class="pun">,</span></td>
+        <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>  <span class="str">"uid"</span><span class="pun">: </span><span class="typ">string</span></td>
@@ -176,6 +174,31 @@
     </tr>
         </tbody>
     </table></div>
+    <h6>Codes: </h6><table class="table table-bordered table-hover table-condensed">
+        <colgroup>
+            <col width="50px"></col>
+            <col></col>
+            <col width="50%"></col>
+        </colgroup>
+        <thead>
+            <tr>
+            <th><span
+            >Code</span></th>
+            <th><span
+            >Message</span></th>
+            <th><span
+            >Description</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="lit">400</span></td>
+            <td><span class="str">Invalid request (fields missing, etc.)</span></td>
+            <td><span class="com"></span></td>
+        </tr>
+        </tbody>
+    </table>
 </div><div class="stack sample"><div data-version="v0.1">
 
 <h5><i class="i-sample"></i> Sample: </h5>
@@ -191,7 +214,8 @@
 <span class="pun">{
 </span>  <span class="str">"human_score"</span><span class="pun">: </span><span class="lit">0.0</span><span class="pun">,
 </span>  <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>    <span class="str">"key"</span><span class="pun">: </span><span class="str">"my_key"</span><span class="pun">,
+</span>    <span class="str">"value"</span><span class="pun">: </span><span class="str">"my_value"</span>
   <span class="pun">}</span><span class="pun">,
 </span>  <span class="str">"uid"</span><span class="pun">: </span><span class="str">"my_uid"</span>
 <span class="pun">}</span></div></div></div>
@@ -420,15 +444,73 @@
     <h6>Resource: </h6>
 
     <code  class="diff_version" data-version="v0.1"><span class="hur">https://aduser.example.com:8000/34hwjkg4324_{server_id}_{user_id}.gif</span></code>
+    <h6>URI Parameters: </h6><table class="table table-bordered table-hover table-condensed">
+        <colgroup>
+            <col></col>
+            <col width="160px"></col>
+            <col width="70px"></col>
+            <col width="50%"></col>
+        </colgroup>
+        <thead>
+            <tr>
+            <th><span
+            >Parameter</span></th>
+            <th><span
+            >Type</span></th>
+            <th><span
+            >Optional</span></th>
+            <th><span
+            >Description</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="str">server_id</span></td>
+            <td><span class="typ">string<td><span class="lit"></span></td>
+            <td><span class="com">AdServer identifier</span></td>
+        </tr>
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="str">user_id</span></td>
+            <td><span class="typ">string<td><span class="lit"></span></td>
+            <td><span class="com">User identifier</span></td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
 <div class="response stack">
     <h5><i class="i-response"></i> Response: </h5>
+    <h6>Codes: </h6><table class="table table-bordered table-hover table-condensed">
+        <colgroup>
+            <col width="50px"></col>
+            <col></col>
+            <col width="50%"></col>
+        </colgroup>
+        <thead>
+            <tr>
+            <th><span
+            >Code</span></th>
+            <th><span
+            >Message</span></th>
+            <th><span
+            >Description</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="lit">302</span></td>
+            <td><span class="str">Redirect to another pixel provider</span></td>
+            <td><span class="com"></span></td>
+        </tr>
+        </tbody>
+    </table>
 </div><div class="stack sample"><div data-version="v0.1">
 
 <h5><i class="i-sample"></i> Sample: </h5>
 <h6>Request: </h6>
-<div class="code"><span class="hme">GET</span> <span class="hur">/34hwjkg4324_{server_id}_{user_id}.gif</span> <span class="hpr">HTTP/1.1</span>
+<div class="code"><span class="hme">GET</span> <span class="hur">/34hwjkg4324_1dsahj32_3724gol5.gif</span> <span class="hpr">HTTP/1.1</span>
 <span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
 
 </div>
@@ -446,6 +528,83 @@
                 <h2>Types</h2>
             </div>
             <ul class="list-unstyled">
+    <li class="category" id="c-None">
+        <ul class="list-unstyled">
+            <li class="type item" id="t-human_score">
+                <h4>human_score</h4><div class="nocontents">no implementation for this version</div>
+                <div class="contents">
+
+<div class="configuration stack">
+    <h5><i class="i-presentation"></i> Presentation: </h5>
+    <div class="code"><table class="table-hover">
+        <colgroup>
+            <col width="50%%"></col>
+            <col width="50%%"></col>
+        </colgroup>
+        <tbody>
+
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="typ">number</span></td>
+        <td class="com"></td>
+    </tr>
+        </tbody>
+    </table></div>
+
+
+</div><div class="stack sample"><div data-version="v0.1">
+
+<h5><i class="i-sample"></i> Formats: </h5>
+<h6>Pretty Print: </h6>
+<code><span class="str">0.0-0.1</span></code>
+<h6>Sample: </h6>
+<div class="code"><span class="lit">0.0</span></div></div></div>
+                </div>
+            </li>
+            <li class="type item" id="t-keyword">
+                <h4>keyword</h4><div class="nocontents">no implementation for this version</div>
+                <div class="contents">
+
+<div class="configuration stack">
+    <h5><i class="i-presentation"></i> Presentation: </h5>
+    <div class="code"><table class="table-hover">
+        <colgroup>
+            <col width="50%%"></col>
+            <col width="50%%"></col>
+        </colgroup>
+        <tbody>
+
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="pun">{</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>  <span class="str">"key"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>  <span class="str">"value"</span><span class="pun">: </span><span class="typ">string</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="pun">}</span></td>
+        <td></td>
+    </tr>
+        </tbody>
+    </table></div>
+
+
+</div><div class="stack sample"><div data-version="v0.1">
+
+<h5><i class="i-sample"></i> Formats: </h5>
+<h6>Sample: </h6>
+<div class="code"><span class="pun">{
+</span>  <span class="str">"key"</span><span class="pun">: </span><span class="str">"my_key"</span><span class="pun">,
+</span>  <span class="str">"value"</span><span class="pun">: </span><span class="str">"my_value"</span>
+<span class="pun">}</span></div></div></div>
+                </div>
+            </li>
+        </ul>
+    </li>
             </ul>
         </div>
     </div>
