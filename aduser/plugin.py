@@ -24,7 +24,7 @@ def initialize(name):
     for p in plugin_files:
         if os.path.isdir(p) and basename(p) == name:
             possible_module_info = imp.find_module(basename(p), [dirname(p)])
-            possible_plugin = imp.load_module(os.path.dirname(p), *possible_module_info)
+            possible_plugin = imp.load_module('aduser.plugins.' + name, *possible_module_info)
 
             data = possible_plugin
             data.init()
