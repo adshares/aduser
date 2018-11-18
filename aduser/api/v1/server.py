@@ -9,38 +9,35 @@ from aduser import const, plugin, utils
 path_template = json.dumps({"path": const.PIXEL_PATH + '?{adserver_id}_{user_id}.gif'})
 
 
-class PixelRequest(Resource):
-    """
-    Routing class for pixels.
-    """
-    def render_GET(self, request):  # NOSONAR
-        utils.attach_tracking_cookie(request)
-        return plugin.data.pixel(request)
-
-
-class PixelPathRequest(Resource):
+class PixelPathResource(Resource):
     """
     Routing class for pixel paths.
     """
+    isLeaf = True
+
     def render_GET(self, request):  # NOSONAR
         request.setHeader(b"content-type", b"text/javascript")
         return path_template
 
 
-class PixelRequest(Resource):
+class PixelResource(Resource):
     """
     Router handler for endpoints of pixel requests. This is a `twisted.web.resource.Resource`.
     """
+    isLeaf = True
+
     def render_GET(self, request):  # NOSONAR
 
         utils.attach_tracking_cookie(request)
         return plugin.data.pixel(request)
 
 
-class DataRequest(Resource):
+class DataResource(Resource):
     """
     Router handler for endpoints of data requests. This is a `twisted.web.resource.Resource`.
     """
+    isLeaf = True
+
     def render_GET(self, request):  # NOSONAR
         self.handle_data(request)
 
@@ -48,12 +45,11 @@ class DataRequest(Resource):
 
     @defer.inlineCallbacks
     def handle_data(self, request):
-
-        request_data = json.loads(request.content.read())
+        request_data = request.args
 
         # Validate request data
         try:
-            default_data = {'uid': request_data['user']['uid'],
+            default_data = {'uid': request_data['uid'],
                             'human_score': 1.0,
                             'keywords': {}}
 
@@ -68,27 +64,25 @@ class DataRequest(Resource):
         yield request.finish()
 
 
-class SchemaRequest(Resource):
+class SchemaResource(Resource):
     """
     Router handler for endpoints of schema requests. This is a `twisted.web.resource.Resource`.
     """
     isLeaf = True
 
-    @staticmethod
-    def render_GET(request):  # NOSONAR
+    def render_GET(self, request):  # NOSONAR
 
         request.setHeader(b"content-type", b"text/javascript")
         return json.dumps(plugin.data.schema)
 
 
-class NormalizationRequest(Resource):
+class NormalizationResource(Resource):
     """
     Router handler for normalization of targeting data. This is a `twisted.web.resource.Resource`.
     """
     isLeaf = True
 
-    @staticmethod
-    def render_POST(request):
+    def render_POST(self, request):
         data_to_normalize = json.loads(request.content.read())
 
         normalized_data = {'ver': plugin.data.schema['meta']['ver'],
@@ -99,12 +93,11 @@ class NormalizationRequest(Resource):
         return json.dumps(normalized_data)
 
 
-class ApiInfoRequest(Resource):
+class ApiInfoResource(Resource):
     """
     Router handler for normalization of targeting data. This is a `twisted.web.resource.Resource`.
     """
     isLeaf = True
 
-    @staticmethod
-    def render_GET(request):
+    def render_GET(self, request):
         return json.dumps({})
