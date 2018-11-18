@@ -76,23 +76,6 @@ class SchemaResource(Resource):
         return json.dumps(plugin.data.schema)
 
 
-class NormalizationResource(Resource):
-    """
-    Router handler for normalization of targeting data. This is a `twisted.web.resource.Resource`.
-    """
-    isLeaf = True
-
-    def render_POST(self, request):
-        data_to_normalize = json.loads(request.content.read())
-
-        normalized_data = {'ver': plugin.data.schema['meta']['ver'],
-                           'name': plugin.data.schema['meta']['name'],
-                           'data': plugin.data.normalize(data_to_normalize)}
-
-        request.setHeader(b"content-type", b"text/javascript")
-        return json.dumps(normalized_data)
-
-
 class ApiInfoResource(Resource):
     """
     Router handler for normalization of targeting data. This is a `twisted.web.resource.Resource`.
