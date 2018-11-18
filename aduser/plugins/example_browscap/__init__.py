@@ -56,7 +56,3 @@ def update_data(user, request_data):
             logger.warning("Missing header user-agent.")
 
     return user
-
-
-def normalize(data):
-    return data

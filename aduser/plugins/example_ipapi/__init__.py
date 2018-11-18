@@ -57,7 +57,3 @@ def update_data(user, request_data):
     user['keywords'].update({'countryCode': data['countryCode']})
 
     defer.returnValue(user)
-
-
-def normalize(data):
-    return data

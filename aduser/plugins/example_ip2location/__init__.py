@@ -30,7 +30,7 @@ def update_user(user):
 
 
 @defer.inlineCallbacks
-def update_source(self):
+def update_source():
     if os.path.exists(bin_path):
         logger.info("Updating IP2Location database.")
         db = yield IP2Location.IP2Location(bin_path)

@@ -43,14 +43,3 @@ def update_data(data, request):
     :return: Updated data object.
     """
     return data
-
-
-def normalize(data):
-    """
-    Normalize user input data for AdSelect input.
-
-    :param data: Keyword object.
-    :return: Normalized data.
-    """
-    return data
-

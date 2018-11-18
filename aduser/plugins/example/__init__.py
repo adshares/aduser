@@ -38,7 +38,7 @@ def update_data(data, request_data):
     data['keywords'].update({'0002': random.randint(0, 100)})
     data['keywords'].update({'0003': random.choice(input_choices)})
     data['keywords'].update({'0004': bool(random.getrandbits(1))})
-    data['keywords'] = normalize(data['keywords'])
+    # data['keywords'] = normalize(data['keywords'])
 
     data['human_score'] = random.random()
     return data
@@ -67,14 +67,14 @@ def generate_schema():
     schema = {'meta': {'name': schema_name,
                        'ver': schema_version},
               'values': values}
-
-
-def normalize(data):
-    for key in data:
-        if schema['values'][key]['type'] == 'num':
-            data[key] = int(data[key])
-        elif schema['values'][key]['type'] == 'input':
-            data[key] = data[key].replace(' ', '').replace('_', '').lower()
-        elif schema['values'][key]['type'] == 'bool':
-            data[key] = bool(data[key])
-    return data
+#
+#
+# def normalize(data):
+#     for key in data:
+#         if schema['values'][key]['type'] == 'num':
+#             data[key] = int(data[key])
+#         elif schema['values'][key]['type'] == 'input':
+#             data[key] = data[key].replace(' ', '').replace('_', '').lower()
+#         elif schema['values'][key]['type'] == 'bool':
+#             data[key] = bool(data[key])
+#     return data

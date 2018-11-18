@@ -71,32 +71,21 @@ def update_data_from_geoip(user, request_data):
 
 @defer.inlineCallbacks
 def update_data_from_browscap(user, request_data):
-
     global browscap
     if browscap:
-        try:
+        browser_caps = yield browscap.get_info(request_data['device']['ua'])
+        if browser_caps:
 
-            browser_caps = yield browscap.get_info(request_data['device']['ua'])
-            if browser_caps:
+            keywords = {'platform': browser_caps.get('platform'),
+                        'device_type': browser_caps.get('device_type'),
+                        'javascript': browser_caps.get('javascript'),
+                        'browser': browser_caps.get('browser')}
 
-                keywords = {'platform': browser_caps.get('platform'),
-                            'device_type': browser_caps.get('device_type'),
-                            'javascript': browser_caps.get('javascript'),
-                            'browser': browser_caps.get('browser')}
+            user['keywords'].update(keywords)
+            # user['keywords'].update(browser_caps.items())
 
-                user['keywords'].update(keywords)
-                # user['keywords'].update(browser_caps.items())
-
-                if browser_caps.is_crawler():
-                    user['human_score'] = 0.0
-
-            else:
-                logger.warning("User agent not identified.")
-        except KeyError:
-            logger.warning("Missing header user-agent.")
-
+            if browser_caps.is_crawler():
+                user['human_score'] = 0.0
+        else:
+            logger.warning("User agent not identified.")
     defer.returnValue(user)
-
-
-def normalize(data):
-    return data

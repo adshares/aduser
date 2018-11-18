@@ -48,7 +48,3 @@ def update_data(user, request_data):
             logger.warning("IP not found in GeoIP db.")
 
     return user
-
-
-def normalize(data):
-    return data
