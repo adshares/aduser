@@ -13,6 +13,15 @@ class TestServer(WebclientTestCase):
         self.assertEquals(200, response.code)
 
     @defer.inlineCallbacks
+    def test_getPixelPath(self):
+        response = yield self.agent.request('GET', self.url + '/getPixelPath')
+        self.assertEquals(200, response.code)
+
+        data = yield self.return_response_json(response)
+        response = yield self.agent.request('GET', self.url + '/' + bytes(data))
+        self.assertEquals(200, response.code)
+
+    @defer.inlineCallbacks
     def test_data(self):
         response = yield self.agent.request('GET',
                                             self.url + '/getData',
@@ -50,3 +59,8 @@ class TestServer(WebclientTestCase):
         for key in ['meta', 'values']:
             self.assertIn(key, data.keys())
             self.assertIsNotNone(data[key])
+
+    @defer.inlineCallbacks
+    def test_ApiInfo(self):
+        response = yield self.agent.request('GET', self.url + '/info')
+        self.assertEquals(200, response.code)

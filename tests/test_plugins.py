@@ -1,12 +1,17 @@
 import logging
 
 from mock import patch
+from twisted.internet import defer
 from twisted.trial.unittest import TestCase
 
 from test_server_utils import TestServer
 
 logging.disable(logging.WARNING)
-from aduser.plugins import example_maxmind_geoip, example_browscap
+from aduser.plugins import example_maxmind_geoip, example_browscap, simple
+
+
+class ExampleTestServer(TestServer):
+    data_plugin = 'example'
 
 
 class MaxmindTestServer(TestServer):
@@ -92,3 +97,71 @@ class ExtraTestsBrowscap(TestCase):
 
         self.assertEquals(0.0, user['human_score'])
 
+
+class SimpleTestServer(TestServer):
+    data_plugin = 'simple'
+
+
+class ExtraSimpleTestServer(TestCase):
+
+    def setUp(self):
+        simple.browscap = None
+        simple.db = None
+
+    def test_init(self):
+        with patch('aduser.plugins.simple.csv_path', 'fake_path'):
+            with patch('aduser.plugins.simple.mmdb_path', 'fake_path'):
+                simple.init()
+                self.assertIsNone(simple.browscap)
+                self.assertIsNone(simple.db)
+
+    @defer.inlineCallbacks
+    def test_bad_ua(self):
+
+        user_agent = 'fake_ua'
+
+        simple.init()
+        user = yield simple.update_data({'human_score': 0.33,
+                                   'keywords': {}},
+                                  {'device': {'ua': user_agent,
+                                              'ip': '127.0.0.1'}})
+
+        self.assertEquals(0.33, user['human_score'])
+
+    @defer.inlineCallbacks
+    def test_good_ua(self):
+
+        user_agent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110628 Ubuntu/10.10 (maverick) Firefox/3.6.18'
+
+        simple.init()
+        user = yield simple.update_data({'human_score': 0.33,
+                                   'keywords': {}},
+                                  {'device': {'ua': user_agent,
+                                              'ip': '127.0.0.1'}})
+
+        self.assertEquals(0.33, user['human_score'])
+
+    @defer.inlineCallbacks
+    def test_bot_ua(self):
+
+        user_agent = 'Google'
+
+        simple.init()
+        user = yield simple.update_data({'human_score': 0.33,
+                                   'keywords': {}},
+                                  {'device': {'ua': user_agent,
+                                              'ip': '127.0.0.1'}})
+
+        self.assertEquals(0.0, user['human_score'])
+
+    @defer.inlineCallbacks
+    def test_bad_ip(self):
+
+        user_agent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110628 Ubuntu/10.10 (maverick) Firefox/3.6.18'
+
+        simple.init()
+        user = yield simple.update_data({'keywords': {}},
+                                  {'device': {'ua': user_agent,
+                                              'ip': '127.0.0.1'}})
+
+        self.assertNotIn('country', user['keywords'].keys())
