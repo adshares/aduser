@@ -23,11 +23,6 @@ def pixel(request):
     return PIXEL_GIF
 
 
-# def pixel_with_redirect(request):
-#     request.redirect("other_provider_url")
-#     return ''
-
-
 def update_data(data, request_data):
     # Ignore request_data
     global taxonomy
@@ -70,14 +65,3 @@ def generate_taxonomy():
     taxonomy = {'meta': {'name': taxonomy_name,
                          'version': taxonomy_version},
                 'data': values}
-
-#
-# def normalize(data):
-#     for key in data:
-#         if taxonomy['data'][key]['type'] == 'num':
-#             data[key] = int(data[key])
-#         elif taxonomy['data'][key]['type'] == 'input':
-#             data[key] = data[key].replace(' ', '').replace('_', '').lower()
-#         elif taxonomy['data'][key]['type'] == 'bool':
-#             data[key] = bool(data[key])
-#     return data
