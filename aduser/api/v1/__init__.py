@@ -1,7 +1,7 @@
 from twisted.web.resource import Resource
 
 from aduser import const
-from aduser.api.v1.server import ApiInfoResource, DataResource, PixelPathResource, PixelResource
+from aduser.api.v1.server import ApiInfoResource, DataResource, PixelPathResource, PixelResource, TaxonomyResource
 
 
 def configure_entrypoint():
