@@ -83,7 +83,6 @@ def update_data_from_browscap(user, request_data):
 
             for k in keywords.items():
                 user['keywords'].append(k)
-            # user['keywords'].update(browser_caps.items())
 
             if browser_caps.is_crawler():
                 user['human_score'] = 0.0

@@ -34,14 +34,7 @@ class ExtraTestsMaxmind(TestCase):
         user = example_maxmind_geoip.update_data({'keywords': []},
                                                  {'device': {'ip': '127.0.0.1'}})
 
-        country_in_keywords = False
-
-        for i in user['keywords']:
-            if i.keys()[0] == 'country':
-                country_in_keywords = True
-                break
-
-        self.assertNotTrue(country_in_keywords)
+        self.assertNotIn('country', [i.keys() for i in user['keywords']])
 
 
 class SkeletonTestServer(TestServer):
@@ -171,11 +164,4 @@ class ExtraSimpleTestServer(TestCase):
                                         {'device': {'ua': user_agent,
                                                     'ip': '127.0.0.1'}})
 
-        country_in_keywords = False
-
-        for i in user['keywords']:
-            if i.keys()[0] == 'country':
-                country_in_keywords = True
-                break
-
-        self.assertNotTrue(country_in_keywords)
+        self.assertNotIn('country', [i.keys() for i in user['keywords']])
