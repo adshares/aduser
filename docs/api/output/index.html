@@ -126,17 +126,22 @@
         <tr class="diff_version " data-version="v0.1">
             <td><span class="str">domain</span></td>
             <td><span class="typ">string<td><span class="lit"></span></td>
-            <td><span class="com"></span></td>
+            <td><span class="com">Visited domain</span></td>
+        </tr>
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="str">ip</span></td>
+            <td><span class="typ">string<td><span class="lit"></span></td>
+            <td><span class="com">User IP</span></td>
         </tr>
         <tr class="diff_version " data-version="v0.1">
             <td><span class="str">ua</span></td>
             <td><span class="typ">string<td><span class="lit"></span></td>
-            <td><span class="com"></span></td>
+            <td><span class="com">User-Agent</span></td>
         </tr>
         <tr class="diff_version " data-version="v0.1">
             <td><span class="str">uid</span></td>
             <td><span class="typ">string<td><span class="lit"></span></td>
-            <td><span class="com"></span></td>
+            <td><span class="com">AdServer user identifier</span></td>
         </tr>
         </tbody>
     </table>
@@ -193,9 +198,14 @@
         <tbody>
             
         <tr class="diff_version " data-version="v0.1">
+            <td><span class="lit">200</span></td>
+            <td><span class="str">OK</span></td>
+            <td><span class="com">All OK.</span></td>
+        </tr>
+        <tr class="diff_version " data-version="v0.1">
             <td><span class="lit">400</span></td>
-            <td><span class="str">Invalid request (fields missing, etc.)</span></td>
-            <td><span class="com"></span></td>
+            <td><span class="str">Bad Request</span></td>
+            <td><span class="com">Fields missing, etc.</span></td>
         </tr>
         </tbody>
     </table>
@@ -203,7 +213,7 @@
 
 <h5><i class="i-sample"></i> Sample: </h5>
 <h6>Request: </h6>
-<div class="code"><span class="hme">GET</span> <span class="hur">/getData?domain=my_domain&amp;ua=my_ua&amp;uid=my_uid</span> <span class="hpr">HTTP/1.1</span>
+<div class="code"><span class="hme">GET</span> <span class="hur">/getData?domain=my_domain&amp;ip=my_ip&amp;ua=my_ua&amp;uid=my_uid</span> <span class="hpr">HTTP/1.1</span>
 <span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
 
 </div>
@@ -214,8 +224,7 @@
 <span class="pun">{
 </span>  <span class="str">"human_score"</span><span class="pun">: </span><span class="lit">0.0</span><span class="pun">,
 </span>  <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
-</span>    <span class="str">"key"</span><span class="pun">: </span><span class="str">"my_key"</span><span class="pun">,
-</span>    <span class="str">"value"</span><span class="pun">: </span><span class="str">"my_value"</span>
+</span>    <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"value of unique key"</span>
   <span class="pun">}</span><span class="pun">,
 </span>  <span class="str">"uid"</span><span class="pun">: </span><span class="str">"my_uid"</span>
 <span class="pun">}</span></div></div></div>
@@ -252,6 +261,31 @@
     </tr>
         </tbody>
     </table></div>
+    <h6>Codes: </h6><table class="table table-bordered table-hover table-condensed">
+        <colgroup>
+            <col width="50px"></col>
+            <col></col>
+            <col width="50%"></col>
+        </colgroup>
+        <thead>
+            <tr>
+            <th><span
+            >Code</span></th>
+            <th><span
+            >Message</span></th>
+            <th><span
+            >Description</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="lit">200</span></td>
+            <td><span class="str">OK</span></td>
+            <td><span class="com">All OK.</span></td>
+        </tr>
+        </tbody>
+    </table>
 </div><div class="stack sample"><div data-version="v0.1">
 
 <h5><i class="i-sample"></i> Sample: </h5>
@@ -322,18 +356,22 @@
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>      <span class="str">"label"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
-        <td class="com"></td>
+        <td class="com">Human readable</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>      <span class="str">"type"</span><span class="pun">: </span><span class="typ">enum</span><span class="pun">,</span></td>
         <td class="com"> (<span class="diff_version" data-version="v0.1">bool</span><span class="diff_version" data-version="v0.1">, dict</span><span class="diff_version" data-version="v0.1">, input</span><span class="diff_version" data-version="v0.1">, num</span>)</td>
     </tr>
     <tr class="diff_version optional" data-version="v0.1">
-        <td>      <span class="str">"values"</span><span class="pun">: </span><span class="pun">{</span></td>
+        <td>      <span class="str">"values"</span><span class="pun">: </span><span class="pun">[</span></td>
         <td class="com">Only used for dict type.</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>      <span class="pun">}</span></td>
+        <td>        <span class="typ"><a href="javascript:navigateTo({type: 'keyword'}, ['category', 'method'])">keyword</a></span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>      <span class="pun">]</span></td>
         <td></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
@@ -350,6 +388,31 @@
     </tr>
         </tbody>
     </table></div>
+    <h6>Codes: </h6><table class="table table-bordered table-hover table-condensed">
+        <colgroup>
+            <col width="50px"></col>
+            <col></col>
+            <col width="50%"></col>
+        </colgroup>
+        <thead>
+            <tr>
+            <th><span
+            >Code</span></th>
+            <th><span
+            >Message</span></th>
+            <th><span
+            >Description</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="lit">200</span></td>
+            <td><span class="str">OK</span></td>
+            <td><span class="com">All OK.</span></td>
+        </tr>
+        </tbody>
+    </table>
 </div><div class="stack sample"><div data-version="v0.1">
 
 <h5><i class="i-sample"></i> Sample: </h5>
@@ -364,16 +427,21 @@
 
 <span class="pun">{
 </span>  <span class="str">"meta"</span><span class="pun">: </span><span class="pun">{
-</span>    <span class="str">"name"</span><span class="pun">: </span><span class="str">"my_name"</span><span class="pun">,
-</span>    <span class="str">"ver"</span><span class="pun">: </span><span class="str">"my_ver"</span>
+</span>    <span class="str">"name"</span><span class="pun">: </span><span class="str">"best_user_data_provider"</span><span class="pun">,
+</span>    <span class="str">"ver"</span><span class="pun">: </span><span class="str">"1.0.3"</span>
   <span class="pun">}</span><span class="pun">,
 </span>  <span class="str">"values"</span><span class="pun">: </span><span class="pun">{
 </span>    <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="pun">{
-</span>      <span class="str">"label"</span><span class="pun">: </span><span class="str">"my_label"</span><span class="pun">,
-</span>      <span class="str">"type"</span><span class="pun">: </span><span class="str">"input"</span><span class="pun">,
-</span>      <span class="str">"values"</span><span class="pun">: </span><span class="pun">{
-</span>
-      <span class="pun">}</span>
+</span>      <span class="str">"label"</span><span class="pun">: </span><span class="str">"Age bracket"</span><span class="pun">,
+</span>      <span class="str">"type"</span><span class="pun">: </span><span class="str">"dict"</span><span class="pun">,
+</span>      <span class="str">"values"</span><span class="pun">: </span><span class="pun">[
+</span>        <span class="pun">{
+</span>          <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"value of unique key"</span>
+        <span class="pun">}</span><span class="pun">,
+</span>        <span class="pun">{
+</span>          <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"value of unique key"</span>
+        <span class="pun">}</span>
+      <span class="pun">]</span>
     <span class="pun">}</span>
   <span class="pun">}</span>
 <span class="pun">}</span></div></div></div>
@@ -406,7 +474,7 @@
 
     <tr class="diff_version" data-version="v0.1">
         <td><span class="pun">{</span></td>
-        <td class="com"></td>
+        <td class="com">Not implemented, returns empty object.</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td><span class="pun">}</span></td>
@@ -414,6 +482,31 @@
     </tr>
         </tbody>
     </table></div>
+    <h6>Codes: </h6><table class="table table-bordered table-hover table-condensed">
+        <colgroup>
+            <col width="50px"></col>
+            <col></col>
+            <col width="50%"></col>
+        </colgroup>
+        <thead>
+            <tr>
+            <th><span
+            >Code</span></th>
+            <th><span
+            >Message</span></th>
+            <th><span
+            >Description</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="lit">200</span></td>
+            <td><span class="str">OK</span></td>
+            <td><span class="com">All OK.</span></td>
+        </tr>
+        </tbody>
+    </table>
 </div><div class="stack sample"><div data-version="v0.1">
 
 <h5><i class="i-sample"></i> Sample: </h5>
@@ -500,9 +593,14 @@
         <tbody>
             
         <tr class="diff_version " data-version="v0.1">
+            <td><span class="lit">200</span></td>
+            <td><span class="str">OK</span></td>
+            <td><span class="com">Returns a 1x1 image/gif.</span></td>
+        </tr>
+        <tr class="diff_version " data-version="v0.1">
             <td><span class="lit">302</span></td>
-            <td><span class="str">Redirect to another pixel provider</span></td>
-            <td><span class="com"></span></td>
+            <td><span class="str">Found</span></td>
+            <td><span class="com">Redirect to another pixel provider. Returns a 1x1 image/gif.</span></td>
         </tr>
         </tbody>
     </table>
@@ -545,7 +643,7 @@
 
     <tr class="diff_version" data-version="v0.1">
         <td><span class="typ">number</span></td>
-        <td class="com"></td>
+        <td class="com">Bot evaluation, 0.0 if bot/crawler, 1.0 if human user.</td>
     </tr>
         </tbody>
     </table></div>
@@ -578,11 +676,7 @@
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>  <span class="str">"key"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
-        <td class="com"></td>
-    </tr>
-    <tr class="diff_version" data-version="v0.1">
-        <td>  <span class="str">"value"</span><span class="pun">: </span><span class="typ">string</span></td>
+        <td>  <span class="typ">string</span><span class="pun">: </span><span class="typ">string</span></td>
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
@@ -598,8 +692,7 @@
 <h5><i class="i-sample"></i> Formats: </h5>
 <h6>Sample: </h6>
 <div class="code"><span class="pun">{
-</span>  <span class="str">"key"</span><span class="pun">: </span><span class="str">"my_key"</span><span class="pun">,
-</span>  <span class="str">"value"</span><span class="pun">: </span><span class="str">"my_value"</span>
+</span>  <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"value of unique key"</span>
 <span class="pun">}</span></div></div></div>
                 </div>
             </li>

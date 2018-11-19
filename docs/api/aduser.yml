@@ -15,6 +15,10 @@ versions:
         description: Return API info.
         response_body:
           type: object
+          description: Not implemented, returns empty object.
+        response_codes:
+          - code: 200
+            description: All OK.
       getPixelPath:
         label: getPixelPath
         method: GET
@@ -23,14 +27,14 @@ versions:
         response_body:
           type: string
           sample: "https://aduser.example.com:8000/34hwjkg4324_{server_id}_{user_id}.gif"
+        response_codes:
+          - code: 200
+            description: All OK.
       pixel:
         label: pixel
         method: GET
         uri: /34hwjkg4324_{server_id}_{user_id}.gif
         description: Return pixel
-        response_codes:
-          - code: 302
-            message: Redirect to another pixel provider
         request_parameters:
           server_id:
             type: string
@@ -42,6 +46,11 @@ versions:
             description: User identifier
             optional: false
             sample: 3724gol5
+        response_codes:
+          - code: 200
+            description: Returns a 1x1 image/gif.
+          - code: 302
+            description: Redirect to another pixel provider. Returns a 1x1 image/gif.
       getData:
         label: getData
         method: GET
@@ -50,16 +59,24 @@ versions:
         request_parameters:
           uid:
             type: string
+            description: AdServer user identifier
           domain:
             type: string
+            description: Visited domain
           ua:
             type: string
+            description: User-Agent
+          ip:
+            type: string
+            description: User IP
         response_body:
           type: reference
           reference: UserDataResponse
         response_codes:
+          - code: 200
+            description: All OK.
           - code: 400
-            message: Invalid request (fields missing, etc.)
+            description: Fields missing, etc.
       getSchema:
         label: getSchema
         method: GET
@@ -68,12 +85,17 @@ versions:
         response_body:
           type: reference
           reference: schema
+        response_codes:
+          - code: 200
+            description: All OK.
     references:
       schema_keyword:
         type: object
         properties:
           label:
             type: string
+            sample: Age bracket
+            description: Human readable
           type:
             type: enum
             values:
@@ -81,17 +103,23 @@ versions:
               - num
               - bool
               - dict
+            sample: dict
           values:
             description: Only used for dict type.
-            type: object
+            type: array
+            items:
+              type: keyword
             optional: true
+
       schema_meta:
         type: object
         properties:
           ver:
             type: string
+            sample: 1.0.3
           name:
             type: string
+            sample: best_user_data_provider
       schema:
         type: object
         properties:
@@ -101,8 +129,8 @@ versions:
           values:
             type: object
             additionalProperties:
-              type: reference
-              reference: schema_keyword
+                type: reference
+                reference: schema_keyword
       UserDataRequest:
         type: object
         properties:
@@ -130,19 +158,17 @@ versions:
             type: human_score
           keywords:
             type: keyword
-
     types:
       human_score:
         item:
           type: number
           sample: 0.0
+          description: Bot evaluation, 0.0 if bot/crawler, 1.0 if human user.
         format:
           pretty: 0.0-0.1
       keyword:
         item:
           type: object
-          properties:
-            key:
-              type: string
-            value:
-              type: string
+          additionalProperties:
+            type: string
+            sample: value of unique key
