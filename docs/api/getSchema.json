@@ -1,0 +1,19 @@
+{"meta": {"name": "example",
+  "ver": "0.0.1"},
+
+  "values":
+  {"0001": {"label": "Interests",
+    "type": "dict",
+    "values": [{"label": "Interest: DC", "key": "0001"},
+      {"label": "Interest: Marvel", "key": "0002"},
+      {"label": "Interest: Marvel: Spiderman", "key": "0003"},
+      {"label": "Interest: Marvel: Venom", "key": "0004"}],
+  },
+    "0002": {"label": "Comic books owned",
+      "type": "num"},
+    "0003": {"label": "Favourite superhero",
+      "type": "input"},
+    "0004": {"label": "Registered at comicbookheroes.net",
+      "type": "bool"}
+  }}
+          
