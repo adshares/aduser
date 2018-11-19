@@ -13,9 +13,10 @@ logger = logging.getLogger(__name__)
 taxonomy_name = 'example_ipapi'
 taxonomy_version = '0.0.1'
 taxonomy = {'meta': {'name': taxonomy_name,
-                     'ver': taxonomy_version},
-          'values': {'countryCode': {'label': 'Country',
-                                     'type': 'input'}}}
+                     'version': taxonomy_version},
+            'data': [{'label': 'Country',
+                      'key': 'countryCode',
+                      'type': 'input'}]}
 
 agent = Agent(reactor)
 
@@ -54,6 +55,6 @@ def update_data(user, request_data):
     response.deliverBody(JsonProtocol(finished))
     data = yield finished
 
-    user['keywords'].update({'countryCode': data['countryCode']})
+    user['keywords'].append({'countryCode': data['countryCode']})
 
     defer.returnValue(user)

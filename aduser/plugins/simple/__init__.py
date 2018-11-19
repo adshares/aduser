@@ -14,8 +14,8 @@ csv_path = os.getenv('ADUSER_BROWSCAP_CSV_PATH')
 taxonomy_name = 'simple'
 taxonomy_version = '0.0.1'
 taxonomy = {'meta': {'name': taxonomy_name,
-                     'ver': taxonomy_version},
-            'values': taxonomy_utils.get_values()}
+                     'version': taxonomy_version},
+            'data': taxonomy_utils.get_values()}
 
 logger = logging.getLogger(__name__)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
@@ -63,7 +63,7 @@ def update_data_from_geoip(user, request_data):
     if db:
         data = yield db.get_info(request_data['device']['ip'])
         if data:
-            user['keywords'].update({'country': data['country']})
+            user['keywords'].append({'country': data['country']})
         else:
             logger.warning("IP not found in GeoIP db.")
     defer.returnValue(user)
@@ -81,7 +81,8 @@ def update_data_from_browscap(user, request_data):
                         'javascript': browser_caps.get('javascript'),
                         'browser': browser_caps.get('browser')}
 
-            user['keywords'].update(keywords)
+            for k in keywords.items():
+                user['keywords'].append(k)
             # user['keywords'].update(browser_caps.items())
 
             if browser_caps.is_crawler():

@@ -34,11 +34,10 @@ def update_data(data, request_data):
 
     input_choices = ['Professor X', 'Deadpool', 'Aquaman', 'professorX']
 
-    data['keywords'].update({'0001': random.choice(taxonomy['values']['0001']['values'])['key']})
-    data['keywords'].update({'0002': random.randint(0, 100)})
-    data['keywords'].update({'0003': random.choice(input_choices)})
-    data['keywords'].update({'0004': bool(random.getrandbits(1))})
-    # data['keywords'] = normalize(data['keywords'])
+    data['keywords'].append({'0001': random.choice(taxonomy['data']['0001']['data'])['key']})
+    data['keywords'].append({'0002': random.randint(0, 100)})
+    data['keywords'].append({'0003': random.choice(input_choices)})
+    data['keywords'].append({'0004': bool(random.getrandbits(1))})
 
     data['human_score'] = random.random()
     return data
@@ -49,32 +48,36 @@ def generate_taxonomy():
     global taxonomy_name
     global taxonomy_version
 
-    values = {'0001': {'label': 'Interests',
-                       'type': 'dict',
-                       'values': [{'label': 'Interest: DC', 'key': '0001'},
-                                  {'label': 'Interest: Marvel', 'key': '0002'},
-                                  {'label': 'Interest: Marvel: Spiderman', 'key': '0003'},
-                                  {'label': 'Interest: Marvel: Venom', 'key': '0004'}],
-                       },
-              '0002': {'label': 'Comic books owned',
-                       'type': 'num'},
-              '0003': {'label': 'Favourite superhero',
-                       'type': 'input'},
-              '0004': {'label': 'Registered at comicbookheroes.net',
-                       'type': 'bool'}
-              }
+    values = [{'label': 'Interests',
+               'key': '0001',
+               'type': 'dict',
+               'data': [{'label': 'Interest: DC', 'key': '0001'},
+                        {'label': 'Interest: Marvel', 'key': '0002'},
+                        {'label': 'Interest: Marvel: Spiderman', 'key': '0003'},
+                        {'label': 'Interest: Marvel: Venom', 'key': '0004'}],
+               },
+              {'label': 'Comic books owned',
+               'key': '0001',
+               'type': 'num'},
+              {'label': 'Favourite superhero',
+               'key': '0001',
+               'type': 'input'},
+              {'label': 'Registered at comicbookheroes.net',
+               'key': '0001',
+               'type': 'bool'}
+              ]
 
     taxonomy = {'meta': {'name': taxonomy_name,
-                         'ver': taxonomy_version},
-              'values': values}
-#
+                         'version': taxonomy_version},
+                'data': values}
+
 #
 # def normalize(data):
 #     for key in data:
-#         if taxonomy['values'][key]['type'] == 'num':
+#         if taxonomy['data'][key]['type'] == 'num':
 #             data[key] = int(data[key])
-#         elif taxonomy['values'][key]['type'] == 'input':
+#         elif taxonomy['data'][key]['type'] == 'input':
 #             data[key] = data[key].replace(' ', '').replace('_', '').lower()
-#         elif taxonomy['values'][key]['type'] == 'bool':
+#         elif taxonomy['data'][key]['type'] == 'bool':
 #             data[key] = bool(data[key])
 #     return data

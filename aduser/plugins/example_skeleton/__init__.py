@@ -7,8 +7,8 @@ taxonomy_version = '0.0.1'
 
 #: Default taxonomy
 taxonomy = {'meta': {'name': taxonomy_name,
-                     'ver': taxonomy_version},
-          'values': {}}
+                     'version': taxonomy_version},
+            'data': []}
 
 #: Pixel value (1x1 GIF)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")

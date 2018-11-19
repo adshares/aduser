@@ -54,7 +54,7 @@ class DataResource(Resource):
 
             default_data = {'uid': request.args['uid'][0],
                             'human_score': 1.0,
-                            'keywords': {}}
+                            'keywords': []}
 
             data = yield plugin.data.update_data(default_data, request_data)
 
