@@ -10,9 +10,20 @@
       },
       {
         "path": "/getTaxonomy",
-        "output": "urn:x-adshares:taxonomy:0.1",
+        "output": "urn:x-adshares:taxonomy:0.1"
+      },
+      {
+        "path": "/getPixelPath",
+        "output": "urn:x-adshares:pixelpath:0.1"
+      },
+      {
+        "path": "/pixel_path",
+        "output": "urn:x-adshares:pixel:0.1"
+      },
+      {
+        "path": "/getData",
+        "output": "urn:x-adshares:data:0.1"
       }
     ]
   }
 }
-

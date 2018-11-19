@@ -36,11 +36,12 @@
               "num"
               ]
           },
-          "values": {
+          "data": {
             "type": "array",
             "items": {
               "type": "object"
-            }
+            },
+            "uniqueItems": true
           }
         }
       }
