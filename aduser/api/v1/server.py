@@ -67,7 +67,7 @@ class DataResource(Resource):
         yield request.finish()
 
 
-class SchemaResource(Resource):
+class TaxonomyResource(Resource):
     """
     Router handler for endpoints of schema requests. This is a `twisted.web.resource.Resource`.
     """
@@ -76,7 +76,7 @@ class SchemaResource(Resource):
     def render_GET(self, request):  # NOSONAR
 
         request.setHeader(b"content-type", b"text/javascript")
-        return json.dumps(plugin.data.schema)
+        return json.dumps(plugin.data.taxonomy)
 
 
 class ApiInfoResource(Resource):

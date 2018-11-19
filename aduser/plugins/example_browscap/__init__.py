@@ -4,15 +4,15 @@ from base64 import b64decode
 
 from aduser.plugins.example_browscap import utils
 
-schema_name = 'example_browscap'
-schema_version = '0.0.1'
+taxonomy_name = 'example_browscap'
+taxonomy_version = '0.0.1'
 
 browscap = None
 csv_path = os.getenv('ADUSER_BROWSCAP_CSV_PATH')
 logger = logging.getLogger(__name__)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
-schema = {'meta': {'name': schema_name,
-                   'ver': schema_version},
+taxonomy = {'meta': {'name': taxonomy_name,
+                     'ver': taxonomy_version},
           'values': {}}
 
 

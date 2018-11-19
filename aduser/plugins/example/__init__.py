@@ -4,15 +4,15 @@ from base64 import b64decode
 
 logger = logging.getLogger(__name__)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
-schema = {}
+taxonomy = {}
 
-schema_name = 'example'
-schema_version = '0.0.1'
+taxonomy_name = 'example'
+taxonomy_version = '0.0.1'
 
 
 def init():
     logger.info("Initializing example data plugin.")
-    generate_schema()
+    generate_taxonomy()
 
 
 def pixel(request):
@@ -30,11 +30,11 @@ def pixel(request):
 
 def update_data(data, request_data):
     # Ignore request_data
-    global schema
+    global taxonomy
 
     input_choices = ['Professor X', 'Deadpool', 'Aquaman', 'professorX']
 
-    data['keywords'].update({'0001': random.choice(schema['values']['0001']['values'])['key']})
+    data['keywords'].update({'0001': random.choice(taxonomy['values']['0001']['values'])['key']})
     data['keywords'].update({'0002': random.randint(0, 100)})
     data['keywords'].update({'0003': random.choice(input_choices)})
     data['keywords'].update({'0004': bool(random.getrandbits(1))})
@@ -44,10 +44,10 @@ def update_data(data, request_data):
     return data
 
 
-def generate_schema():
-    global schema
-    global schema_name
-    global schema_version
+def generate_taxonomy():
+    global taxonomy
+    global taxonomy_name
+    global taxonomy_version
 
     values = {'0001': {'label': 'Interests',
                        'type': 'dict',
@@ -64,17 +64,17 @@ def generate_schema():
                        'type': 'bool'}
               }
 
-    schema = {'meta': {'name': schema_name,
-                       'ver': schema_version},
+    taxonomy = {'meta': {'name': taxonomy_name,
+                         'ver': taxonomy_version},
               'values': values}
 #
 #
 # def normalize(data):
 #     for key in data:
-#         if schema['values'][key]['type'] == 'num':
+#         if taxonomy['values'][key]['type'] == 'num':
 #             data[key] = int(data[key])
-#         elif schema['values'][key]['type'] == 'input':
+#         elif taxonomy['values'][key]['type'] == 'input':
 #             data[key] = data[key].replace(' ', '').replace('_', '').lower()
-#         elif schema['values'][key]['type'] == 'bool':
+#         elif taxonomy['values'][key]['type'] == 'bool':
 #             data[key] = bool(data[key])
 #     return data

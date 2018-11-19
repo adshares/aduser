@@ -7,10 +7,10 @@ from aduser.plugins.example_maxmind_geoip import utils
 db = None
 mmdb_path = os.getenv('ADUSER_GEOLITE_PATH')
 
-schema_name = 'example_maxmind_geoip'
-schema_version = '0.0.1'
-schema = {'meta': {'name': schema_name,
-                   'ver': schema_version},
+taxonomy_name = 'example_maxmind_geoip'
+taxonomy_version = '0.0.1'
+taxonomy = {'meta': {'name': taxonomy_name,
+                     'ver': taxonomy_version},
           'values': {'country':
                      {'label': 'Country',
                       'type': 'input'}}}

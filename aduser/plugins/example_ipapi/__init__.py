@@ -10,10 +10,10 @@ from twisted.web.client import Agent
 
 logger = logging.getLogger(__name__)
 
-schema_name = 'example_ipapi'
-schema_version = '0.0.1'
-schema = {'meta': {'name': schema_name,
-                   'ver': schema_version},
+taxonomy_name = 'example_ipapi'
+taxonomy_version = '0.0.1'
+taxonomy = {'meta': {'name': taxonomy_name,
+                     'ver': taxonomy_version},
           'values': {'countryCode': {'label': 'Country',
                                      'type': 'input'}}}
 
