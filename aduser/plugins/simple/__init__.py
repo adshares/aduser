@@ -53,7 +53,9 @@ def init():
 def update_data(user, request_data):
     user_cap = yield update_data_from_browscap(user, request_data)
     user_geo = yield update_data_from_geoip(user, request_data)
-    user_cap.update(user_geo)
+
+    user_cap['keywords'] += user_geo['keywords']
+
     defer.returnValue(user_cap)
 
 
