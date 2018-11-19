@@ -78,13 +78,10 @@ def update_data_from_browscap(user, request_data):
         browser_caps = yield browscap.get_info(request_data['device']['ua'])
         if browser_caps:
 
-            keywords = {'platform': browser_caps.get('platform'),
-                        'device_type': browser_caps.get('device_type'),
-                        'javascript': browser_caps.get('javascript'),
-                        'browser': browser_caps.get('browser')}
-
-            for k in keywords.items():
-                user['keywords'].append(k)
+            user['keywords'] += [{'platform': browser_caps.get('platform')},
+                                 {'device_type': browser_caps.get('device_type')},
+                                 {'javascript': browser_caps.get('javascript')},
+                                 {'browser': browser_caps.get('browser')}]
 
             if browser_caps.is_crawler():
                 user['human_score'] = 0.0
