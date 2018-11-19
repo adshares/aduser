@@ -34,7 +34,14 @@ class ExtraTestsMaxmind(TestCase):
         user = example_maxmind_geoip.update_data({'keywords': []},
                                                  {'device': {'ip': '127.0.0.1'}})
 
-        self.assertNotIn('country', user['keywords'].keys())
+        country_in_keywords = False
+
+        for i in user['keywords']:
+            if i.keys()[0] == 'country':
+                country_in_keywords = True
+                break
+
+        self.assertNotTrue(country_in_keywords)
 
 
 class SkeletonTestServer(TestServer):
@@ -124,7 +131,7 @@ class ExtraSimpleTestServer(TestCase):
         user = yield simple.update_data({'human_score': 0.33,
                                          'keywords': []},
                                         {'device': {'ua': user_agent,
-                                              'ip': '127.0.0.1'}})
+                                                    'ip': '127.0.0.1'}})
 
         self.assertEquals(0.33, user['human_score'])
 
@@ -137,7 +144,7 @@ class ExtraSimpleTestServer(TestCase):
         user = yield simple.update_data({'human_score': 0.33,
                                          'keywords': []},
                                         {'device': {'ua': user_agent,
-                                              'ip': '127.0.0.1'}})
+                                                    'ip': '127.0.0.1'}})
 
         self.assertEquals(0.33, user['human_score'])
 
@@ -150,7 +157,7 @@ class ExtraSimpleTestServer(TestCase):
         user = yield simple.update_data({'human_score': 0.33,
                                          'keywords': []},
                                         {'device': {'ua': user_agent,
-                                              'ip': '127.0.0.1'}})
+                                                    'ip': '127.0.0.1'}})
 
         self.assertEquals(0.0, user['human_score'])
 
@@ -162,6 +169,13 @@ class ExtraSimpleTestServer(TestCase):
         simple.init()
         user = yield simple.update_data({'keywords': []},
                                         {'device': {'ua': user_agent,
-                                              'ip': '127.0.0.1'}})
+                                                    'ip': '127.0.0.1'}})
 
-        self.assertNotIn('country', user['keywords'].keys())
+        country_in_keywords = False
+
+        for i in user['keywords']:
+            if i.keys()[0] == 'country':
+                country_in_keywords = True
+                break
+
+        self.assertNotTrue(country_in_keywords)
