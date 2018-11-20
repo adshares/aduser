@@ -15,7 +15,7 @@ class PixelPathResource(Resource):
 
     def render_GET(self, request):  # NOSONAR
         request.setHeader(b"content-type", b"text/javascript")
-        return '"{0}'.format(const.PIXEL_PATH) + '?{adserver_id_{user_id}.gif"'
+        return '"{0}'.format(const.PIXEL_PATH) + '?{adserver_id}_{user_id}.gif"'
 
 
 class PixelResource(Resource):
