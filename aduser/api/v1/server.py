@@ -15,7 +15,7 @@ class PixelPathResource(Resource):
 
     def render_GET(self, request):  # NOSONAR
         request.setHeader(b"content-type", b"text/javascript")
-        return '"{0}'.format(const.PIXEL_PATH) + '?{adserver_id_{user_id}.gif"'
+        return '"{0}'.format(const.PIXEL_PATH) + '?{adserver_id}_{user_id}.gif"'
 
 
 class PixelResource(Resource):
@@ -54,7 +54,7 @@ class DataResource(Resource):
 
             default_data = {'uid': request.args['uid'][0],
                             'human_score': 1.0,
-                            'keywords': {}}
+                            'keywords': []}
 
             data = yield plugin.data.update_data(default_data, request_data)
 
@@ -67,7 +67,7 @@ class DataResource(Resource):
         yield request.finish()
 
 
-class SchemaResource(Resource):
+class TaxonomyResource(Resource):
     """
     Router handler for endpoints of schema requests. This is a `twisted.web.resource.Resource`.
     """
@@ -76,7 +76,7 @@ class SchemaResource(Resource):
     def render_GET(self, request):  # NOSONAR
 
         request.setHeader(b"content-type", b"text/javascript")
-        return json.dumps(plugin.data.schema)
+        return json.dumps(plugin.data.taxonomy)
 
 
 class ApiInfoResource(Resource):

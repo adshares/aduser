@@ -63,7 +63,9 @@
         <li class="nav-header"><h5>Methods</h5></li>
         <li data-group="None"  data-item="getData"><a href="javascript:navigateTo({category: 'None', method: 'getData'}, ['category', 'method'])" data-target="#m-getData"><span>getData</span></a></li>
         <li data-group="None"  data-item="getPixelPath"><a href="javascript:navigateTo({category: 'None', method: 'getPixelPath'}, ['category', 'method'])" data-target="#m-getPixelPath"><span>getPixelPath</span></a></li>
-        <li data-group="None"  data-item="getSchema"><a href="javascript:navigateTo({category: 'None', method: 'getSchema'}, ['category', 'method'])" data-target="#m-getSchema"><span>getSchema</span></a></li>
+        <li data-group="None" data-item="getTaxonomy"><a
+                href="javascript:navigateTo({category: 'None', method: 'getTaxonomy'}, ['category', 'method'])"
+                data-target="#m-getTaxonomy"><span>getTaxonomy</span></a></li>
         <li data-group="None"  data-item="info"><a href="javascript:navigateTo({category: 'None', method: 'info'}, ['category', 'method'])" data-target="#m-info"><span>info</span></a></li>
         <li data-group="None"  data-item="pixel"><a href="javascript:navigateTo({category: 'None', method: 'pixel'}, ['category', 'method'])" data-target="#m-pixel"><span>pixel</span></a></li>
     </ul>
@@ -301,19 +303,22 @@
 <span class="str">"https://aduser.example.com:8000/34hwjkg4324_{server_id}_{user_id}.gif"</span></div></div></div>
                 </div>
             </li>
-            <li class="method item" id="m-getSchema" data-method="GET">
-                <h4>getSchema</h4><div class="nocontents">no implementation for this version</div>
+            <li class="method item" id="m-getTaxonomy" data-method="GET">
+                <h4>getTaxonomy</h4>
+                <div class="nocontents">no implementation for this version</div>
                 <div class="contents">
 
 <h5 class="title"></h5>
 
 <div class="description stack">
-    
-    <div class="diff_version" data-version="v0.1">Return API info.</div></div><div class="request stack">
+
+    <div class="diff_version" data-version="v0.1">Return schema for taxonomy.</div>
+</div>
+                    <div class="request stack">
     <h5><i class="i-request"></i> Request: </h5>
     <h6>Resource: </h6>
 
-    <code  class="diff_version" data-version="v0.1"><span class="hur">https://aduser.example.com:8000/getSchema</span></code>
+                        <code class="diff_version" data-version="v0.1"><span class="hur">https://aduser.example.com:8000/getTaxonomy</span></code>
 </div>
 
 <div class="response stack">
@@ -331,52 +336,54 @@
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>  <span class="str">"meta"</span><span class="pun">: </span><span class="pun">{</span></td>
+        <td><span class="str">"data"</span><span class="pun">: </span><span class="pun">[</span></td>
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>    <span class="str">"name"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
+        <td><span class="pun">{</span></td>
         <td class="com"></td>
     </tr>
-    <tr class="diff_version" data-version="v0.1">
-        <td>    <span class="str">"ver"</span><span class="pun">: </span><span class="typ">string</span></td>
-        <td class="com"></td>
+    <tr class="diff_version optional" data-version="v0.1">
+        <td><span class="str">"data"</span><span class="pun">: </span><span class="pun">{</span></td>
+        <td class="com">Only used for dict type.</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>  <span class="pun">}</span><span class="pun">,</span></td>
+        <td><span class="pun">}</span><span class="pun">,</span></td>
         <td></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>  <span class="str">"values"</span><span class="pun">: </span><span class="pun">{</span></td>
-        <td class="com"></td>
-    </tr>
-    <tr class="diff_version" data-version="v0.1">
-        <td>    <span class="typ">string</span><span class="pun">: </span><span class="pun">{</span></td>
-        <td class="com"></td>
+        <td><span class="str">"key"</span><span class="pun">: </span><span class="typ">string</span><span
+                class="pun">,</span></td>
+        <td class="com">Unique key for keyword</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>      <span class="str">"label"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
         <td class="com">Human readable</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>      <span class="str">"type"</span><span class="pun">: </span><span class="typ">enum</span><span class="pun">,</span></td>
+        <td><span class="str">"type"</span><span class="pun">: </span><span class="typ">enum</span></td>
         <td class="com"> (<span class="diff_version" data-version="v0.1">bool</span><span class="diff_version" data-version="v0.1">, dict</span><span class="diff_version" data-version="v0.1">, input</span><span class="diff_version" data-version="v0.1">, num</span>)</td>
     </tr>
-    <tr class="diff_version optional" data-version="v0.1">
-        <td>      <span class="str">"values"</span><span class="pun">: </span><span class="pun">[</span></td>
-        <td class="com">Only used for dict type.</td>
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="pun">}</span></td>
+        <td></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>        <span class="typ"><a href="javascript:navigateTo({type: 'keyword'}, ['category', 'method'])">keyword</a></span></td>
+        <td><span class="pun">]</span><span class="pun">,</span></td>
+        <td></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td><span class="str">"meta"</span><span class="pun">: </span><span class="pun">{</span></td>
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>      <span class="pun">]</span></td>
-        <td></td>
+        <td><span class="str">"name"</span><span class="pun">: </span><span class="typ">string</span><span
+                class="pun">,</span></td>
+        <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>    <span class="pun">}</span></td>
-        <td></td>
+        <td><span class="str">"ver"</span><span class="pun">: </span><span class="typ">string</span></td>
+        <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>  <span class="pun">}</span></td>
@@ -417,7 +424,8 @@
 
 <h5><i class="i-sample"></i> Sample: </h5>
 <h6>Request: </h6>
-<div class="code"><span class="hme">GET</span> <span class="hur">/getSchema</span> <span class="hpr">HTTP/1.1</span>
+                    <div class="code"><span class="hme">GET</span> <span class="hur">/getTaxonomy</span> <span
+                            class="hpr">HTTP/1.1</span>
 <span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
 
 </div>
@@ -426,23 +434,29 @@
 <span class="hat">Content-Type</span><span class="pun">: </span><span class="hva">application/json; charset=utf-8</span>
 
 <span class="pun">{
-</span>  <span class="str">"meta"</span><span class="pun">: </span><span class="pun">{
-</span>    <span class="str">"name"</span><span class="pun">: </span><span class="str">"best_user_data_provider"</span><span class="pun">,
-</span>    <span class="str">"ver"</span><span class="pun">: </span><span class="str">"1.0.3"</span>
-  <span class="pun">}</span><span class="pun">,
-</span>  <span class="str">"values"</span><span class="pun">: </span><span class="pun">{
-</span>    <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="pun">{
+</span> <span class="str">"data"</span><span class="pun">: </span><span class="pun">[
+</span> <span class="pun">{
+</span> <span class="str">"data"</span><span class="pun">: </span><span class="pun">{
+</span>
+            <span class="pun">}</span><span class="pun">,
+</span> <span class="str">"key"</span><span class="pun">: </span><span class="str">"ABCD-0001"</span><span class="pun">,
 </span>      <span class="str">"label"</span><span class="pun">: </span><span class="str">"Age bracket"</span><span class="pun">,
-</span>      <span class="str">"type"</span><span class="pun">: </span><span class="str">"dict"</span><span class="pun">,
-</span>      <span class="str">"values"</span><span class="pun">: </span><span class="pun">[
-</span>        <span class="pun">{
-</span>          <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"value of unique key"</span>
-        <span class="pun">}</span><span class="pun">,
-</span>        <span class="pun">{
-</span>          <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"value of unique key"</span>
-        <span class="pun">}</span>
-      <span class="pun">]</span>
+</span> <span class="str">"type"</span><span class="pun">: </span><span class="str">"num"</span>
+            <span class="pun">}</span><span class="pun">,
+</span> <span class="pun">{
+</span> <span class="str">"data"</span><span class="pun">: </span><span class="pun">{
+</span>
+            <span class="pun">}</span><span class="pun">,
+</span> <span class="str">"key"</span><span class="pun">: </span><span class="str">"ABCD-0001"</span><span class="pun">,
+</span> <span class="str">"label"</span><span class="pun">: </span><span class="str">"Age bracket"</span><span
+                    class="pun">,
+</span> <span class="str">"type"</span><span class="pun">: </span><span class="str">"num"</span>
     <span class="pun">}</span>
+            <span class="pun">]</span><span class="pun">,
+</span> <span class="str">"meta"</span><span class="pun">: </span><span class="pun">{
+</span> <span class="str">"name"</span><span class="pun">: </span><span
+                    class="str">"best_user_data_provider"</span><span class="pun">,
+</span> <span class="str">"ver"</span><span class="pun">: </span><span class="str">"1.0.3"</span>
   <span class="pun">}</span>
 <span class="pun">}</span></div></div></div>
                 </div>

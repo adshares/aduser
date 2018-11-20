@@ -51,12 +51,12 @@ class TestServer(WebclientTestCase):
             self.assertIsNotNone(data[key])
 
     @defer.inlineCallbacks
-    def test_schema(self):
-        response = yield self.agent.request('GET', self.url + '/getSchema')
+    def test_taxonomy(self):
+        response = yield self.agent.request('GET', self.url + '/getTaxonomy')
         self.assertEquals(200, response.code)
         data = yield self.return_response_json(response)
 
-        for key in ['meta', 'values']:
+        for key in ['meta', 'data']:
             self.assertIn(key, data.keys())
             self.assertIsNotNone(data[key])
 
