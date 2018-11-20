@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "$id": "urn:x-adshares:pixelpath:0.1",
+  "type": "string",
+  "definitions": {}
+}

@@ -1,14 +1,14 @@
 from base64 import b64decode
 
-#: Schema name and identifier
-schema_name = 'example_skeleton'
-#: Schema version
-schema_version = '0.0.1'
+#: taxonomy name and identifier
+taxonomy_name = 'example_skeleton'
+#: taxonomy version
+taxonomy_version = '0.0.1'
 
-#: Default schema
-schema = {'meta': {'name': schema_name,
-                   'ver': schema_version},
-          'values': {}}
+#: Default taxonomy
+taxonomy = {'meta': {'name': taxonomy_name,
+                     'version': taxonomy_version},
+            'data': []}
 
 #: Pixel value (1x1 GIF)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")

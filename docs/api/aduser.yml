@@ -77,11 +77,11 @@ versions:
             description: All OK.
           - code: 400
             description: Fields missing, etc.
-      getSchema:
-        label: getSchema
+      getTaxonomy:
+        label: getTaxonomy
         method: GET
-        uri: /getSchema
-        description: Return API info.
+        uri: /getTaxonomy
+        description: Return schema for taxonomy.
         response_body:
           type: reference
           reference: schema
@@ -92,6 +92,10 @@ versions:
       schema_keyword:
         type: object
         properties:
+          key:
+            type: string
+            sample: ABCD-0001
+            description: Unique key for keyword
           label:
             type: string
             sample: Age bracket
@@ -103,14 +107,11 @@ versions:
               - num
               - bool
               - dict
-            sample: dict
-          values:
+            sample: num
+          data:
             description: Only used for dict type.
-            type: array
-            items:
-              type: keyword
+            type: object
             optional: true
-
       schema_meta:
         type: object
         properties:
@@ -126,11 +127,11 @@ versions:
           meta:
             type: reference
             reference: schema_meta
-          values:
-            type: object
-            additionalProperties:
-                type: reference
-                reference: schema_keyword
+          data:
+            type: array
+            items:
+              type: reference
+              reference: schema_keyword
       UserDataRequest:
         type: object
         properties:
@@ -158,6 +159,11 @@ versions:
             type: human_score
           keywords:
             type: keyword
+      MockKeyword:
+        type: object
+        properties:
+          input:
+            type: Example input keyword
     types:
       human_score:
         item:
@@ -172,3 +178,72 @@ versions:
           additionalProperties:
             type: string
             sample: value of unique key
+      Example input keyword:
+        category: Taxonomy
+        item:
+          type: object
+          properties:
+            key:
+              type: string
+              sample: ABCD-001
+            type:
+              type: const
+              const_type: string
+              value: input
+            label:
+              type: string
+              sample: Example
+      Example number keyword:
+        category: Taxonomy
+        item:
+          type: object
+          properties:
+            key:
+              type: string
+              sample: ABCD-001
+            type:
+              type: const
+              const_type: string
+              value: num
+            label:
+              type: string
+              sample: Example number
+      Example boolean keyword:
+        category: Taxonomy
+        item:
+          type: object
+          properties:
+            key:
+              type: string
+              sample: ABCD-001
+            type:
+              type: const
+              const_type: string
+              value: bool
+            label:
+              type: string
+              sample: Example boolean
+      Example dictionary keyword:
+        category: Taxonomy
+        item:
+          type: object
+          properties:
+            key:
+              type: string
+              sample: ABCD-001
+            type:
+              type: const
+              const_type: string
+              value: dict
+            label:
+              type: string
+              sample: Example
+            values:
+              type: object
+              properties:
+                key1:
+                  type: string
+                  sample: ValueOne
+                key2:
+                  type: string
+                  sample: ValueTwo

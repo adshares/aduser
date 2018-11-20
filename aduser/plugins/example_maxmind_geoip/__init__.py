@@ -7,13 +7,13 @@ from aduser.plugins.example_maxmind_geoip import utils
 db = None
 mmdb_path = os.getenv('ADUSER_GEOLITE_PATH')
 
-schema_name = 'example_maxmind_geoip'
-schema_version = '0.0.1'
-schema = {'meta': {'name': schema_name,
-                   'ver': schema_version},
-          'values': {'country':
-                     {'label': 'Country',
-                      'type': 'input'}}}
+taxonomy_name = 'example_maxmind_geoip'
+taxonomy_version = '0.0.1'
+taxonomy = {'meta': {'name': taxonomy_name,
+                     'version': taxonomy_version},
+            'data': [{'label': 'Country',
+                      "key": "country",
+                      'type': 'input'}]}
 
 logger = logging.getLogger(__name__)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
@@ -43,7 +43,7 @@ def update_data(user, request_data):
     if db:
         data = db.get_info(request_data['device']['ip'])
         if data:
-            user['keywords'].update({'country': data['country']})
+            user['keywords'].append({'country': data['country']})
         else:
             logger.warning("IP not found in GeoIP db.")
 

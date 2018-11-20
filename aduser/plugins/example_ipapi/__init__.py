@@ -10,12 +10,13 @@ from twisted.web.client import Agent
 
 logger = logging.getLogger(__name__)
 
-schema_name = 'example_ipapi'
-schema_version = '0.0.1'
-schema = {'meta': {'name': schema_name,
-                   'ver': schema_version},
-          'values': {'countryCode': {'label': 'Country',
-                                     'type': 'input'}}}
+taxonomy_name = 'example_ipapi'
+taxonomy_version = '0.0.1'
+taxonomy = {'meta': {'name': taxonomy_name,
+                     'version': taxonomy_version},
+            'data': [{'label': 'Country',
+                      'key': 'countryCode',
+                      'type': 'input'}]}
 
 agent = Agent(reactor)
 
@@ -54,6 +55,6 @@ def update_data(user, request_data):
     response.deliverBody(JsonProtocol(finished))
     data = yield finished
 
-    user['keywords'].update({'countryCode': data['countryCode']})
+    user['keywords'].append({'countryCode': data['countryCode']})
 
     defer.returnValue(user)
