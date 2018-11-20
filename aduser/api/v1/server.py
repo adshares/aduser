@@ -14,7 +14,7 @@ class PixelPathResource(Resource):
     isLeaf = True
 
     def render_GET(self, request):  # NOSONAR
-        request.setHeader(b"content-type", b"text/javascript")
+        request.setHeader(b"content-type", b"application/json")
         return '"{0}'.format(const.PIXEL_PATH) + '?{adserver_id}_{user_id}.gif"'
 
 
@@ -59,7 +59,7 @@ class DataResource(Resource):
             data = yield plugin.data.update_data(default_data, request_data)
 
             yield request.write(json.dumps(data))
-            request.setHeader(b"content-type", b"text/javascript")
+            request.setHeader(b"content-type", b"application/json")
 
         except KeyError:
             request.setResponseCode(400)
@@ -75,7 +75,7 @@ class TaxonomyResource(Resource):
 
     def render_GET(self, request):  # NOSONAR
 
-        request.setHeader(b"content-type", b"text/javascript")
+        request.setHeader(b"content-type", b"application/json")
         return json.dumps(plugin.data.taxonomy)
 
 
@@ -86,4 +86,5 @@ class ApiInfoResource(Resource):
     isLeaf = True
 
     def render_GET(self, request):
+        request.setHeader(b"content-type", b"application/json")
         return json.dumps({})
