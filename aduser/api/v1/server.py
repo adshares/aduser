@@ -13,7 +13,8 @@ class PixelPathResource(Resource):
     """
     isLeaf = True
 
-    def render_GET(self, request):  # NOSONAR
+    @staticmethod
+    def render_GET(request):  # NOSONAR
         request.setHeader(b"content-type", b"application/json")
         return '"{0}'.format(const.PIXEL_PATH) + '?{adserver_id}_{user_id}.gif"'
 
@@ -24,7 +25,8 @@ class PixelResource(Resource):
     """
     isLeaf = True
 
-    def render_GET(self, request):  # NOSONAR
+    @staticmethod
+    def render_GET(request):  # NOSONAR
 
         utils.attach_tracking_cookie(request)
         return plugin.data.pixel(request)
@@ -73,7 +75,8 @@ class TaxonomyResource(Resource):
     """
     isLeaf = True
 
-    def render_GET(self, request):  # NOSONAR
+    @staticmethod
+    def render_GET(request):  # NOSONAR
 
         request.setHeader(b"content-type", b"application/json")
         return json.dumps(plugin.data.taxonomy)
@@ -85,6 +88,7 @@ class ApiInfoResource(Resource):
     """
     isLeaf = True
 
-    def render_GET(self, request):
+    @staticmethod
+    def render_GET(request):
         request.setHeader(b"content-type", b"application/json")
         return json.dumps({})
