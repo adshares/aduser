@@ -20,53 +20,6 @@ Full installation instructions can be found in `README.md <https://github.com/ad
 
 Make sure you set up the ``$ADUSER_ROOT`` environment variable to point to the root directory of AdUser - the directory containing the aduser package.
 
-Configuration
--------------
-
-Configuration is spread among 5 files:
-
-    * aduser.proxy.const
-    * aduser.simple_provider.client.const
-    * aduser.simple_provider.server.const
-    * config/log_config.json
-    * config/supervisord.conf
-
-AdUser logging config
-^^^^^^^^^^^^^^^^^^^^^
-
-*config/log_config.json* contains Python logging configuration. You can learn more about it `here. <https://docs.python.org/2/library/logging.config.html>`_ The AdUser daemon will look for this file in the ``$ADUSER_ROOT/aduser/config`` directory, where ``$ADUSER_ROOT`` is an environmental variable.
-
-AdUser proxy configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-*aduser.proxy.const* is a python file containing configuration for proxy side of AdUser.
-
-AdUser simple provider client configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-*aduser.simple_provider.client.const* is a python file containing configuration for client side of AdUser.
-
-AdUser simple provider server configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-*aduser.simple_provider.server.const* is a python file containing configuration for server side of AdUser.
-
-.. NOTE::
-    Configuration items you should specially consider in initial deployment:
-
-    * Tracking cookie name
-    * Tracking id expiration
-
-Supervisor config
-^^^^^^^^^^^^^^^^^
-
-Config for supervisor daemon configuration (log and pid file paths) is in *config/supervisord.conf*.
-
-Logging
--------
-
-Logging config for the Python app can be found in the *config/log_config.json* file. By default, it's captured by supervisor to ``$ADUSER_ROOT/log/aduser.log``. Other logs (MongoDB, supervisord) can also be found in the same directory.
-
 
 User Guide
 ==========
@@ -84,17 +37,14 @@ Python stack is as follows:
 
     * Twisted for the core network communication and asynchronous event handling
     * txmongo for asynchronous MongoDB communication
-    * pygelf for Graylog integration
+
+Some plugins may require additional packages, eg.:
+
     * python-geoip for MaxMind GeoIP integration
     * pybrowscap for Browscap integration
-    * supervisor for running it as a daemon
+    * ip2location for IP2Location integration
 
-AdUser is conceptually divided into two parts:
-
-    * Proxy
-    * Data server
-
-The proxy accepts requests from AdServer and requests information from the data server. It also hosts the cache and attaches the tracking cookie. The server provides the information about the consumer.
+See plugins documentation.
 
 Default server
 --------------
@@ -120,30 +70,18 @@ The most interesting part to extend is configuration of UserDataSources. When Ad
 
 You can also build your own servers or use an external service directly from proxy. The interface is defined in :py:mod:`aduser.proxy.client.ProviderClient`.
 
-Testing
--------
-
-For testing you'll need additional libraries (mock and mongomock). Tests can be run using Twisted Trial.
-
-    ``trial tests``
-
-To test with a live MongoDB instance, run the tests without the mongomock library.
-
-    ``trial tests --without mongomock``
-
 Packages
 --------
 
 .. toctree::
    :maxdepth: 1
 
-   modules
-   aduser
-   aduser.proxy
-   aduser.simple_provider
-   aduser.simple_provider.client
-   aduser.simple_provider.server
-   aduser.simple_provider.server.data_sources
+   api_methods
+   reference
+   testing
+   config
+   deploy
+   contributing
 
 Indices and tables
 ==================
