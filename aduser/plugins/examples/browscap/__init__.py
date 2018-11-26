@@ -2,7 +2,7 @@ import logging
 import os
 from base64 import b64decode
 
-from aduser.plugins.example_browscap import utils
+from aduser.plugins.examples.browscap import utils
 
 taxonomy_name = 'example_browscap'
 taxonomy_version = '0.0.1'

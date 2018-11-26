@@ -10,7 +10,7 @@ from twisted.web.client import Agent
 
 logger = logging.getLogger(__name__)
 
-taxonomy_name = 'example_ipapi'
+taxonomy_name = 'examples.ipapi'
 taxonomy_version = '0.0.1'
 taxonomy = {'meta': {'name': taxonomy_name,
                      'version': taxonomy_version},
