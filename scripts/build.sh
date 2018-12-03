@@ -28,3 +28,11 @@ elif [ ${ADUSER_APP_ENV} == 'deploy' ]; then
 else
     pipenv install pipenv
 fi
+
+if [ -v BUILD_WITH_PYBROWSCAP ]; then
+    pipenv run install_pybrowscap
+fi
+
+if [ -v BUILD_WITH_GEOIP ]; then
+    pipenv run install_geoip
+fi
