@@ -38,7 +38,7 @@ class DataResource(Resource):
     """
     isLeaf = True
 
-    def render_GET(self, request):  # NOSONAR
+    def render_POST(self, request):  # NOSONAR
         self.handle_data(request)
 
         return NOT_DONE_YET
@@ -51,10 +51,12 @@ class DataResource(Resource):
             request_data = {'site': {},
                             'device': {}}
 
-            request_data['device']['ip'] = request.args['ip'][0]
-            request_data['device']['ua'] = request.args['ua'][0]
+            post_data = json.loads(request.content.read())
 
-            default_data = {'uid': request.args['uid'][0],
+            request_data['device']['ip'] = post_data['ip']
+            request_data['device']['ua'] = post_data['ua']
+
+            default_data = {'uid': post_data['uid'],
                             'human_score': 1.0,
                             'keywords': []}
 
