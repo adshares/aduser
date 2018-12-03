@@ -1,10 +1,11 @@
 import logging
 import os
+import random
 from base64 import b64decode
 
 from twisted.internet import defer
 
-from aduser.plugins.simple.utils import browscap_utils, geoip_utils, taxonomy_utils
+from aduser.plugins.simple.utils import browscap_utils, geoip_utils, mock_data, taxonomy_utils
 
 db = None
 mmdb_path = os.getenv('ADUSER_GEOLITE_PATH')
@@ -15,7 +16,7 @@ taxonomy_name = 'simple'
 taxonomy_version = '0.0.1'
 taxonomy = {'meta': {'name': taxonomy_name,
                      'version': taxonomy_version},
-            'data': taxonomy_utils.get_values()}
+            'data': [mock_data.mock] + taxonomy_utils.get_values()}
 
 logger = logging.getLogger(__name__)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
@@ -53,12 +54,12 @@ def init():
 
 @defer.inlineCallbacks
 def update_data(user, request_data):
-    user_cap = yield update_data_from_browscap(user, request_data)
-    user_geo = yield update_data_from_geoip(user, request_data)
+    yield update_data_from_browscap(user, request_data)
+    yield update_data_from_geoip(user, request_data)
 
-    user_cap['keywords'] += user_geo['keywords']
+    user['keywords'] += [{'interest': random.choice(mock_data.mock['data'])['key']}]
 
-    defer.returnValue(user_cap)
+    defer.returnValue(user)
 
 
 @defer.inlineCallbacks

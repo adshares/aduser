@@ -1,4 +1,3 @@
-
 def get_values():
     return [{'label': 'Country',
              'key': 'country',
