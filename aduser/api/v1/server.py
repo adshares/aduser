@@ -1,10 +1,12 @@
 import json
+import logging
 
 from twisted.internet import defer
 from twisted.web.resource import NoResource, Resource
 from twisted.web.server import NOT_DONE_YET
 
 from aduser import const, plugin, utils
+from aduser.db import utils as db_utils
 
 
 class PixelPathResource(Resource):
@@ -66,7 +68,13 @@ class UserPixelResource(Resource):
 
     def render_GET(self, request):  # NOSONAR
 
-        utils.attach_tracking_cookie(request)
+        tid = utils.attach_tracking_cookie(request)
+        db_utils.update_mapping({'tracking_id': tid,
+                                 'server_user_id': self.adserver_id + '_' + self.user_id})
+        db_utils.update_pixel({'tracking_id': tid,
+                               'request': [h for h in request.requestHeaders.getAllRawHeaders()]})
+        logging.info({'tracking_id': tid,
+                      'request': [h for h in request.requestHeaders.getAllRawHeaders()]})
         return plugin.data.pixel(request)
 
 
@@ -93,6 +101,7 @@ class DataResource(Resource):
 
             request_data['device']['ip'] = post_data['ip']
             request_data['device']['ua'] = post_data['ua']
+            # request_data['user']['server'] = post_data['serverid']
 
             default_data = {'uid': post_data['uid'],
                             'human_score': 1.0,
