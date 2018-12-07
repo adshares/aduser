@@ -13,7 +13,7 @@ if [ -v INSTALL_GEOLITE_DATA ]; then
 
     echo "Downloading geolite data"
     CWD=`pwd`
-    mkdir -p ${ADUSER_DATA_PATH}
+    mkdir -p ${INSTALL_DATA_PATH}
     TEMP_DIR=`mktemp -d`
     cd ${TEMP_DIR}
     python -c "from urllib import urlretrieve; \
@@ -28,7 +28,7 @@ if [ -v INSTALL_GEOLITE_DATA ]; then
                tar.close(); \
                \
                import shutil; \
-               shutil.move(version + '/GeoLite2-City.mmdb', '${ADUSER_DATA_PATH}/GeoLite2-City.mmdb')"
+               shutil.move(version + '/GeoLite2-City.mmdb', '${INSTALL_DATA_PATH}/GeoLite2-City.mmdb')"
 
     cd  ${CWD}
     rm -r ${TEMP_DIR}
@@ -40,10 +40,10 @@ if [ -v INSTALL_BROWSCAP_DATA ]; then
 
     echo "Downloading browscap data (this make take a while). \
           You can find the dataset here: https://browscap.org/"
-    mkdir -p ${ADUSER_DATA_PATH}
+    mkdir -p ${INSTALL_DATA_PATH}
     python -c "from pybrowscap.loader import Downloader; \
                from pybrowscap.loader.csv import URL; \
-               Downloader(URL).get('${ADUSER_DATA_PATH}/browscap.csv')"
+               Downloader(URL).get('${INSTALL_DATA_PATH}/browscap.csv')"
     echo "Download finished"
 
 fi
