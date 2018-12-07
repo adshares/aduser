@@ -57,7 +57,7 @@ def update_data(user, request_data):
     yield update_data_from_browscap(user, request_data)
     yield update_data_from_geoip(user, request_data)
 
-    user['keywords'] += [{'interest': random.choice(mock_data.mock['data'])['key']}]
+    user['keywords'].update({'interest': random.choice(mock_data.mock['data'])['key']})
 
     defer.returnValue(user)
 
@@ -68,7 +68,7 @@ def update_data_from_geoip(user, request_data):
     if db:
         data = yield db.get_info(request_data['device']['ip'])
         if data:
-            user['keywords'].append({'country': data['country']})
+            user['keywords'].update({'country': data['country']})
         else:
             logger.warning("IP not found in GeoIP db.")
     defer.returnValue(user)
@@ -81,10 +81,10 @@ def update_data_from_browscap(user, request_data):
         browser_caps = yield browscap.get_info(request_data['device']['ua'])
         if browser_caps:
 
-            user['keywords'] += [{'platform': browser_caps.get('platform')},
-                                 {'device_type': browser_caps.get('device_type')},
-                                 {'javascript': browser_caps.get('javascript')},
-                                 {'browser': browser_caps.get('browser')}]
+            user['keywords'].update({'platform': browser_caps.get('platform'),
+                                     'device_type': browser_caps.get('device_type'),
+                                     'javascript': browser_caps.get('javascript'),
+                                     'browser': browser_caps.get('browser')})
 
             if browser_caps.is_crawler():
                 user['human_score'] = 0.0
