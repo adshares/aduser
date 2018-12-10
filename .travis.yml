@@ -24,6 +24,7 @@ env:
     - ADUSER_GEOLITE_PATH=$ADUSER_DATA_PATH/GeoLite2-City.mmdb
     - ADUSER_BROWSCAP_CSV_PATH=$ADUSER_DATA_PATH/browscap.csv
     - ADUSER_PIXEL_PATH=pixel_path
+    - PIPENV_DONT_LOAD_ENV=true
 
   matrix:
     - ADUSER_APP_ENV=dev
