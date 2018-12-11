@@ -25,11 +25,11 @@ def configure_server():
     logger.info("Pixel path: {0}".format(const.PIXEL_PATH))
     logger.info("Server port: {0}".format(const.SERVER_PORT))
 
-    # Initialize the data plugin.
-    plugin.initialize(const.ADUSER_DATA_PROVIDER)
+    plugin.initialize()
 
+    # Initialize the data plugin.
     if not plugin.data:
-        logger.info("Failed to load data plugin, exiting.")
+        logger.error("Failed to load data plugin, exiting.")
         sys.exit(1)
 
     return reactor.listenTCP(const.SERVER_PORT, Site(root))

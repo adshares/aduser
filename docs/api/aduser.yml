@@ -26,7 +26,7 @@ versions:
         description: Return API info.
         response_body:
           type: string
-          sample: "https://aduser.example.com:8000/34hwjkg4324_{server_id}_{user_id}.gif"
+          sample: "https://aduser.example.com:8000/34hwjkg4324_{adserver_id}_{user_id}.gif"
         response_codes:
           - code: 200
             description: All OK.

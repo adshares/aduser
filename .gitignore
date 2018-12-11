@@ -113,3 +113,4 @@ data/
 aduser.env
 
 pybrowscap
+aduser/plugins/simple/utils/mock_data.py

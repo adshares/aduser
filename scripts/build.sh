@@ -19,7 +19,9 @@ if [ ! -v TRAVIS ]; then
   cd ${BUILD_PATH}/build
 fi
 
-envsubst < .env.dist | tee .env
+if [ ! -v PIPENV_DONT_LOAD_ENV ]; then
+    envsubst < .env.dist | tee .env
+fi
 
 if [ ${ADUSER_APP_ENV} == 'dev' ]; then
     pipenv install --dev pipenv
@@ -27,4 +29,12 @@ elif [ ${ADUSER_APP_ENV} == 'deploy' ]; then
     pipenv install --deploy pipenv
 else
     pipenv install pipenv
+fi
+
+if [ -v BUILD_WITH_PYBROWSCAP ]; then
+    pipenv run install_pybrowscap
+fi
+
+if [ -v BUILD_WITH_GEOIP ]; then
+    pipenv run install_geoip
 fi

@@ -1,21 +1,20 @@
-from zope.interface import implementer
+import json
 
-from twisted.trial.unittest import TestCase
+import txmongo
+from mock import MagicMock, patch
+from twisted.internet import defer, reactor
 from twisted.internet.protocol import Protocol
-from twisted.internet import reactor, defer
+from twisted.trial.unittest import TestCase
 from twisted.web.client import Agent
 from twisted.web.iweb import IBodyProducer
+from zope.interface import implementer
 
-import json
-from mock import patch
-import os
-
-from aduser import server_utils, plugin
+import aduser.db as aduser_db
+from aduser import const, plugin, server_utils
 
 
 class WebclientTestCase(TestCase):
-
-    data_plugin = os.getenv('ADUSER_DATA_PROVIDER')
+    data_plugin = const.ADUSER_DATA_PROVIDER
 
     class ReceiverProtocol(Protocol):
         def __init__(self, finished):
@@ -76,10 +75,86 @@ class WebclientTestCase(TestCase):
         with patch('aduser.const.ADUSER_DATA_PROVIDER', self.data_plugin):
             self.port = server_utils.configure_server()
 
-        self.url = 'http://{0}:{1}'.format(self.port.getHost().host, self.port.getHost().port)
+        self.url = 'http://{0}:{1}'.format(self.port.getHost().host,
+                                           self.port.getHost().port)
 
         self.timeout = 5
 
     def tearDown(self):  # NOSONAR
         self.port.stopListening()
         plugin.data = None
+
+
+class DBTestCase(TestCase):
+    @defer.inlineCallbacks
+    def setUp(self):
+        self.conn = yield aduser_db.get_mongo_connection()
+        self.db = yield aduser_db.get_mongo_db()
+
+        yield aduser_db.configure_db()
+        self.timeout = 5
+
+    @defer.inlineCallbacks
+    def tearDown(self):
+        if aduser_db.MONGO_CONNECTION:
+            yield self.conn.drop_database(self.db)
+        yield aduser_db.disconnect()
+
+
+try:
+    import mongomock
+
+
+    class MongoMockTestCase(TestCase):
+
+        def setUp(self):
+
+            aduser_db.MONGO_CONNECTION = None
+
+            self.connection = mongomock.MongoClient()
+            self.connection.disconnect = MagicMock()
+            self.connection.disconnect.return_value = True
+
+            self.mock_lazyMongoConnectionPool = MagicMock()
+            self.mock_lazyMongoConnectionPool.return_value = self.connection
+            self.patch(txmongo, 'lazyMongoConnectionPool', self.mock_lazyMongoConnectionPool)
+
+            def mock_create_index(obj, index, *args, **kwargs):
+                obj.old_create_index([i[1][0] for i in index.items()], *args, **kwargs)
+
+            mongomock.Collection.old_create_index = mongomock.Collection.create_index
+            mongomock.Collection.create_index = mock_create_index
+
+            def mock_find(obj, *args, **kwargs):
+                with_cursor = False
+                if 'cursor' in kwargs.keys():
+                    with_cursor = True
+                    del kwargs['cursor']
+
+                cursor = obj.old_find(*args, **kwargs)
+
+                if with_cursor:
+                    return [d for d in cursor], ([], None)
+                else:
+                    return [d for d in cursor]
+
+            mongomock.Collection.old_find = mongomock.Collection.find
+            mongomock.Collection.find = mock_find
+
+            def mock_find_one(obj, *args, **kwargs):
+                kwargs['limit'] = 1
+                cursor = obj.old_find(*args, **kwargs)
+                if cursor.count() > 0:
+                    return cursor[0]
+                return None
+
+            mongomock.Collection.find_one = mock_find_one
+
+        def tearDown(self):
+            mongomock.Collection.create_index = mongomock.Collection.old_create_index
+            mongomock.Collection.find = mongomock.Collection.old_find
+
+
+    db_test_case = MongoMockTestCase
+except ImportError:
+    db_test_case = DBTestCase

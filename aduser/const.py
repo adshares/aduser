@@ -28,4 +28,4 @@ else:
         EXPIRY_PERIOD = timedelta(days=count)
 
 #: Name of AdUser data backend plugin
-ADUSER_DATA_PROVIDER = os.getenv('ADUSER_DATA_PROVIDER')
+ADUSER_DATA_PROVIDER = os.getenv('ADUSER_DATA_PROVIDER', 'aduser.plugins.examples.example')

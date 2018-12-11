@@ -7,15 +7,24 @@ name = "pypi"
 coverage = "~=4.5"
 mock = "~=2.0"
 mongomock = "~=3.13"
+sphinx = "*"
+sphinx-rtd-theme = "*"
+sphinx-jsondomain = {git = "https://github.com/boolangery/sphinx-jsondomain.git"}
+sphinxcontrib-httpdomain = "*"
 
 [packages]
 txmongo = "~=18.2.0"
 Twisted = "~=18.9.0"
+jsonobject = "*"
 
 [requires]
 python_version = "2.7"
 
 [scripts]
 install_geoip = "pip install python-geoip"
+install_pybrowscap = "pip install git+https://github.com/char0n/pybrowscap#egg=pybrowscap"
+install_ip2location = "pip install ip2location"
 tests = "coverage run .venv/bin/trial tests"
+tests_mongo = "coverage run .venv/bin/trial --without-module=mongomock tests"
 quality = "coverage xml -i"
+build_docs = "sphinx-build -b html docs/source docs/_build"
