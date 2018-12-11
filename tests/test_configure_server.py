@@ -1,6 +1,8 @@
 from unittest import TestCase
-from aduser import server_utils
+
 from mock import patch
+
+from aduser import server_utils
 
 
 class TestConfigure_server(TestCase):
@@ -16,6 +18,6 @@ class TestConfigure_server(TestCase):
         self.assertIsNotNone(self.port)
 
     def test_bad_plugin(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(ImportError):
             with patch('aduser.const.ADUSER_DATA_PROVIDER', 'fake_module'):
                 self.port = server_utils.configure_server()

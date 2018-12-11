@@ -7,71 +7,71 @@ from twisted.trial.unittest import TestCase
 from test_server_utils import TestServer
 
 logging.disable(logging.WARNING)
-from aduser.plugins import example_maxmind_geoip, example_browscap, simple
+from aduser.plugins import simple
+from aduser.plugins.examples import browscap, maxmind_geoip
 
 
 class ExampleTestServer(TestServer):
-    data_plugin = 'example'
+    data_plugin = 'aduser.plugins.examples.example'
 
 
 class MaxmindTestServer(TestServer):
-    data_plugin = 'example_maxmind_geoip'
+    data_plugin = 'aduser.plugins.examples.maxmind_geoip'
 
 
 class ExtraTestsMaxmind(TestCase):
 
     def setUp(self):
-        example_maxmind_geoip.db = None
+        maxmind_geoip.db = None
 
     def test_init(self):
-        with patch('aduser.plugins.example_maxmind_geoip.mmdb_path', 'fake_path'):
-            example_maxmind_geoip.init()
-            self.assertIsNone(example_maxmind_geoip.db)
+        with patch('aduser.plugins.examples.maxmind_geoip.mmdb_path', 'fake_path'):
+            maxmind_geoip.init()
+            self.assertIsNone(maxmind_geoip.db)
 
     def test_bad_ip(self):
-
-        example_maxmind_geoip.init()
-        user = example_maxmind_geoip.update_data({'keywords': []},
+        maxmind_geoip.init()
+        user = maxmind_geoip.update_data({'keywords': {}},
                                                  {'device': {'ip': '127.0.0.1'}})
 
         self.assertNotIn('country', [i.keys() for i in user['keywords']])
 
 
 class SkeletonTestServer(TestServer):
-    data_plugin = 'example_skeleton'
+    data_plugin = 'aduser.plugins.skeleton'
 
 
 class IPapiTestServer(TestServer):
-    data_plugin = 'example_ipapi'
+    data_plugin = 'aduser.plugins.examples.ipapi'
 
 
 class BrowscapTestServer(TestServer):
-    data_plugin = 'example_browscap'
+    data_plugin = 'aduser.plugins.examples.browscap'
 
 
 class ExtraTestsBrowscap(TestCase):
 
     def setUp(self):
-        example_browscap.browscap = None
+        browscap.browscap = None
 
     def test_init(self):
-        with patch('aduser.plugins.example_browscap.csv_path', 'fake_path'):
-            example_browscap.init()
-            self.assertIsNone(example_browscap.browscap)
+        with patch('aduser.plugins.examples.browscap.csv_path', 'fake_path'):
+            browscap.init()
+            self.assertIsNone(browscap.browscap)
 
     def test_bad_request(self):
-        example_browscap.init()
+        browscap.init()
         # Don't raise an exception
-        example_browscap.update_data({}, {})
+        browscap.update_data({}, {})
 
     def test_bad_ua(self):
 
         user_agent = 'fake_ua'
 
-        example_browscap.init()
-        user = example_browscap.update_data({'human_score': 0.33,
-                                             'keywords': []},
-                                            {'device': {'ua': user_agent}})
+        browscap.init()
+        user = browscap.update_data({'human_score': 0.33,
+                                     'keywords': {}},
+                                    {'device': {'ua': user_agent}})
 
         self.assertEquals(0.33, user['human_score'])
 
@@ -79,10 +79,10 @@ class ExtraTestsBrowscap(TestCase):
 
         user_agent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110628 Ubuntu/10.10 (maverick) Firefox/3.6.18'
 
-        example_browscap.init()
-        user = example_browscap.update_data({'human_score': 0.33,
-                                             'keywords': []},
-                                            {'device': {'ua': user_agent}})
+        browscap.init()
+        user = browscap.update_data({'human_score': 0.33,
+                                     'keywords': {}},
+                                    {'device': {'ua': user_agent}})
 
         self.assertEquals(0.33, user['human_score'])
 
@@ -90,16 +90,16 @@ class ExtraTestsBrowscap(TestCase):
 
         user_agent = 'Google'
 
-        example_browscap.init()
-        user = example_browscap.update_data({'human_score': 0.33,
-                                             'keywords': []},
-                                            {'device': {'ua': user_agent}})
+        browscap.init()
+        user = browscap.update_data({'human_score': 0.33,
+                                     'keywords': {}},
+                                    {'device': {'ua': user_agent}})
 
         self.assertEquals(0.0, user['human_score'])
 
 
 class SimpleTestServer(TestServer):
-    data_plugin = 'simple'
+    data_plugin = 'aduser.plugins.simple'
 
 
 class ExtraSimpleTestServer(TestCase):
@@ -122,7 +122,7 @@ class ExtraSimpleTestServer(TestCase):
 
         simple.init()
         user = yield simple.update_data({'human_score': 0.33,
-                                         'keywords': []},
+                                         'keywords': {}},
                                         {'device': {'ua': user_agent,
                                                     'ip': '127.0.0.1'}})
 
@@ -135,7 +135,7 @@ class ExtraSimpleTestServer(TestCase):
 
         simple.init()
         user = yield simple.update_data({'human_score': 0.33,
-                                         'keywords': []},
+                                         'keywords': {}},
                                         {'device': {'ua': user_agent,
                                                     'ip': '127.0.0.1'}})
 
@@ -148,7 +148,7 @@ class ExtraSimpleTestServer(TestCase):
 
         simple.init()
         user = yield simple.update_data({'human_score': 0.33,
-                                         'keywords': []},
+                                         'keywords': {}},
                                         {'device': {'ua': user_agent,
                                                     'ip': '127.0.0.1'}})
 
@@ -160,8 +160,8 @@ class ExtraSimpleTestServer(TestCase):
         user_agent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110628 Ubuntu/10.10 (maverick) Firefox/3.6.18'
 
         simple.init()
-        user = yield simple.update_data({'keywords': []},
+        user = yield simple.update_data({'keywords': {}},
                                         {'device': {'ua': user_agent,
                                                     'ip': '127.0.0.1'}})
 
-        self.assertNotIn('country', [i.keys() for i in user['keywords']])
+        self.assertNotIn('country', [i for i in user['keywords']])
