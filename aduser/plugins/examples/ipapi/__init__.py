@@ -55,6 +55,6 @@ def update_data(user, request_data):
     response.deliverBody(JsonProtocol(finished))
     data = yield finished
 
-    user['keywords'].append({'countryCode': data['countryCode']})
+    user['keywords'].update({'countryCode': data['countryCode']})
 
     defer.returnValue(user)

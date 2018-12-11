@@ -29,10 +29,10 @@ def update_data(data, request_data):
 
     input_choices = ['Professor X', 'Deadpool', 'Aquaman', 'professorX']
 
-    data['keywords'].append({'0001': random.choice(taxonomy['data'][0]['data'])['key']})
-    data['keywords'].append({'0002': random.randint(0, 100)})
-    data['keywords'].append({'0003': random.choice(input_choices)})
-    data['keywords'].append({'0004': bool(random.getrandbits(1))})
+    data['keywords'].update({'0001': random.choice(taxonomy['data'][0]['data'])['key']})
+    data['keywords'].update({'0002': random.randint(0, 100)})
+    data['keywords'].update({'0003': random.choice(input_choices)})
+    data['keywords'].update({'0004': bool(random.getrandbits(1))})
 
     data['human_score'] = random.random()
     return data

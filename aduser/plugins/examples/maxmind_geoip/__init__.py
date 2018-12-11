@@ -43,7 +43,7 @@ def update_data(user, request_data):
     if db:
         data = db.get_info(request_data['device']['ip'])
         if data:
-            user['keywords'].append({'country': data['country']})
+            user['keywords'].update({'country': data['country']})
         else:
             logger.warning("IP not found in GeoIP db.")
 
