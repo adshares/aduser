@@ -18,7 +18,9 @@ class PixelPathResource(Resource):
     @staticmethod
     def render_GET(request):  # NOSONAR
         request.setHeader(b"content-type", b"application/json")
-        return '"{0}'.format(const.PIXEL_PATH) + '/{adserver_id}/{user_id}/{nonce}.gif"'
+        return '"http://{0}:{1}/{2}'.format(request.getHost().host,
+                                            request.getHost().port,
+                                            const.PIXEL_PATH) + '/{adserver_id}/{user_id}/{nonce}.gif"'
 
 
 class PixelFactory(Resource):

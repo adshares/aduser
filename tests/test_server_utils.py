@@ -25,8 +25,6 @@ class TestServer(WebclientTestCase):
         data = yield self.return_response_json(response)
 
         response = yield self.agent.request('GET',
-                                            self.url +
-                                            '/' +
                                             bytes(data.replace('{', '').replace('}', '')))
         self.assertEquals(200, response.code)
 
