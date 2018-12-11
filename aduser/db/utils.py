@@ -30,6 +30,13 @@ def update_mapping(mapping_doc):
 
 
 @defer.inlineCallbacks
+def get_mapping(user_id):
+    return_value = yield db.get_collection('user').find_one({'server_user_id': user_id})
+
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
 def update_pixel(pixel_doc):
     """
     Update campaign data or create one if doesn't exist.
@@ -40,4 +47,19 @@ def update_pixel(pixel_doc):
     return_value = yield db.get_collection('pixel').replace_one({'tracking_id': pixel_doc['tracking_id']},
                                                                 pixel_doc,
                                                                 upsert=True)
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def update_user_data(data_doc):
+    return_value = yield db.get_collection('data').replace_one({'tracking_id': data_doc['tracking_id']},
+                                                               data_doc,
+                                                               upsert=True)
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def get_user_data(tracking_id):
+    return_value = yield db.get_collection('data').find_one({'tracking_id': tracking_id})
+
     defer.returnValue(return_value)
