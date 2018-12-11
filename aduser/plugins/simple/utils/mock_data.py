@@ -1,4 +1,4 @@
 mock = {"label": "Interest",
         "key": "interest",
         "type": "dict",
-        "data": []}
+        "data": [{"key": "1", "label": "Music"}]}
