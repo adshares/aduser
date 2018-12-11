@@ -1,18 +1,39 @@
 aduser package
 ==============
 
-Subpackages
------------
-
 .. toctree::
 
-    aduser.proxy
-    aduser.simple_provider
+    aduser.api
+    aduser.plugins
 
-Module contents
----------------
+aduser.const module
+-------------------
 
-.. automodule:: aduser
+.. automodule:: aduser.const
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+aduser.plugin module
+--------------------
+
+.. automodule:: aduser.plugin
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+aduser.server\_utils module
+---------------------------
+
+.. automodule:: aduser.server_utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+aduser.utils module
+-------------------
+
+.. automodule:: aduser.utils
     :members:
     :undoc-members:
     :show-inheritance:

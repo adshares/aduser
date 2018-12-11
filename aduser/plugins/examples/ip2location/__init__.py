@@ -4,7 +4,7 @@ import os
 import IP2Location
 from twisted.internet import defer
 
-taxonomy_name = 'example_ip2location'
+taxonomy_name = 'examples.ip2location'
 taxonomy_version = '0.0.1'
 
 logger = logging.getLogger(__name__)

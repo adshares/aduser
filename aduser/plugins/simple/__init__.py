@@ -1,10 +1,11 @@
 import logging
 import os
+import random
 from base64 import b64decode
 
 from twisted.internet import defer
 
-from aduser.plugins.simple.utils import browscap_utils, geoip_utils, taxonomy_utils
+from aduser.plugins.simple.utils import browscap_utils, geoip_utils, mock_data, taxonomy_utils
 
 db = None
 mmdb_path = os.getenv('ADUSER_GEOLITE_PATH')
@@ -15,10 +16,12 @@ taxonomy_name = 'simple'
 taxonomy_version = '0.0.1'
 taxonomy = {'meta': {'name': taxonomy_name,
                      'version': taxonomy_version},
-            'data': taxonomy_utils.get_values()}
+            'data': [mock_data.mock] + taxonomy_utils.get_values()}
 
 logger = logging.getLogger(__name__)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
+PIXEL_PNG = b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==")
 
 
 def pixel(request):
@@ -51,12 +54,15 @@ def init():
 
 @defer.inlineCallbacks
 def update_data(user, request_data):
-    user_cap = yield update_data_from_browscap(user, request_data)
-    user_geo = yield update_data_from_geoip(user, request_data)
+    yield update_data_from_browscap(user, request_data)
+    yield update_data_from_geoip(user, request_data)
 
-    user_cap['keywords'] += user_geo['keywords']
+    update_mock_data(user, request_data)
+    defer.returnValue(user)
 
-    defer.returnValue(user_cap)
+
+def update_mock_data(user, request_data):
+    return user['keywords'].update({'interest': random.choice(mock_data.mock['data'])['key']})
 
 
 @defer.inlineCallbacks
@@ -65,7 +71,7 @@ def update_data_from_geoip(user, request_data):
     if db:
         data = yield db.get_info(request_data['device']['ip'])
         if data:
-            user['keywords'].append({'country': data['country']})
+            user['keywords'].update({'country': data['country']})
         else:
             logger.warning("IP not found in GeoIP db.")
     defer.returnValue(user)
@@ -78,10 +84,10 @@ def update_data_from_browscap(user, request_data):
         browser_caps = yield browscap.get_info(request_data['device']['ua'])
         if browser_caps:
 
-            user['keywords'] += [{'platform': browser_caps.get('platform')},
-                                 {'device_type': browser_caps.get('device_type')},
-                                 {'javascript': browser_caps.get('javascript')},
-                                 {'browser': browser_caps.get('browser')}]
+            user['keywords'].update({'platform': browser_caps.get('platform'),
+                                     'device_type': browser_caps.get('device_type'),
+                                     'javascript': browser_caps.get('javascript'),
+                                     'browser': browser_caps.get('browser')})
 
             if browser_caps.is_crawler():
                 user['human_score'] = 0.0

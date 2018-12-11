@@ -72,6 +72,10 @@ def attach_tracking_cookie(request):
         tid = create_tracking_id(request)
 
     logger.info("Updating tracking id.")
-    request.addCookie(const.COOKIE_NAME, tid, expires=str(datetime.now() + const.EXPIRY_PERIOD))
+
+    expiry_time = datetime.now() + const.EXPIRY_PERIOD
+    expiry_string = 'Date: {0}'.format(expiry_time.strftime("%a, %d %b %Y %H:%M:%S GMT"))
+
+    request.addCookie(const.COOKIE_NAME, tid, expires=expiry_string)
 
     return tid

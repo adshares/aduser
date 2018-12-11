@@ -2,12 +2,12 @@ import logging
 import os
 from base64 import b64decode
 
-from aduser.plugins.example_maxmind_geoip import utils
+from aduser.plugins.examples.maxmind_geoip import utils
 
 db = None
 mmdb_path = os.getenv('ADUSER_GEOLITE_PATH')
 
-taxonomy_name = 'example_maxmind_geoip'
+taxonomy_name = 'examples.maxmind_geoip'
 taxonomy_version = '0.0.1'
 taxonomy = {'meta': {'name': taxonomy_name,
                      'version': taxonomy_version},
@@ -43,7 +43,7 @@ def update_data(user, request_data):
     if db:
         data = db.get_info(request_data['device']['ip'])
         if data:
-            user['keywords'].append({'country': data['country']})
+            user['keywords'].update({'country': data['country']})
         else:
             logger.warning("IP not found in GeoIP db.")
 

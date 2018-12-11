@@ -2,7 +2,7 @@ import logging
 import os
 from base64 import b64decode
 
-from aduser.plugins.example_browscap import utils
+from aduser.plugins.examples.browscap import utils
 
 taxonomy_name = 'example_browscap'
 taxonomy_version = '0.0.1'
@@ -46,7 +46,7 @@ def update_data(user, request_data):
             if browser_caps:
 
                 for i in browser_caps.items():
-                    user['keywords'].append({i: browser_caps.get(i)})
+                    user['keywords'].update({i: browser_caps.get(i)})
 
                 if browser_caps.is_crawler():
                     user['human_score'] = 0.0

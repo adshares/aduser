@@ -18,12 +18,12 @@ env:
     - ADUSER_COOKIE_NAME=aduser_proxy_tid
     - ADUSER_EXPIRY_PERIOD=4w
     - ADUSER_LOG_CONFIG_FILE=$BUILD_PATH/config/log_config.json
-    - ADUSER_PLUGINS_PATH=$BUILD_PATH/aduser/plugins
-    - ADUSER_DATA_PROVIDER=example
+    - ADUSER_DATA_PROVIDER=aduser.plugins.examples.example
     - ADUSER_DATA_PATH=$BUILD_PATH/data
     - ADUSER_GEOLITE_PATH=$ADUSER_DATA_PATH/GeoLite2-City.mmdb
     - ADUSER_BROWSCAP_CSV_PATH=$ADUSER_DATA_PATH/browscap.csv
     - ADUSER_PIXEL_PATH=pixel_path
+    - PIPENV_DONT_LOAD_ENV=true
 
   matrix:
     - ADUSER_APP_ENV=dev
@@ -56,7 +56,7 @@ jobs:
           -e PIPENV_VENV_IN_PROJECT=1
           -e LC_ALL=C.UTF-8
           -e BUILD_PATH=$BUILD_PATH
-          -e ADUSER_BROWSCAP_CSV_PATH=$BUILD_PATH/pybrowscap/test/data/browscap_14_05_2012.csv
+          -e ADUSER_BROWSCAP_CSV_PATH=$BUILD_PATH/.venv/lib/python2.7/site-packages/pybrowscap/test/data/browscap_14_05_2012.csv
           -e BUILD_WITH_GEOIP=true
           -e BUILD_WITH_PYBROWSCAP=true
           -e INSTALLATION_PATH=/var/www/aduser

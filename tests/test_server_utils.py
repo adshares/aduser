@@ -9,38 +9,40 @@ class TestServer(WebclientTestCase):
 
     @defer.inlineCallbacks
     def test_pixel(self):
-        response = yield self.agent.request('GET', self.url + '/' + os.getenv('ADUSER_PIXEL_PATH'))
+        response = yield self.agent.request('GET',
+                                            self.url +
+                                            '/' +
+                                            os.getenv('ADUSER_PIXEL_PATH') +
+                                            '/serverid/userid/nonce.gif')
         self.assertEquals(200, response.code)
 
     @defer.inlineCallbacks
     def test_getPixelPath(self):
-        response = yield self.agent.request('GET', self.url + '/getPixelPath')
+        response = yield self.agent.request('GET',
+                                            self.url + '/getPixelPath')
         self.assertEquals(200, response.code)
 
         data = yield self.return_response_json(response)
-        response = yield self.agent.request('GET', self.url + '/' + bytes(data))
+
+        response = yield self.agent.request('GET',
+                                            bytes(data.replace('{', '').replace('}', '')))
         self.assertEquals(200, response.code)
 
     @defer.inlineCallbacks
     def test_data(self):
-        response = yield self.agent.request('GET',
+        response = yield self.agent.request('POST',
                                             self.url + '/getData',
                                             None,
                                             self.JsonBytesProducer({}))
         self.assertEquals(400, response.code)
 
-        request_data = {'user': {'uid': 111},
-                        'site': {'domain': 'http://example.com',
-                                 'keywords': ['sports', 'football']},
-                        'device': {'ua': '',
-                                   'ip': '212.212.22.1'}}
+        request_data = {'uid': 111,
+                        'domain': 'http://example.com',
+                        'ua': '',
+                        'ip': '212.212.22.1'}
 
-        response = yield self.agent.request('GET',
-                                            self.url + '/getData?'
-                                            + 'uid=111&'
-                                            + 'domain=example.com&'
-                                            + 'ip=212.212.22.1&'
-                                            + 'ua=fake_ua',
+        response = yield self.agent.request('POST',
+                                            self.url + '/getData',
                                             None,
                                             self.JsonBytesProducer(request_data))
         self.assertEquals(200, response.code)
