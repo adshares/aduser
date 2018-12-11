@@ -57,9 +57,12 @@ def update_data(user, request_data):
     yield update_data_from_browscap(user, request_data)
     yield update_data_from_geoip(user, request_data)
 
-    user['keywords'].update({'interest': random.choice(mock_data.mock['data'])['key']})
-
+    update_mock_data(user, request_data)
     defer.returnValue(user)
+
+
+def update_mock_data(user, request_data):
+    return user['keywords'].update({'interest': random.choice(mock_data.mock['data'])['key']})
 
 
 @defer.inlineCallbacks
