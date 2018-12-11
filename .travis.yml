@@ -18,8 +18,7 @@ env:
     - ADUSER_COOKIE_NAME=aduser_proxy_tid
     - ADUSER_EXPIRY_PERIOD=4w
     - ADUSER_LOG_CONFIG_FILE=$BUILD_PATH/config/log_config.json
-    - ADUSER_PLUGINS_PATH=$BUILD_PATH/aduser/plugins
-    - ADUSER_DATA_PROVIDER=example
+    - ADUSER_DATA_PROVIDER=aduser.plugins.examples.example
     - ADUSER_DATA_PATH=$BUILD_PATH/data
     - ADUSER_GEOLITE_PATH=$ADUSER_DATA_PATH/GeoLite2-City.mmdb
     - ADUSER_BROWSCAP_CSV_PATH=$ADUSER_DATA_PATH/browscap.csv
