@@ -30,13 +30,20 @@ class TestServer(WebclientTestCase):
 
     @defer.inlineCallbacks
     def test_data(self):
+        response = yield self.agent.request('GET',
+                                            self.url +
+                                            '/' +
+                                            os.getenv('ADUSER_PIXEL_PATH') +
+                                            '/0/111/nonce.gif')
+        self.assertEquals(200, response.code)
+
         response = yield self.agent.request('POST',
                                             self.url + '/getData',
                                             None,
                                             self.JsonBytesProducer({}))
         self.assertEquals(400, response.code)
 
-        request_data = {'uid': 111,
+        request_data = {'uid': "0_111",
                         'domain': 'http://example.com',
                         'ua': '',
                         'ip': '212.212.22.1'}
