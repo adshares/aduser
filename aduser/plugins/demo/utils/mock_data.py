@@ -11,6 +11,6 @@ default_mock = {"label": "Interest",
 
 try:
     with open(os.getenv('ADUSER_MOCK_DATA_PATH'), 'r') as f:
-        mock = json.loads(f.reads())
+        mock = json.load(f)
 except (ValueError, IOError):
     mock = default_mock
