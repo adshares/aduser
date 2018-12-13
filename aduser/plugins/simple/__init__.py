@@ -57,7 +57,8 @@ def update_data(user, request_data):
     yield update_data_from_browscap(user, request_data)
     yield update_data_from_geoip(user, request_data)
 
-    update_mock_data(user, request_data)
+    if 'interest' not in user['keywords']:
+        update_mock_data(user, request_data)
     defer.returnValue(user)
 
 

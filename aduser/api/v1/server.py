@@ -93,29 +93,60 @@ class DataResource(Resource):
 
     @defer.inlineCallbacks
     def handle_data(self, request):
+        logger = logging.getLogger(__name__)
+        try:
+            post_data = json.loads(request.content.read())
+        except ValueError:
+            logger.debug('ValueError')
+            logger.debug(request.content.read())
+            request.setResponseCode(400)
+            request.finish()
+            return
 
         # Validate request data
         try:
             request_data = {'site': {},
                             'device': {}}
 
-            post_data = json.loads(request.content.read())
-
             request_data['device']['ip'] = post_data['ip']
             request_data['device']['ua'] = post_data['ua']
-            # request_data['user']['server'] = post_data['serverid']
 
             default_data = {'uid': post_data['uid'],
                             'human_score': 1.0,
                             'keywords': {}}
 
-            data = yield plugin.data.update_data(default_data, request_data)
-
-            yield request.write(json.dumps(data))
-            request.setHeader(b"content-type", b"application/json")
-
         except KeyError:
+            logger.debug('KeyError')
+
             request.setResponseCode(400)
+            request.finish()
+            return
+
+        try:
+            user_map = yield db_utils.get_mapping(post_data['uid'])
+            cached_data = yield db_utils.get_user_data(user_map['tracking_id'])
+        except TypeError:
+            logger.debug('TypeError')
+
+            request.setResponseCode(400)
+            request.finish()
+            return
+
+        logger.debug(cached_data)
+        if cached_data:
+            default_data['keywords'] = cached_data['keywords']
+
+        data = yield plugin.data.update_data(default_data, request_data)
+
+        data.update({'tracking_id': user_map['tracking_id']})
+        yield db_utils.update_user_data(data)
+
+        del data['tracking_id']
+
+        logger.debug(data)
+
+        yield request.write(json.dumps(data))
+        request.setHeader(b"content-type", b"application/json")
 
         yield request.finish()
 
