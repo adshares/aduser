@@ -1,6 +1,5 @@
 import logging
 import os
-import random
 from base64 import b64decode
 
 from twisted.internet import defer
@@ -57,13 +56,7 @@ def update_data(user, request_data):
     yield update_data_from_browscap(user, request_data)
     yield update_data_from_geoip(user, request_data)
 
-    if 'interest' not in user['keywords']:
-        update_mock_data(user, request_data)
     defer.returnValue(user)
-
-
-def update_mock_data(user, request_data):
-    return user['keywords'].update({'interest': random.choice(mock_data.mock['data'])['key']})
 
 
 @defer.inlineCallbacks
