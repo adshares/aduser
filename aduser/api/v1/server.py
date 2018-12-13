@@ -98,6 +98,7 @@ class DataResource(Resource):
             post_data = json.loads(request.content.read())
         except ValueError:
             logger.debug('ValueError')
+            logger.debug(request.content.read())
             request.setResponseCode(400)
             request.finish()
             return
