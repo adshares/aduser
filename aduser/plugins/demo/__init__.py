@@ -5,7 +5,7 @@ from base64 import b64decode
 
 from twisted.internet import defer
 
-from aduser.plugins.simple.utils import browscap_utils, geoip_utils, mock_data, taxonomy_utils
+from aduser.plugins.demo.utils import browscap_utils, geoip_utils, mock_data, taxonomy_utils
 
 db = None
 mmdb_path = os.getenv('ADUSER_GEOLITE_PATH')
