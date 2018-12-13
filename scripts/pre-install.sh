@@ -9,7 +9,8 @@ apt-get -qq -y install --no-install-recommends python python-pip
 
 pip install pipenv
 
-if [ -v INSTALL_GEOLITE_DATA ]; then
+if [ -v INSTALL_GEOLITE_DATA ] && [ ${INSTALL_GEOLITE_DATA} -eq 1 ]
+then
 
     echo "Downloading geolite data"
     CWD=`pwd`
@@ -36,7 +37,8 @@ if [ -v INSTALL_GEOLITE_DATA ]; then
 
 fi
 
-if [ -v INSTALL_BROWSCAP_DATA ]; then
+if [ -v INSTALL_BROWSCAP_DATA ] && [ ${INSTALL_BROWSCAP_DATA} -eq 1 ]
+then
 
     echo "Downloading browscap data (this make take a while). \
           You can find the dataset here: https://browscap.org/"
