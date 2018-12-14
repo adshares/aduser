@@ -7,7 +7,7 @@ from twisted.trial.unittest import TestCase
 from test_server_utils import TestServer
 
 logging.disable(logging.WARNING)
-from aduser.plugins import simple
+from aduser.plugins import simple, demo
 from aduser.plugins.examples import browscap, maxmind_geoip
 
 
@@ -103,28 +103,29 @@ class SimpleTestServer(TestServer):
 
 
 class ExtraSimpleTestServer(TestCase):
+    data_plugin = simple
 
     def setUp(self):
-        simple.browscap = None
-        simple.db = None
+        self.data_plugin.browscap = None
+        self.data_plugin.db = None
 
     def test_init(self):
         with patch('aduser.plugins.simple.csv_path', 'fake_path'):
             with patch('aduser.plugins.simple.mmdb_path', 'fake_path'):
-                simple.init()
-                self.assertIsNone(simple.browscap)
-                self.assertIsNone(simple.db)
+                self.data_plugin.init()
+                self.assertIsNone(self.data_plugin.browscap)
+                self.assertIsNone(self.data_plugin.db)
 
     @defer.inlineCallbacks
     def test_bad_ua(self):
 
         user_agent = 'fake_ua'
 
-        simple.init()
-        user = yield simple.update_data({'human_score': 0.33,
-                                         'keywords': {}},
-                                        {'device': {'ua': user_agent,
-                                                    'ip': '127.0.0.1'}})
+        self.data_plugin.init()
+        user = yield self.data_plugin.update_data({'human_score': 0.33,
+                                                   'keywords': {}},
+                                                  {'device': {'ua': user_agent,
+                                                              'ip': '127.0.0.1'}})
 
         self.assertEquals(0.33, user['human_score'])
 
@@ -133,11 +134,11 @@ class ExtraSimpleTestServer(TestCase):
 
         user_agent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110628 Ubuntu/10.10 (maverick) Firefox/3.6.18'
 
-        simple.init()
-        user = yield simple.update_data({'human_score': 0.33,
-                                         'keywords': {}},
-                                        {'device': {'ua': user_agent,
-                                                    'ip': '127.0.0.1'}})
+        self.data_plugin.init()
+        user = yield self.data_plugin.update_data({'human_score': 0.33,
+                                                   'keywords': {}},
+                                                  {'device': {'ua': user_agent,
+                                                              'ip': '127.0.0.1'}})
 
         self.assertEquals(0.33, user['human_score'])
 
@@ -146,11 +147,11 @@ class ExtraSimpleTestServer(TestCase):
 
         user_agent = 'Google'
 
-        simple.init()
-        user = yield simple.update_data({'human_score': 0.33,
-                                         'keywords': {}},
-                                        {'device': {'ua': user_agent,
-                                                    'ip': '127.0.0.1'}})
+        self.data_plugin.init()
+        user = yield self.data_plugin.update_data({'human_score': 0.33,
+                                                   'keywords': {}},
+                                                  {'device': {'ua': user_agent,
+                                                              'ip': '127.0.0.1'}})
 
         self.assertEquals(0.0, user['human_score'])
 
@@ -159,9 +160,28 @@ class ExtraSimpleTestServer(TestCase):
 
         user_agent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110628 Ubuntu/10.10 (maverick) Firefox/3.6.18'
 
-        simple.init()
-        user = yield simple.update_data({'keywords': {}},
-                                        {'device': {'ua': user_agent,
-                                                    'ip': '127.0.0.1'}})
+        self.data_plugin.init()
+        user = yield self.data_plugin.update_data({'keywords': {}},
+                                                  {'device': {'ua': user_agent,
+                                                              'ip': '127.0.0.1'}})
 
         self.assertNotIn('country', [i for i in user['keywords']])
+
+
+class DemoTestServer(SimpleTestServer):
+    data_plugin = 'aduser.plugins.demo'
+
+
+class ExtraDemoTestServer(ExtraSimpleTestServer):
+    data_plugin = demo
+
+    @defer.inlineCallbacks
+    def test_mock_data(self):
+        self.data_plugin.init()
+        user = yield self.data_plugin.update_data({'human_score': 0.33,
+                                                   'keywords': {}},
+                                                  {'device': {'ua': '',
+                                                              'ip': '127.0.0.1'}})
+
+        self.assertIn('interest', user['keywords'].keys())
+        self.assertIn(user['keywords']['interest'], ["1", "2"])
