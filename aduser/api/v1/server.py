@@ -126,9 +126,9 @@ class DataResource(Resource):
             user_map = yield db_utils.get_mapping(post_data['uid'])
             cached_data = yield db_utils.get_user_data(user_map['tracking_id'])
         except TypeError:
-            logger.debug('TypeError')
+            logger.debug('User not found')
 
-            request.setResponseCode(400)
+            request.setResponseCode(404)
             request.finish()
             return
 
