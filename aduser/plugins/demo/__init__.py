@@ -8,6 +8,7 @@ from aduser.plugins.demo.utils import mock_data
 from aduser.plugins.simple.utils import browscap_utils, geoip_utils, taxonomy_utils
 from aduser.plugins.simple import PIXEL_GIF, PIXEL_PNG, pixel, init, update_data_from_browscap, update_data_from_geoip
 
+
 db = None
 mmdb_path = os.getenv('ADUSER_GEOLITE_PATH')
 browscap = None
