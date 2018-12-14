@@ -112,7 +112,7 @@ class DataResource(Resource):
             request_data['device']['ua'] = post_data['ua']
 
             default_data = {'uid': post_data['uid'],
-                            'human_score': 1.0,
+                            'human_score': 0.5,
                             'keywords': {}}
 
         except KeyError:
