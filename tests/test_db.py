@@ -2,6 +2,7 @@ from twisted.internet import defer
 
 from aduser import db
 from aduser.db import const as db_const
+from aduser.db import utils as db_utils
 from tests import db_test_case
 
 
@@ -37,3 +38,8 @@ class DbInitTestCase(db_test_case):
 
         disconnected = yield db.disconnect()
         self.assertIsNone(disconnected)
+
+    @defer.inlineCallbacks
+    def test_get_collection_iter(self):
+        l1, l2 = yield db_utils.get_collection_iter('data')
+        self.assertListEqual([], l1)
