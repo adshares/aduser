@@ -67,6 +67,7 @@ jobs:
 
         # Run pre-build script
         - in_docker apt-get -qq update"
+
         # Run pre-build script
         - in_docker /bin/bash scripts/pre-build.sh"
 
@@ -74,6 +75,9 @@ jobs:
         - in_docker /bin/bash scripts/build.sh"
 
         - in_docker /bin/bash scripts/pre-install.sh"
+
+        # Install locale for pybrowscap
+        - in_docker apt-get -qq -y install locales && locale-gen en_US.UTF-8 && locale -a"
 
         - in_docker pipenv run tests"
 
