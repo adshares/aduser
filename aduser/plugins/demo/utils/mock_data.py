@@ -1,7 +1,7 @@
 import json
 import os
 
-mock = {}
+mock = None
 default_mock = {"label": "Interest",
                 "key": "interest",
                 "type": "dict",
@@ -9,8 +9,19 @@ default_mock = {"label": "Interest",
                          {"key": "2", "label": "Books"},
                          ]}
 
-try:
-    with open(os.getenv('ADUSER_MOCK_DATA_PATH'), 'r') as f:
-        mock = json.load(f)
-except (ValueError, IOError, TypeError):
-    mock = default_mock
+
+def init(mock_data_file=None):
+    global mock
+    if not mock_data_file:
+        mock = default_mock
+        return
+    else:
+        try:
+            with open(mock_data_file, 'r') as f:
+                mock = json.load(f)
+        except (ValueError, IOError, TypeError) as e:
+            mock = default_mock
+
+
+if not mock:
+    init(os.getenv('ADUSER_MOCK_DATA_PATH'))
