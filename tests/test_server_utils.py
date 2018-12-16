@@ -1,8 +1,10 @@
+import logging
 import os
 
 from mock import MagicMock, patch
 from twisted.internet import defer
 from twisted.trial.unittest import TestCase
+
 from aduser import server_utils
 from tests import WebclientTestCase
 
@@ -12,7 +14,10 @@ class InvalidPluginServer(TestCase):
     def test_main(self):
         with self.assertRaises(SystemExit):
             with patch('aduser.plugin.initialize', MagicMock()):
+                logging.disable(logging.ERROR)
                 self.port = server_utils.configure_server()
+
+        logging.disable(logging.WARNING)
 
 
 class TestServer(WebclientTestCase):
