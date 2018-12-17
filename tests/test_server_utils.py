@@ -1,8 +1,23 @@
+import logging
 import os
 
+from mock import MagicMock, patch
 from twisted.internet import defer
+from twisted.trial.unittest import TestCase
 
+from aduser import server_utils
 from tests import WebclientTestCase
+
+
+class InvalidPluginServer(TestCase):
+
+    def test_main(self):
+        with self.assertRaises(SystemExit):
+            with patch('aduser.plugin.initialize', MagicMock()):
+                logging.disable(logging.ERROR)
+                self.port = server_utils.configure_server()
+
+        logging.disable(logging.WARNING)
 
 
 class TestServer(WebclientTestCase):
@@ -15,6 +30,27 @@ class TestServer(WebclientTestCase):
                                             os.getenv('ADUSER_PIXEL_PATH') +
                                             '/serverid/userid/nonce.gif')
         self.assertEquals(200, response.code)
+
+        response = yield self.agent.request('GET',
+                                            self.url +
+                                            '/' +
+                                            os.getenv('ADUSER_PIXEL_PATH') +
+                                            '/')
+        self.assertEquals(404, response.code)
+
+        response = yield self.agent.request('GET',
+                                            self.url +
+                                            '/' +
+                                            os.getenv('ADUSER_PIXEL_PATH') +
+                                            '/serverid/')
+        self.assertEquals(404, response.code)
+
+        response = yield self.agent.request('GET',
+                                            self.url +
+                                            '/' +
+                                            os.getenv('ADUSER_PIXEL_PATH') +
+                                            '/serverid/userid/')
+        self.assertEquals(404, response.code)
 
     @defer.inlineCallbacks
     def test_getPixelPath(self):
@@ -30,12 +66,30 @@ class TestServer(WebclientTestCase):
 
     @defer.inlineCallbacks
     def test_data(self):
+
+        request_data = {'uid': "000_111",
+                        'domain': 'http://example.com',
+                        'ua': '',
+                        'ip': '212.212.22.1'}
+
+        response = yield self.agent.request('POST',
+                                            self.url + '/getData',
+                                            None,
+                                            self.JsonBytesProducer(request_data))
+        self.assertEquals(404, response.code)
+
         response = yield self.agent.request('GET',
                                             self.url +
                                             '/' +
                                             os.getenv('ADUSER_PIXEL_PATH') +
                                             '/0/111/nonce.gif')
         self.assertEquals(200, response.code)
+
+        response = yield self.agent.request('POST',
+                                            self.url + '/getData',
+                                            None,
+                                            None)
+        self.assertEquals(400, response.code)
 
         response = yield self.agent.request('POST',
                                             self.url + '/getData',

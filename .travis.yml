@@ -54,7 +54,6 @@ jobs:
           -e PYTHONPATH=$BUILD_PATH
           -e TRAVIS=true
           -e PIPENV_VENV_IN_PROJECT=1
-          -e LC_ALL=C.UTF-8
           -e BUILD_PATH=$BUILD_PATH
           -e ADUSER_BROWSCAP_CSV_PATH=$BUILD_PATH/.venv/lib/python2.7/site-packages/pybrowscap/test/data/browscap_14_05_2012.csv
           -e BUILD_WITH_GEOIP=true
@@ -67,6 +66,7 @@ jobs:
 
         # Run pre-build script
         - in_docker apt-get -qq update"
+
         # Run pre-build script
         - in_docker /bin/bash scripts/pre-build.sh"
 
@@ -74,6 +74,9 @@ jobs:
         - in_docker /bin/bash scripts/build.sh"
 
         - in_docker /bin/bash scripts/pre-install.sh"
+
+        # Install locale for pybrowscap
+        - in_docker apt-get -qq -y install locales && locale-gen en_US.UTF-8 && locale -a"
 
         - in_docker pipenv run tests"
 

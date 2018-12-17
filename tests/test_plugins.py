@@ -1,6 +1,6 @@
 import logging
 
-from mock import patch
+from mock import MagicMock, mock_open, patch
 from twisted.internet import defer
 from twisted.trial.unittest import TestCase
 
@@ -9,6 +9,7 @@ from test_server_utils import TestServer
 logging.disable(logging.WARNING)
 from aduser.plugins import simple, demo
 from aduser.plugins.examples import browscap, maxmind_geoip
+from aduser.plugins.demo.utils import mock_data as demo_mock_data
 
 
 class ExampleTestServer(TestServer):
@@ -185,3 +186,16 @@ class ExtraDemoTestServer(ExtraSimpleTestServer):
 
         self.assertIn('interest', user['keywords'].keys())
         self.assertIn(user['keywords']['interest'], ["1", "2"])
+
+    def test_mock_file(self):
+        with patch('__builtin__.open', mock_open(read_data='{}')) as m:
+            demo_mock_data.init('fake_path')
+
+        self.assertIsNotNone(demo_mock_data.mock)
+        self.assertEqual({}, demo_mock_data.mock)
+
+    def test_notfound_mock_file(self):
+        demo_mock_data.init('fake_path')
+
+        self.assertIsNotNone(demo_mock_data.mock)
+        self.assertEqual(demo_mock_data.default_mock, demo_mock_data.mock)
