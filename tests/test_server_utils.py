@@ -76,7 +76,7 @@ class TestServer(WebclientTestCase):
                                             self.url + '/getData',
                                             None,
                                             self.JsonBytesProducer(request_data))
-        self.assertEquals(400, response.code)
+        self.assertEquals(404, response.code)
 
         response = yield self.agent.request('GET',
                                             self.url +

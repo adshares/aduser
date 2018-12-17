@@ -22,6 +22,7 @@ taxonomy = {'meta': {'name': taxonomy_name,
 
 logger = logging.getLogger(__name__)
 
+
 @defer.inlineCallbacks
 def update_data(user, request_data):
     yield update_data_from_browscap(user, request_data)
