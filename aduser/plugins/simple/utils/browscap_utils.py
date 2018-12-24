@@ -2,6 +2,7 @@ import cPickle as pickle
 import os
 
 from pybrowscap.loader.csv import load_file
+from aduser.plugins.simple.const import PICKLE_BROWSCAP
 
 
 class Database:
@@ -21,7 +22,7 @@ class Database:
 
     def load_database(self):
 
-        if os.getenv('PICKLE_PYBROWSCAP', True) and os.path.exists(self.pickle_path):
+        if PICKLE_BROWSCAP and os.path.exists(self.pickle_path):
             with open(self.pickle_path, 'rb') as f:
                 self.db = pickle.load(f)
         else:

@@ -1,11 +1,10 @@
 import logging
-import os
 from base64 import b64decode
 
-from aduser.plugins.examples.maxmind_geoip import utils
+from aduser.plugins.examples.maxmind_geoip import const, utils
 
 db = None
-mmdb_path = os.getenv('ADUSER_GEOLITE_PATH')
+mmdb_path = const.GEOLITE_PATH
 
 taxonomy_name = 'examples.maxmind_geoip'
 taxonomy_version = '0.0.1'

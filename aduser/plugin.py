@@ -18,5 +18,5 @@ def initialize():
     """
     global data
 
-    data = importlib.import_module(const.ADUSER_DATA_PROVIDER)
+    data = importlib.import_module(const.DATA_PROVIDER)
     data.init()
