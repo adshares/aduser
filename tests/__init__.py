@@ -14,7 +14,7 @@ from aduser import const, plugin, server_utils
 
 
 class WebclientTestCase(TestCase):
-    data_plugin = const.ADUSER_DATA_PROVIDER
+    data_plugin = const.DATA_PROVIDER
 
     class ReceiverProtocol(Protocol):
         def __init__(self, finished):
@@ -72,7 +72,7 @@ class WebclientTestCase(TestCase):
 
         self.agent = Agent(reactor)
 
-        with patch('aduser.const.ADUSER_DATA_PROVIDER', self.data_plugin):
+        with patch('aduser.const.DATA_PROVIDER', self.data_plugin):
             self.port = server_utils.configure_server()
 
         self.url = 'http://{0}:{1}'.format(self.port.getHost().host,
