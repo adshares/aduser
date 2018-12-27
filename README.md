@@ -7,67 +7,20 @@ AdUser is fully implemented in python.
 
 ### Dependencies
 
-All dependencies are listed in requirements.txt file.
+All dependencies are in Pipfile, which is managed by [Pipenv](https://pipenv.readthedocs.io/en/latest/).
 
-#### Linux
+Ubuntu 18.04 dependencies can be found in [pre-build](scripts/pre-build.sh) and [pre-install](scripts/install.sh) scripts.
 
-Example for Debian based systems:
-```
-$ sudo apt-get install python-virtualenv mongodb python-pip virtualenv
-```
+### Installation
 
-Create virtualenv environment for aduser.
-```
-$ cd ~
-$ virtualenv aduser
-$ source ~/aduser/bin/activate
+Installation instructions can be found in the [documentation](https://adshares-aduser.readthedocs.io/en/latest/).
 
-$ export VIRTUALENV_ROOT=$HOME/aduser
-$ export PYTHONPATH=$HOME/aduser:$PYTHONPATH
-```
+Please note, that you'll want to configure AdUser. Read the [configuration documentation](https://adshares-aduser.readthedocs.io/en/latest/config.html).
 
-Create folder for MONGO database.
-```
-$ mkdir -p ~/aduser/db/mongo
-```
-
-
-Create folders for supervisor.
-```
-$ mkdir -p ~/aduser/log
-$ mkdir -p ~/aduser/run/supervisor ~/aduser/run/aduser ~/aduser/run/mongo
-```
-
-Download source code and install dependencies.
-```
-$ git clone https://github.com/adshares/aduser.git ~/aduser/aduser
-$ pip install -r ~/aduser/aduser/requirements.txt
-```
-
-Run aduser daemon.
-```
-$ supervisord -c ~/aduser/aduser/config/supervisord.conf
-```
-
-## Build
-```
-$ cd ~/aduser/aduser
-$ trial db iface stats
-```
 ## TL;DR  
 ```
-#aduser
-apt-get install python-virtualenv mongodb python-pip virtualenv
-screen -S aduser
-cd ~
-virtualenv aduser
-export VIRTUALENV_ROOT=$HOME/aduser
-export PYTHONPATH=$HOME/aduser:$PYTHONPATH
-source ./aduser/bin/activate
-mkdir -p ./aduser/db/mongo
-mkdir -p ./aduser/log
-mkdir -p ./aduser/run/supervisor ./aduser/run/aduser ./aduser/run/mongo
-git clone https://github.com/adshares/aduser.git ./aduser/aduser
-pip install -r ./aduser/aduser/requirements.txt
-supervisord -c ./aduser/aduser/config/supervisord.conf
+bash scripts/pre-build.sh
+bash scripts/pre-install.sh
+pipenv install
+pipenv run daemon
 ```
