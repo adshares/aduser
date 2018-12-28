@@ -11,14 +11,17 @@ class Database:
         self.db = None
         self.csv_path = csv_path
         self.pickle_path = csv_path + '.pickle'
+        self.cache = {}
 
     def init(self):
         # logging.disable(logging.DEBUG)
         self.load_database()
 
     def get_info(self, user_agent):
-        match = self.db.search(user_agent)
-        return match
+        if user_agent not in self.cache:
+            self.cache[user_agent] = self.db.search(user_agent)
+
+        return self.cache[user_agent]
 
     def load_database(self):
 
