@@ -88,7 +88,7 @@ class DataResource(Resource):
 
     def render_POST(self, request):  # NOSONAR
         self.handle_data(request)
-
+        request.setHeader(b"content-type", b"application/json")
         return NOT_DONE_YET
 
     @defer.inlineCallbacks
@@ -146,8 +146,6 @@ class DataResource(Resource):
         logger.debug(data)
 
         yield request.write(json.dumps(data))
-        request.setHeader(b"content-type", b"application/json")
-
         yield request.finish()
 
 
