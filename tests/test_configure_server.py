@@ -19,5 +19,5 @@ class TestConfigure_server(TestCase):
 
     def test_bad_plugin(self):
         with self.assertRaises(ImportError):
-            with patch('aduser.const.ADUSER_DATA_PROVIDER', 'fake_module'):
+            with patch('aduser.const.DATA_PROVIDER', 'fake_module'):
                 self.port = server_utils.configure_server()

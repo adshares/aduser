@@ -11,11 +11,11 @@ class TestInitialize(TestCase):
         plugin.data = None
 
     def test_incorrect_initialize(self):
-        with patch('aduser.const.ADUSER_DATA_PROVIDER', 'fake_path'):
+        with patch('aduser.const.DATA_PROVIDER', 'fake_path'):
             with self.assertRaises(ImportError):
                 plugin.initialize()
 
     def test_correct_initialize(self):
-        with patch('aduser.const.ADUSER_DATA_PROVIDER', 'aduser.plugins.examples.example'):
+        with patch('aduser.const.DATA_PROVIDER', 'aduser.plugins.examples.example'):
             plugin.initialize()
             self.assertIsNotNone(plugin.data)

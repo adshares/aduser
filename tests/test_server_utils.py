@@ -1,11 +1,10 @@
 import logging
-import os
 
 from mock import MagicMock, patch
 from twisted.internet import defer
 from twisted.trial.unittest import TestCase
 
-from aduser import server_utils
+from aduser import const, server_utils
 from tests import WebclientTestCase
 
 
@@ -27,28 +26,28 @@ class TestServer(WebclientTestCase):
         response = yield self.agent.request('GET',
                                             self.url +
                                             '/' +
-                                            os.getenv('ADUSER_PIXEL_PATH') +
+                                            const.PIXEL_PATH +
                                             '/serverid/userid/nonce.gif')
         self.assertEquals(200, response.code)
 
         response = yield self.agent.request('GET',
                                             self.url +
                                             '/' +
-                                            os.getenv('ADUSER_PIXEL_PATH') +
+                                            const.PIXEL_PATH +
                                             '/')
         self.assertEquals(404, response.code)
 
         response = yield self.agent.request('GET',
                                             self.url +
                                             '/' +
-                                            os.getenv('ADUSER_PIXEL_PATH') +
+                                            const.PIXEL_PATH +
                                             '/serverid/')
         self.assertEquals(404, response.code)
 
         response = yield self.agent.request('GET',
                                             self.url +
                                             '/' +
-                                            os.getenv('ADUSER_PIXEL_PATH') +
+                                            const.PIXEL_PATH +
                                             '/serverid/userid/')
         self.assertEquals(404, response.code)
 
@@ -81,7 +80,7 @@ class TestServer(WebclientTestCase):
         response = yield self.agent.request('GET',
                                             self.url +
                                             '/' +
-                                            os.getenv('ADUSER_PIXEL_PATH') +
+                                            const.PIXEL_PATH +
                                             '/0/111/nonce.gif')
         self.assertEquals(200, response.code)
 

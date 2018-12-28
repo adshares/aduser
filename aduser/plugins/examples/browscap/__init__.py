@@ -1,14 +1,13 @@
 import logging
-import os
 from base64 import b64decode
 
-from aduser.plugins.examples.browscap import utils
+from aduser.plugins.examples.browscap import const, utils
 
 taxonomy_name = 'example_browscap'
 taxonomy_version = '0.0.1'
 
 browscap = None
-csv_path = os.getenv('ADUSER_BROWSCAP_CSV_PATH')
+csv_path = const.BROWSCAP_CSV_PATH
 logger = logging.getLogger(__name__)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
 taxonomy = {'meta': {'name': taxonomy_name,
@@ -31,6 +30,7 @@ def init():
         logger.info("Initializing browscap database.")
         browscap = utils.Database(csv_path)
         browscap.init()
+
         if browscap.db:
             logger.info("Browscap database initialized.")
         else:

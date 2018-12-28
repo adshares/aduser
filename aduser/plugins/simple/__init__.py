@@ -1,15 +1,15 @@
 import logging
-import os
 from base64 import b64decode
 
 from twisted.internet import defer
 
+from aduser.plugins.simple import const
 from aduser.plugins.simple.utils import browscap_utils, geoip_utils, taxonomy_utils
 
 db = None
-mmdb_path = os.getenv('ADUSER_GEOLITE_PATH')
+mmdb_path = const.GEOLITE_PATH
 browscap = None
-csv_path = os.getenv('ADUSER_BROWSCAP_CSV_PATH')
+csv_path = const.BROWSCAP_CSV_PATH
 
 taxonomy_name = 'simple'
 taxonomy_version = '0.0.1'
@@ -45,6 +45,7 @@ def init():
         logger.info("Initializing browscap database.")
         browscap = browscap_utils.Database(csv_path)
         browscap.init()
+
         if browscap.db:
             logger.info("Browscap database initialized.")
         else:
@@ -74,6 +75,7 @@ def update_data_from_geoip(user, request_data):
 @defer.inlineCallbacks
 def update_data_from_browscap(user, request_data):
     global browscap
+
     if browscap:
         browser_caps = yield browscap.get_info(request_data['device']['ua'])
         if browser_caps:
@@ -87,4 +89,5 @@ def update_data_from_browscap(user, request_data):
                 user['human_score'] = 0.0
         else:
             logger.warning("User agent not identified.")
+
     defer.returnValue(user)

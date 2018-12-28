@@ -1,6 +1,7 @@
 import logging
+import os
 
-from mock import MagicMock, mock_open, patch
+from mock import mock_open, patch
 from twisted.internet import defer
 from twisted.trial.unittest import TestCase
 
@@ -10,6 +11,8 @@ logging.disable(logging.WARNING)
 from aduser.plugins import simple, demo
 from aduser.plugins.examples import browscap, maxmind_geoip
 from aduser.plugins.demo.utils import mock_data as demo_mock_data
+
+browscap_test_path = os.path.abspath('.venv/lib/python2.7/site-packages/pybrowscap/test/data/browscap_14_05_2012.csv')
 
 
 class ExampleTestServer(TestServer):
@@ -33,7 +36,7 @@ class ExtraTestsMaxmind(TestCase):
     def test_bad_ip(self):
         maxmind_geoip.init()
         user = maxmind_geoip.update_data({'keywords': {}},
-                                                 {'device': {'ip': '127.0.0.1'}})
+                                         {'device': {'ip': '127.0.0.1'}})
 
         self.assertNotIn('country', [i.keys() for i in user['keywords']])
 
@@ -60,6 +63,10 @@ class ExtraTestsBrowscap(TestCase):
             browscap.init()
             self.assertIsNone(browscap.browscap)
 
+        with patch('aduser.plugins.examples.browscap.csv_path', browscap_test_path):
+            browscap.init()
+            self.assertIsNotNone(browscap.browscap)
+
     def test_bad_request(self):
         browscap.init()
         # Don't raise an exception
@@ -77,13 +84,14 @@ class ExtraTestsBrowscap(TestCase):
         self.assertEquals(0.33, user['human_score'])
 
     def test_good_ua(self):
-
         user_agent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110628 Ubuntu/10.10 (maverick) Firefox/3.6.18'
 
-        browscap.init()
-        user = browscap.update_data({'human_score': 0.33,
-                                     'keywords': {}},
-                                    {'device': {'ua': user_agent}})
+        with patch('aduser.plugins.examples.browscap.csv_path', browscap_test_path):
+            browscap.init()
+            self.assertIsNotNone(browscap.browscap)
+            user = browscap.update_data({'human_score': 0.33,
+                                         'keywords': {}},
+                                        {'device': {'ua': user_agent}})
 
         self.assertEquals(0.33, user['human_score'])
 
@@ -91,10 +99,12 @@ class ExtraTestsBrowscap(TestCase):
 
         user_agent = 'Google'
 
-        browscap.init()
-        user = browscap.update_data({'human_score': 0.33,
-                                     'keywords': {}},
-                                    {'device': {'ua': user_agent}})
+        with patch('aduser.plugins.examples.browscap.csv_path', browscap_test_path):
+            browscap.init()
+            self.assertIsNotNone(browscap.browscap)
+            user = browscap.update_data({'human_score': 0.33,
+                                         'keywords': {}},
+                                        {'device': {'ua': user_agent}})
 
         self.assertEquals(0.0, user['human_score'])
 
@@ -109,8 +119,9 @@ class ExtraSimpleTestServer(TestCase):
     def setUp(self):
         self.data_plugin.browscap = None
         self.data_plugin.db = None
+        self.data_plugin.csv_path = browscap_test_path
 
-    def test_init(self):
+    def test_fake_init(self):
         with patch('aduser.plugins.simple.csv_path', 'fake_path'):
             with patch('aduser.plugins.simple.mmdb_path', 'fake_path'):
                 self.data_plugin.init()
@@ -175,6 +186,11 @@ class DemoTestServer(SimpleTestServer):
 
 class ExtraDemoTestServer(ExtraSimpleTestServer):
     data_plugin = demo
+
+    def setUp(self):
+        simple.browscap = None
+        simple.db = None
+        simple.csv_path = browscap_test_path
 
     @defer.inlineCallbacks
     def test_mock_data(self):
