@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     # Configure logging
     logging.basicConfig()
-    logfile_path = os.getenv('ADUSER_LOG_CONFIG_FILE')
+    logfile_path = os.getenv('ADUSER_LOG_CONFIG_FILE', 'config/log_config.json')
     with open(logfile_path, "r") as fd:
         logging.config.dictConfig(json.load(fd))
 
