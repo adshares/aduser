@@ -4,7 +4,7 @@ import sys
 from twisted.internet import reactor
 from twisted.web.server import Site
 
-from aduser import const, db, plugin
+from aduser import const, plugin
 from aduser.api.v1 import configure_entrypoint
 
 
@@ -23,9 +23,6 @@ def configure_server():
     logger.info("Tracking cookie name: {0}".format(const.COOKIE_NAME))
     logger.info("Tracking cookie expiration: {0}".format(const.EXPIRY_PERIOD))
     logger.info("Pixel path: {0}".format(const.PIXEL_PATH))
-
-    # Configure database
-    db.configure_db()
 
     plugin.initialize()
 
