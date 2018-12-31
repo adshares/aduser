@@ -19,7 +19,7 @@ def configure_db():
     # User identification collection
     user_collection = yield get_collection('user')
     yield user_collection.create_index(suid_idx, unique=True)
-    yield user_collection.create_index(tid_idx, unique=True)
+    yield user_collection.create_index(tid_idx)
 
     yield get_collection('pixel').create_index(suid_idx)
     yield get_collection('data').create_index(tid_idx)

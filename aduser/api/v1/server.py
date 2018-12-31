@@ -8,6 +8,8 @@ from twisted.web.server import NOT_DONE_YET
 from aduser import const, plugin, utils
 from aduser.db import utils as db_utils
 
+cache = {}
+
 
 class PixelPathResource(Resource):
     """
@@ -73,10 +75,16 @@ class UserPixelResource(Resource):
         tid = utils.attach_tracking_cookie(request)
         db_utils.update_mapping({'tracking_id': tid,
                                  'server_user_id': self.adserver_id + '_' + self.user_id})
+        logging.debug({'tracking_id': tid,
+                       'server_user_id': self.adserver_id + '_' + self.user_id})
+
         db_utils.update_pixel({'tracking_id': tid,
                                'request': [h for h in request.requestHeaders.getAllRawHeaders()]})
-        logging.info({'tracking_id': tid,
-                      'request': [h for h in request.requestHeaders.getAllRawHeaders()]})
+        # Log request
+        logger = logging.getLogger(__name__)
+        logger.info({'tracking_id': tid,
+                     'request': [h for h in request.requestHeaders.getAllRawHeaders()]})
+
         return plugin.data.pixel(request)
 
 
@@ -94,10 +102,18 @@ class DataResource(Resource):
     @defer.inlineCallbacks
     def handle_data(self, request):
         logger = logging.getLogger(__name__)
+
+        req_text = request.content.read()
+
+        if req_text in cache:
+            yield request.write(cache[req_text])
+            yield request.finish()
+            return
+
         try:
-            post_data = json.loads(request.content.read())
+            post_data = json.loads(req_text)
         except ValueError:
-            logger.debug('ValueError')
+            logger.debug('JSON parsing error (ValueError)')
             logger.debug(request.content.read())
             request.setResponseCode(400)
             request.finish()
@@ -116,7 +132,7 @@ class DataResource(Resource):
                             'keywords': {}}
 
         except KeyError:
-            logger.debug('KeyError')
+            logger.debug('Data invalid (KeyError)')
 
             request.setResponseCode(400)
             request.finish()
@@ -132,6 +148,7 @@ class DataResource(Resource):
             request.finish()
             return
 
+        logger.debug('Cached data: ')
         logger.debug(cached_data)
         if cached_data:
             default_data['keywords'] = cached_data['keywords']
@@ -139,13 +156,23 @@ class DataResource(Resource):
         data = yield plugin.data.update_data(default_data, request_data)
 
         data.update({'tracking_id': user_map['tracking_id']})
-        yield db_utils.update_user_data(data)
+
+        if cached_data:
+            for k in ['keywords', 'human_score']:
+                if data[k] != cached_data[k]:
+                    yield db_utils.update_user_data(data)
+                    break
+        else:
+            yield db_utils.update_user_data(data)
 
         del data['tracking_id']
 
+        logger.debug('User data: ')
         logger.debug(data)
 
-        yield request.write(json.dumps(data))
+        json_data = json.dumps(data)
+        cache[req_text] = json_data
+        yield request.write(json_data)
         yield request.finish()
 
 

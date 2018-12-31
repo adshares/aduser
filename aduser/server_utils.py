@@ -19,11 +19,10 @@ def configure_server():
 
     # Configure logger.
     logger = logging.getLogger(__name__)
-    logger.info("Initializing server.")
+    logger.info("Initializing AdUser server on port {0}.".format(const.SERVER_PORT))
     logger.info("Tracking cookie name: {0}".format(const.COOKIE_NAME))
     logger.info("Tracking cookie expiration: {0}".format(const.EXPIRY_PERIOD))
     logger.info("Pixel path: {0}".format(const.PIXEL_PATH))
-    logger.info("Server port: {0}".format(const.SERVER_PORT))
 
     plugin.initialize()
 
@@ -31,5 +30,7 @@ def configure_server():
     if not plugin.data:
         logger.error("Failed to load data plugin, exiting.")
         sys.exit(1)
+
+    logger.info("AdUser ready and listening.")
 
     return reactor.listenTCP(const.SERVER_PORT, Site(root))
