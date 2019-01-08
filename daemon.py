@@ -1,20 +1,12 @@
-import json
-import logging.config
-import os
-
 from twisted.internet import reactor
 
-from aduser import server_utils
-from aduser import db
+from aduser import db, logs as server_logging, server_utils
 
 if __name__ == "__main__":
+    # Set up logging.
+    server_logging.setup()
 
-    # Configure logging
-    logging.basicConfig()
-    logfile_path = os.getenv('ADUSER_LOG_CONFIG_FILE', 'config/log_config.json')
-    with open(logfile_path, "r") as fd:
-        logging.config.dictConfig(json.load(fd))
-
+    # Configuring database.
     db.configure_db()
 
     # Set up server
