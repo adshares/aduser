@@ -87,6 +87,9 @@ def update_data_from_browscap(user, request_data):
 
             if browser_caps.is_crawler():
                 user['human_score'] = 0.0
+            else:
+                user['human_score'] = 1.0
+
         else:
             logger.warning("User agent not identified.")
 
