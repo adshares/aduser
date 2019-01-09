@@ -19,6 +19,8 @@ Please note, that you'll want to configure AdUser. Read the [configuration docum
 
 ## TL;DR  
 ```
+git clone https://github.com/adshares/aduser
+cd aduser
 bash scripts/pre-build.sh
 bash scripts/pre-install.sh
 pipenv install
