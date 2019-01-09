@@ -152,7 +152,7 @@ class ExtraSimpleTestServer(TestCase):
                                                   {'device': {'ua': user_agent,
                                                               'ip': '127.0.0.1'}})
 
-        self.assertEquals(0.33, user['human_score'])
+        self.assertEquals(1.0, user['human_score'])
 
     @defer.inlineCallbacks
     def test_bot_ua(self):
