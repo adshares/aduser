@@ -19,6 +19,10 @@ if [ ! -v TRAVIS ]; then
   cd ${BUILD_PATH}/build
 fi
 
+if [[ ${BUILD_MODE} == "data_services" ]]; then
+    cd aduser_data_services
+fi
+
 if [[ ${ADUSER_APP_ENV:-dev} == "dev" ]]; then
     pipenv install --dev pipenv
 elif [[ ${ADUSER_APP_ENV} == "deploy" ]]; then

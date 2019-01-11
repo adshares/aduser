@@ -10,11 +10,12 @@ mv Pipfile.lock ${INSTALLATION_PATH}/
 
 mv .venv ${INSTALLATION_PATH}/
 
-mv .env ${INSTALLATION_PATH}/
-
-mv aduser ${INSTALLATION_PATH}/
-mv config ${INSTALLATION_PATH}/
-mv daemon.py ${INSTALLATION_PATH}/
+if [[ ${INSTALL_MODE} == "data_services" ]]; then
+    mv aduser_data_services ${INSTALLATION_PATH}/
+else
+    mv aduser ${INSTALLATION_PATH}/
+    mv daemon.py ${INSTALLATION_PATH}/
+fi
 
 cd ${INSTALLATION_PATH}/
 
