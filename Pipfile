@@ -21,8 +21,6 @@ jsonobject = "*"
 python_version = "2.7"
 
 [scripts]
-install_geoip = "pip install python-geoip"
-install_pybrowscap = "pip install git+https://github.com/char0n/pybrowscap#egg=pybrowscap"
 tests = "coverage run .venv/bin/trial tests"
 tests_mongo = "coverage run .venv/bin/trial --without-module=mongomock tests"
 quality = "coverage xml -i"

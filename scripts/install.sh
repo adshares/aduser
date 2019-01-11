@@ -18,8 +18,7 @@ mv daemon.py ${INSTALLATION_PATH}/
 
 cd ${INSTALLATION_PATH}/
 
-if [ -v INSTALL_GEOLITE_DATA ] && [ ${INSTALL_GEOLITE_DATA} -eq 1 ]
-then
+if [[ ${INSTALL_GEOLITE_DATA:-0} -eq 1 ]]; then
 
     echo "Downloading geolite data"
     CWD=`pwd`
@@ -46,8 +45,7 @@ then
 
 fi
 
-if [ -v INSTALL_BROWSCAP_DATA ] && [ ${INSTALL_BROWSCAP_DATA} -eq 1 ]
-then
+if [[ ${INSTALL_BROWSCAP_DATA:-0} -eq 1 ]]; then
 
     echo "Downloading browscap data (this make take a while). \
           You can find the dataset here: https://browscap.org/"
