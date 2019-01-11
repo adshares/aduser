@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+
+[packages]
+pybrowscap = {git = "https://github.com/char0n/pybrowscap#egg=pybrowscap"}
+python-geoip = "*"
+Twisted = "~=18.9.0"
+
+[requires]
+python_version = "2.7"
+
+[scripts]
+browscap_server = "python aduser_data_services/browscap/daemon.py"
+geolite_server = "python aduser_data_services/geolite/daemon.py"
