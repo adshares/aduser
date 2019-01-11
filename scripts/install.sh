@@ -5,6 +5,10 @@ set -e
 # Create directories
 mkdir -p ${INSTALLATION_PATH}
 
+if [[ ${INSTALL_MODE} == "data_services" ]]; then
+    cd aduser_data_services
+fi
+
 mv Pipfile ${INSTALLATION_PATH}/
 mv Pipfile.lock ${INSTALLATION_PATH}/
 
