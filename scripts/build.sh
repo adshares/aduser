@@ -19,13 +19,9 @@ if [ ! -v TRAVIS ]; then
   cd ${BUILD_PATH}/build
 fi
 
-if [ ! -v PIPENV_DONT_LOAD_ENV ]; then
-    envsubst < .env.dist | tee .env
-fi
-
-if [ ${ADUSER_APP_ENV} == 'dev' ]; then
+if [[ ${ADUSER_APP_ENV:-dev} == "dev" ]]; then
     pipenv install --dev pipenv
-elif [ ${ADUSER_APP_ENV} == 'deploy' ]; then
+elif [[ ${ADUSER_APP_ENV} == "deploy" ]]; then
     pipenv install --deploy pipenv
 else
     pipenv install pipenv
