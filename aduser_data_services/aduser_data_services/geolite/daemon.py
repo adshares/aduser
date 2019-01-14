@@ -10,7 +10,7 @@ from twisted.internet.endpoints import UNIXServerEndpoint
 from twisted.internet.protocol import Factory
 
 #: Socket file
-SOCK_FILE = os.getenv('ADUSER_DATA_GEOIP_SOCK_FILE', '/tmp/aduser-data-geoip.sock')
+SOCK_FILE = os.getenv('ADUSER_DATA_GEOLITE_SOCK_FILE', '/tmp/aduser-data-geoip.sock')
 GEOLITE_PATH = os.getenv('ADUSER_DATA_GEOLITE_PATH', '/var/www/aduser_data/GeoLite2-City.mmdb')
 
 geolite_database = None
