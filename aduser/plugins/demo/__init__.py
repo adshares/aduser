@@ -1,13 +1,10 @@
 import logging
-import os
 import random
 
 from twisted.internet import defer
 
 import aduser.plugins.simple as simple_plugin
 from aduser.plugins.demo import mock_data
-
-MOCK_DATA_PATH = os.getenv('ADUSER_MOCK_DATA_PATH', '/var/www/aduser_data/mock.json')
 
 taxonomy_name = 'demo'
 taxonomy_version = '0.0.1'
