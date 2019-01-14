@@ -25,15 +25,6 @@ def pixel(request):
     return PIXEL_GIF
 
 
-def init():
-    """
-    Initialize this plugin.
-
-    :return:
-    """
-    pass
-
-
 def update_data(data, request):
     """
     Update data object with plugin data.

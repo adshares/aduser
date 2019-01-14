@@ -16,11 +16,11 @@ taxonomy = {'meta': {'name': taxonomy_name,
 logger = logging.getLogger(__name__)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
 
-SOCK_FILE = os.getenv('ADUSER_DATA_BROWSCAP_SOCK_FILE', '/tmp/aduser-data-browscap.sock')
-SOCK2_FILE = os.getenv('ADUSER_DATA_GEOLITE_SOCK_FILE', '/tmp/aduser-data-geolite.sock')
+BROWSCAP_SERVICE_SOCKET = os.getenv('ADUSER_DATA_BROWSCAP_SOCK_FILE', '/tmp/aduser-data-browscap.sock')
+GEOLITE_SERVICE_SOCKET = os.getenv('ADUSER_DATA_GEOLITE_SOCK_FILE', '/tmp/aduser-data-geolite.sock')
 
-browscap_provider = UnixDataProvider(SOCK_FILE)
-geolite_provider = UnixDataProvider(SOCK2_FILE)
+browscap_provider = UnixDataProvider(BROWSCAP_SERVICE_SOCKET)
+geolite_provider = UnixDataProvider(GEOLITE_SERVICE_SOCKET)
 
 
 def pixel(request):
@@ -39,19 +39,25 @@ def update_data(user, request_data):
 
 @defer.inlineCallbacks
 def update_data_from_geoip(user, request_data):
+    # Request data
     data = yield geolite_provider.query(request_data['device']['ip'])
+
     if data:
+        # Choose data to return
         user['keywords'].update({'country': data['country']})
     else:
         logger.warning("IP not found in GeoIP db.")
+
     defer.returnValue(user)
 
 
 @defer.inlineCallbacks
 def update_data_from_browscap(user, request_data):
+    # Request data
     browser_caps = yield browscap_provider.query(request_data['device']['ua'])
-    if browser_caps:
 
+    if browser_caps:
+        # Choose data to return
         user['keywords'].update({'platform': browser_caps.get('platform'),
                                  'device_type': browser_caps.get('device_type'),
                                  'javascript': browser_caps.get('javascript'),
@@ -60,6 +66,9 @@ def update_data_from_browscap(user, request_data):
         if browser_caps.is_crawler():
             user['human_score'] = 0.0
         else:
-            logger.warning("User agent not identified.")
+            user['human_score'] = 1.0
+
+    else:
+        logger.warning("User agent not identified.")
 
     defer.returnValue(user)

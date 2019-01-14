@@ -40,10 +40,6 @@ def pixel(request):
     return PIXEL_GIF
 
 
-def init():
-    logger.info("IpApi initialized.")
-
-
 @defer.inlineCallbacks
 def update_data(user, request_data):
 

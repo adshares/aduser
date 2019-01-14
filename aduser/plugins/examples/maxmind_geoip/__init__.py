@@ -23,19 +23,6 @@ def pixel(request):
     return PIXEL_GIF
 
 
-def init():
-    global db
-
-    if not db:
-        logger.info("Initializing GeoIP database.")
-        db = utils.Database(mmdb_path)
-        db.init()
-        if db.db:
-            logger.info("GeoIP database initialized.")
-        else:
-            db = None
-
-
 def update_data(user, request_data):
     global db
 
