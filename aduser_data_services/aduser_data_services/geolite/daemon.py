@@ -19,7 +19,7 @@ geolite_database = None
 class GeoLiteProtocolFactory(Factory):
 
     def buildProtocol(self, addr):
-        p = self.DataResponseProtocol()
+        p = DataResponseProtocol()
         p.factory = self
         p.query_function = geolite_database.lookup
         return p

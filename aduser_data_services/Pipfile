@@ -14,5 +14,5 @@ Twisted = "~=18.9.0"
 python_version = "2.7"
 
 [scripts]
-browscap_server = "python aduser_data_services/browscap/daemon.py"
-geolite_server = "python aduser_data_services/geolite/daemon.py"
+browscap_service = "python aduser_data_services/browscap/daemon.py"
+geolite_service = "python aduser_data_services/geolite/daemon.py"

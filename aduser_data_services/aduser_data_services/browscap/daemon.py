@@ -19,7 +19,7 @@ browscap_database = None
 class BrowscapProtocolFactory(Factory):
 
     def buildProtocol(self, addr):
-        p = self.DataResponseProtocol()
+        p = DataResponseProtocol()
         p.factory = self
         p.query_function = browscap_database.search
         return p
