@@ -19,7 +19,7 @@ if [ ! -v TRAVIS ]; then
   cd ${BUILD_PATH}/build
 fi
 
-if [[ ${BUILD_MODE} == "data_services" ]]; then
+if [[ ${BUILD_DATA_SERVICES_ONLY:-0} -eq 1 ]]; then
     cd aduser_data_services
 fi
 

@@ -17,8 +17,6 @@ mv Pipfile.lock ${INSTALLATION_PATH}/
 
 mv .venv ${INSTALLATION_PATH}/
 
-mv .env ${INSTALLATION_PATH}/
-
 mv aduser_data_services ${INSTALLATION_PATH}/
 
 cd ${INSTALLATION_PATH}/
