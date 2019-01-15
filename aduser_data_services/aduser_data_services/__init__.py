@@ -1,7 +1,10 @@
+import json
+
 from twisted.internet import protocol
 
 
 class DataResponseProtocol(protocol.Protocol):
+
     #: Callable for our data query. Take one argument.
     query_function = (lambda q: None)
 
@@ -13,9 +16,9 @@ class DataResponseProtocol(protocol.Protocol):
         :return:
         """
 
-        query_result = self.query_function(data)
+        query_result = self.query_function(json.loads(data))
         if query_result:
-            self.transport.write(bytes(query_result))
+            self.transport.write(bytes(json.dumps(query_result)))
         else:
             self.transport.write()
 

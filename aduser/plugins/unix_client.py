@@ -1,3 +1,5 @@
+import json
+
 from twisted.internet import defer, protocol, reactor
 from twisted.internet.endpoints import UNIXClientEndpoint
 from twisted.internet.error import ConnectError
@@ -14,7 +16,7 @@ class DataRequestProtocol(protocol.Protocol):
 
         :return:
         """
-        self.response = data
+        self.response = json.loads(data)
 
     def connectionMade(self):
         """
@@ -43,7 +45,7 @@ class UnixDataProvider:
     @defer.inlineCallbacks
     def query(self, data):
         try:
-            response = yield self.endpoint.connect(DataClientFactory(data))
+            response = yield self.endpoint.connect(DataClientFactory(json.dumps(data)))
             defer.returnValue(response.content)
         except ConnectError:
             defer.returnValue(None)
