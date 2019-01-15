@@ -49,31 +49,3 @@ class UnixDataProvider:
             defer.returnValue(response.content)
         except ConnectError:
             defer.returnValue(None)
-
-
-@defer.inlineCallbacks
-def run(SOCK_FILE):
-    data_source = UnixDataProvider(SOCK_FILE)
-    ret1 = yield data_source.query('hello')
-    ret2 = yield data_source.query('Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0')
-    print ret1
-    print ret2
-    defer.returnValue(ret1)
-
-
-if __name__ == '__main__':
-
-    SOCK_FILE = os.getenv('ADUSER_DATA_BROWSCAP_SOCK_FILE', '/tmp/aduser-browscap.sock')
-    LOG_LEVEL = logging.DEBUG
-
-    logging.basicConfig(format='[%(asctime)s] %(name)-6s %(levelname)-9s %(message)s',
-                        datefmt="%Y-%m-%dT%H:%M:%SZ",
-                        handlers=[logging.StreamHandler()],
-                        level=LOG_LEVEL)
-
-    reactor.callLater(1, reactor.stop)
-
-    res = run(SOCK_FILE)
-    if res:
-        print res
-    reactor.run()
