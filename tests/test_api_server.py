@@ -5,7 +5,7 @@ from mock import patch
 from aduser import server_utils
 
 
-class TestConfigure_server(TestCase):
+class TestConfigureServer(TestCase):
 
     port = None
 

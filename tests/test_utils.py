@@ -1,11 +1,13 @@
-from aduser import utils
-from twisted.trial import unittest
-from hashlib import sha1
-from base64 import b64encode, b64decode
-from aduser.utils import tracking_id_checksum, is_tracking_id_valid
-from mock import MagicMock
-
 import logging
+from base64 import b64decode, b64encode
+from hashlib import sha1
+
+from mock import MagicMock
+from twisted.trial import unittest
+
+from aduser import utils
+from aduser.utils import is_tracking_id_valid, tracking_id_checksum
+
 logging.disable(logging.WARNING)
 
 

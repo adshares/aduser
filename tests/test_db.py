@@ -1,8 +1,7 @@
 from twisted.internet import defer
 
 from aduser import db
-from aduser.db import const as db_const
-from aduser.db import utils as db_utils
+from aduser.db import const as db_const, utils as db_utils
 from tests import db_test_case
 
 

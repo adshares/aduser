@@ -1,8 +1,9 @@
-from twisted.trial.unittest import TestCase
-from datetime import timedelta
 import os
+from datetime import timedelta
+
+from twisted.trial.unittest import TestCase
+
 import aduser.const
-import imp
 
 
 class TestRequest(TestCase):

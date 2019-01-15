@@ -7,8 +7,6 @@ from twisted.trial.unittest import TestCase
 from aduser import const, server_utils
 from tests import WebclientTestCase
 
-logging.disable(logging.WARNING)
-
 
 class InvalidPluginServer(TestCase):
 
@@ -19,6 +17,9 @@ class InvalidPluginServer(TestCase):
                 # Suppress this case of error logging
                 logging.disable(logging.ERROR)
                 self.port = server_utils.configure_server()
+
+        # Reset logging
+        logging.disable(logging.WARNING)
 
 
 class TestServer(WebclientTestCase):
