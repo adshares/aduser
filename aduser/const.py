@@ -40,3 +40,5 @@ if config_period:
         EXPIRY_PERIOD = timedelta(weeks=count)
     elif config_period.group(2) == 'd':
         EXPIRY_PERIOD = timedelta(days=count)
+
+NO_CACHE = bool(int(os.getenv('ADUSER_NO_CACHE', 1)))
