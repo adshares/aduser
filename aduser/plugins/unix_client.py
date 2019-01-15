@@ -8,7 +8,7 @@ from twisted.internet.error import ConnectError
 class DataRequestProtocol(protocol.Protocol):
 
     def __init__(self):
-        self.response = None
+        self.content = None
 
     def dataReceived(self, data):
         """
@@ -16,7 +16,7 @@ class DataRequestProtocol(protocol.Protocol):
 
         :return:
         """
-        self.response = json.loads(data)
+        self.content = json.loads(data)
 
     def connectionMade(self):
         """
