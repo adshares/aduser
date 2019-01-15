@@ -1,4 +1,5 @@
 import json
+
 from aduser.plugins.demo import const
 
 mock = None
@@ -19,7 +20,7 @@ def init(mock_data_file=None):
         try:
             with open(mock_data_file, 'r') as f:
                 mock = json.load(f)
-        except (ValueError, IOError, TypeError) as e:
+        except (ValueError, IOError, TypeError):
             mock = default_mock
 
 

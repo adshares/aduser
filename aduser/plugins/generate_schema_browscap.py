@@ -2,13 +2,14 @@ from __future__ import print_function
 
 import csv
 from collections import defaultdict
-from aduser.plugins.simple import const
+
+BROWSCAP_CSV_PATH = None
 
 index = {}
 
 sets = defaultdict(set)
 
-with open(const.BROWSCAP_CSV_PATH, 'rb') as csvfile:
+with open(BROWSCAP_CSV_PATH, 'rb') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
 
     for row in spamreader:

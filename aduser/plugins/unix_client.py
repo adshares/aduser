@@ -1,6 +1,4 @@
-import os
-import logging
-from twisted.internet import defer, reactor, protocol
+from twisted.internet import defer, protocol, reactor
 from twisted.internet.endpoints import UNIXClientEndpoint
 from twisted.internet.error import ConnectError
 
