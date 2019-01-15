@@ -2,12 +2,14 @@ from __future__ import print_function
 
 import os
 import sys
+from datetime import datetime
 
-from aduser_data_services import DataResponseProtocol
 from geoip import open_database
 from twisted.internet import reactor
 from twisted.internet.endpoints import UNIXServerEndpoint
 from twisted.internet.protocol import Factory
+
+from aduser_data_services import DataResponseProtocol
 
 #: Socket file
 SOCK_FILE = os.getenv('ADUSER_DATA_GEOLITE_SOCK_FILE', '/tmp/aduser-data-geoip.sock')
@@ -26,6 +28,8 @@ class GeoLiteProtocolFactory(Factory):
 
 
 if __name__ == '__main__':
+
+    print(datetime.now())
 
     if os.path.exists(GEOLITE_PATH):
         print("Opening GeoLite database.")

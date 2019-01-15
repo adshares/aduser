@@ -2,12 +2,14 @@ from __future__ import print_function
 
 import os
 import sys
+from datetime import datetime
 
-from aduser_data_services import DataResponseProtocol
 from pybrowscap.loader.csv import load_file
 from twisted.internet import reactor
 from twisted.internet.endpoints import UNIXServerEndpoint
 from twisted.internet.protocol import Factory
+
+from aduser_data_services import DataResponseProtocol
 
 #: Socket file
 SOCK_FILE = os.getenv('ADUSER_DATA_BROWSCAP_SOCK_FILE', '/tmp/aduser-data-browscap.sock')
@@ -26,6 +28,8 @@ class BrowscapProtocolFactory(Factory):
 
 
 if __name__ == '__main__':
+
+    print(datetime.now())
 
     if os.path.exists(CSV_PATH):
         print("Compiling browscap data, this may take a while.")
