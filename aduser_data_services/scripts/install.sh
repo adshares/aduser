@@ -2,7 +2,7 @@
 
 set -e
 
-if [ -v ${INSTALLATION_PATH} ]; then
+if [[ -v ${INSTALLATION_PATH} ]]; then
 
     printf "INSTALLATION_PATH not defined"
     exit 1
