@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
+coverage = "~=4.5"
+mock = "~=2.0"
 
 [packages]
 pybrowscap = {git = "https://github.com/char0n/pybrowscap#egg=pybrowscap"}
@@ -16,3 +18,5 @@ python_version = "2.7"
 [scripts]
 browscap_service = "python aduser_data_services/browscap/daemon.py"
 geolite_service = "python aduser_data_services/geolite/daemon.py"
+tests = "coverage run .venv/bin/trial tests"
+quality = "coverage xml -i"

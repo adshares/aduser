@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "634732b63b9a14f23ecbcb39dfb4ca7e10ecd38c5f294b91d367533753d00238"
+            "sha256": "e808c84b7eb8d92be0fcb9fd88c6a172859502b98d3d30d74bd23971c93d322b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -57,14 +57,6 @@
                 "sha256:7b751696aaf36eebfab537e458929e194460051ccad279c72b755a167eebd4b3"
             ],
             "version": "==17.5.0"
-        },
-        "ip2location": {
-            "hashes": [
-                "sha256:5fa79bfd18281bc6331f4e9116cc18f992458bbdec96ab0e008ef3d43bbe4f31",
-                "sha256:945ed47690abeb269ab2b10e55a41b12d03e85c277d029df96791736095b54ea"
-            ],
-            "index": "pypi",
-            "version": "==8.0.3"
         },
         "pybrowscap": {
             "git": "https://github.com/char0n/pybrowscap",

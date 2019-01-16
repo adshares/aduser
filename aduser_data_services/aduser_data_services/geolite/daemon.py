@@ -56,10 +56,8 @@ class GeoLiteProtocolFactory(Factory):
     protocol = GeoLiteResponseProtocol
 
 
-if __name__ == '__main__':
-
-    print(datetime.now())
-
+def init_database():
+    global geolite_database
     if os.path.exists(GEOLITE_PATH):
         print("Opening GeoLite database.")
         geolite_database = open_database(GEOLITE_PATH)
@@ -69,8 +67,19 @@ if __name__ == '__main__':
         print("Couldn't load GeoLite database, exiting.")
         sys.exit(1)
 
+
+def configure_server():
     endpoint = UNIXServerEndpoint(reactor, SOCK_FILE)
     endpoint.listen(GeoLiteProtocolFactory())
+    return endpoint
+
+
+if __name__ == '__main__':
+    print(datetime.now())
+
+    init_database()
+
+    server = configure_server()
 
     print("Listening on {0}.".format(SOCK_FILE))
 

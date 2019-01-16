@@ -30,26 +30,27 @@ class BrowscapResponseProtocol(Protocol):
         :param data: Query string.
         :return:
         """
+        try:
+            query_result = browscap_database.search(json.loads(data))
 
-        query_result = browscap_database.search(json.loads(data))
+            if query_result:
+                # Convert result to dictionary, encode in json and push to the wire
+                self.transport.write(bytes(json.dumps(query_result.items())))
+            else:
+                self.transport.write(self._empty_result)
 
-        if query_result:
-            # Convert result to dictionary, encode in json and push to the wire
-            self.transport.write(bytes(json.dumps(query_result.items())))
-        else:
+            self.transport.loseConnection()
+
+        except ValueError:
             self.transport.write(self._empty_result)
-
-        self.transport.loseConnection()
 
 
 class BrowscapProtocolFactory(Factory):
     protocol = BrowscapResponseProtocol
 
 
-if __name__ == '__main__':
-
-    print(datetime.now())
-
+def init_database():
+    global browscap_database
     if os.path.exists(CSV_PATH):
         print("Compiling browscap data, this may take a while.")
         browscap_database = load_file(CSV_PATH)
@@ -59,8 +60,20 @@ if __name__ == '__main__':
         print("Couldn't load browscap database, exiting.")
         sys.exit(1)
 
+
+def configure_server():
     endpoint = UNIXServerEndpoint(reactor, SOCK_FILE)
     endpoint.listen(BrowscapProtocolFactory())
+    return endpoint
+
+
+if __name__ == '__main__':
+
+    print(datetime.now())
+
+    init_database()
+
+    server = configure_server()
 
     print("Listening on {0}.".format(SOCK_FILE))
 
