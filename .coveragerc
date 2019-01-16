@@ -9,3 +9,7 @@ omit =
     */lib/python*/site-packages/*
     # omit pipenv
     .venv/*
+
+[report]
+exclude_lines =
+    if __name__ == .__main__.:
