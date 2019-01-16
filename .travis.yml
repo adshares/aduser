@@ -78,6 +78,9 @@ jobs:
         # Install locale for pybrowscap
         - in_docker apt-get -qq -y install locales && locale-gen en_US.UTF-8 && locale -a"
 
+        # Test aduser_data_services, install dependencies
+        - in_docker pipenv install python-geoip git+https://github.com/char0n/pybrowscap#egg=pybrowscap"
+
         - in_docker pipenv run tests"
 
         - in_docker pipenv run quality"
