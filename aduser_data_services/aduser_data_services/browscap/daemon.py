@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import json
 import os
 import sys
 from datetime import datetime
@@ -7,24 +8,42 @@ from datetime import datetime
 from pybrowscap.loader.csv import load_file
 from twisted.internet import reactor
 from twisted.internet.endpoints import UNIXServerEndpoint
-from twisted.internet.protocol import Factory
-
-from aduser_data_services import DataResponseProtocol
+from twisted.internet.protocol import Factory, Protocol
 
 #: Socket file
 SOCK_FILE = os.getenv('ADUSER_DATA_BROWSCAP_SOCK_FILE', '/tmp/aduser-data-browscap.sock')
+
+#: Path for Browscap database file (csv)
 CSV_PATH = os.getenv('ADUSER_DATA_BROWSCAP_CSV_PATH', '/var/www/aduser_data/browscap.csv')
 
 browscap_database = None
 
 
-class BrowscapProtocolFactory(Factory):
+class BrowscapResponseProtocol(Protocol):
+    #: Empty result for None result from our database
+    _empty_result = bytes("{}")
 
-    def buildProtocol(self, addr):
-        p = DataResponseProtocol()
-        p.factory = self
-        p.query_function = browscap_database.search
-        return p
+    def dataReceived(self, data):
+        """
+        When data is received, query our source, respond and disconnect.
+
+        :param data: Query string.
+        :return:
+        """
+
+        query_result = browscap_database.search(json.loads(data))
+
+        if query_result:
+            # Convert result to dictionary, encode in json and push to the wire
+            self.transport.write(bytes(json.dumps(query_result.items())))
+        else:
+            self.transport.write(self._empty_result)
+
+        self.transport.loseConnection()
+
+
+class BrowscapProtocolFactory(Factory):
+    protocol = BrowscapResponseProtocol
 
 
 if __name__ == '__main__':

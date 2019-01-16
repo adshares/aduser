@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import json
 import os
 import sys
 from datetime import datetime
@@ -7,24 +8,52 @@ from datetime import datetime
 from geoip import open_database
 from twisted.internet import reactor
 from twisted.internet.endpoints import UNIXServerEndpoint
-from twisted.internet.protocol import Factory
-
-from aduser_data_services import DataResponseProtocol
+from twisted.internet.protocol import Factory, Protocol
 
 #: Socket file
-SOCK_FILE = os.getenv('ADUSER_DATA_GEOLITE_SOCK_FILE', '/tmp/aduser-data-geoip.sock')
+SOCK_FILE = os.getenv('ADUSER_DATA_GEOLITE_SOCK_FILE', '/tmp/aduser-data-geolite.sock')
+
+#: Path for GeoLite database file (mmdb)
 GEOLITE_PATH = os.getenv('ADUSER_DATA_GEOLITE_PATH', '/var/www/aduser_data/GeoLite2-City.mmdb')
 
 geolite_database = None
 
 
-class GeoLiteProtocolFactory(Factory):
+class GeoLiteResponseProtocol(Protocol):
+    #: Empty result for None result from our database
+    _empty_result = bytes("{}")
 
-    def buildProtocol(self, addr):
-        p = DataResponseProtocol()
-        p.factory = self
-        p.query_function = geolite_database.lookup
-        return p
+    def dataReceived(self, data):
+        """
+        When data is received, query our source, respond and disconnect.
+
+        :param data: Query string.
+        :return:
+        """
+        try:
+            query_result = geolite_database.lookup(json.loads(data))
+
+            if query_result:
+                # Convert result to dictionary
+                query_result = query_result.to_dict()
+
+                # Convert frozenset to list (frozenset is not JSON serializable)
+                query_result['subdivisions'] = list(query_result['subdivisions'])
+
+                # Encode in JSON and push it on the wire
+                self.transport.write(bytes(json.dumps(query_result)))
+
+            else:
+                self.transport.write(self._empty_result)
+
+        except ValueError:
+            self.transport.write(self._empty_result)
+
+        self.transport.loseConnection()
+
+
+class GeoLiteProtocolFactory(Factory):
+    protocol = GeoLiteResponseProtocol
 
 
 if __name__ == '__main__':
