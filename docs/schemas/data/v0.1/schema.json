@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "$id": "urn:x-adshares:data:0.1",
+  "type": "object",
+  "definitions": {},
+  "properties": {
+    "human_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "uniqueItems": true
+    },
+    "uid": {
+      "type": "string"
+    }
+  }
+}
