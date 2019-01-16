@@ -26,7 +26,7 @@ def pixel(request):
 
 
 @defer.inlineCallbacks
-def update_data_from_browscap(user, request_data):
+def update_data(user, request_data):
 
     # Request data
     browser_caps = yield browscap_provider.query(request_data['device']['ua'])

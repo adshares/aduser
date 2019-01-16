@@ -3,21 +3,21 @@ from mock import Mock, MagicMock
 from twisted.trial.unittest import TestCase as TrialTestCase
 
 from unittest import TestCase
-from aduser.plugins.unix_client import DataRequestProtocol, DataClientFactory, UnixDataProvider
+from aduser.plugins.unix_client import JSONProtocol, DataClientFactory, UnixDataProvider
 from twisted.internet import defer
 
 
-class TestDataRequestProtocol(TestCase):
+class TestJSONProtocol(TestCase):
 
+    @defer.inlineCallbacks
     def test_dataReceived(self):
-        proto = DataRequestProtocol()
-        self.assertIsNone(proto.response)
-
-        proto.dataReceived('data')
-        self.assertEqual('data', proto.response)
+        proto = JSONProtocol()
+        proto.dataReceived('"data"')
+        response_data = yield proto.dataDeferred
+        self.assertEqual('data', response_data)
 
     def test_connectionMade(self):
-        proto = DataRequestProtocol()
+        proto = JSONProtocol()
 
         proto.transport = MagicMock(return_value=None)
         proto.transport.write = MagicMock(return_value=None)
@@ -33,9 +33,10 @@ class TestDataRequestProtocol(TestCase):
 class TestDataClientFactory(TestCase):
 
     def test_init(self):
+
         factory = DataClientFactory(None)
         protocol = factory.buildProtocol(None)
-        self.assertTrue(isinstance(protocol, DataRequestProtocol))
+        self.assertTrue(isinstance(protocol, JSONProtocol))
 
 
 class TestUnixDataProvider(TrialTestCase):
@@ -50,3 +51,14 @@ class TestUnixDataProvider(TrialTestCase):
 
         result = yield provider.query(None)
         self.assertIsNone(result)
+
+        proto = JSONProtocol()
+        proto.dataReceived('"data"')
+
+        provider.endpoint.connect = Mock()
+        provider.endpoint.connect.return_value = proto
+
+        result = yield provider.query(None)
+
+        self.assertIsNotNone(result)
+        self.assertEqual('data', result)

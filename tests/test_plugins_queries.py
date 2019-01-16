@@ -28,8 +28,7 @@ class TestPluginQueries(TrialTestCase):
             yield simple_update_data(user, request_data)
             self.assertEqual(user['keywords'], {'country': 'DE'})
 
-        browscap_mock_return = MagicMock()
-        browscap_mock_return.is_crawler.return_value = True
+        browscap_mock_return = {'crawler': True}
 
         with patch('aduser.plugins.simple.browscap_provider.query',
                    MagicMock(return_value=browscap_mock_return)):
@@ -37,7 +36,7 @@ class TestPluginQueries(TrialTestCase):
             yield simple_update_data(user, request_data)
             self.assertEqual(user['human_score'], 0.0)
 
-        browscap_mock_return.is_crawler.return_value = False
+        browscap_mock_return = {'crawler': False}
 
         with patch('aduser.plugins.simple.browscap_provider.query',
                    MagicMock(return_value=browscap_mock_return)):
@@ -55,15 +54,14 @@ class TestPluginQueries(TrialTestCase):
         self.assertIsNotNone(data)
         self.assertEqual(user, data)
 
-        browscap_mock_return = MagicMock()
-        browscap_mock_return.is_crawler.return_value = True
+        browscap_mock_return = {'crawler': True}
 
         with patch('aduser.plugins.examples.browscap.browscap_provider.query',
                    MagicMock(return_value=browscap_mock_return)):
             yield browscap_update_data(user, request_data)
             self.assertEqual(user['human_score'], 0.0)
 
-        browscap_mock_return.is_crawler.return_value = False
+        browscap_mock_return = {'crawler': False}
 
         with patch('aduser.plugins.examples.browscap.browscap_provider.query',
                    MagicMock(return_value=browscap_mock_return)):
