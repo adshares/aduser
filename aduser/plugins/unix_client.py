@@ -5,18 +5,18 @@ from twisted.internet.endpoints import UNIXClientEndpoint
 from twisted.internet.error import ConnectError
 
 
-class DataRequestProtocol(protocol.Protocol):
+class JSONProtocol(protocol.Protocol):
 
     def __init__(self):
-        self.content = None
+        self.dataDeferred = defer.Deferred()
 
     def dataReceived(self, data):
         """
-        Save response data.
+        Get data and send it to data callback
 
         :return:
         """
-        self.content = json.loads(data)
+        self.dataDeferred.callback(json.loads(data))
 
     def connectionMade(self):
         """
@@ -28,7 +28,7 @@ class DataRequestProtocol(protocol.Protocol):
 
 
 class DataClientFactory(protocol.ClientFactory):
-    protocol = DataRequestProtocol
+    protocol = JSONProtocol
 
     def __init__(self, data):
         self.data = data
@@ -44,8 +44,19 @@ class UnixDataProvider:
 
     @defer.inlineCallbacks
     def query(self, data):
+        """
+        Connect to unix server and collects results
+
+        :param data: Data to send
+        :return: Data (probably a dictionary) or None
+        """
         try:
+            # Get protocol instance
             response = yield self.endpoint.connect(DataClientFactory(json.dumps(data)))
-            defer.returnValue(response.content)
+
+            # Get data
+            response_data = yield response.dataDeferred
+
+            defer.returnValue(response_data)
         except ConnectError:
             defer.returnValue(None)

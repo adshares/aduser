@@ -39,9 +39,9 @@ def update_data(user, request_data):
 
 @defer.inlineCallbacks
 def update_data_from_geoip(user, request_data):
+
     # Request data
     data = yield geolite_provider.query(request_data['device']['ip'])
-
     if data:
         # Choose data to return
         user['keywords'].update({'country': data['country']})
@@ -55,7 +55,6 @@ def update_data_from_geoip(user, request_data):
 def update_data_from_browscap(user, request_data):
     # Request data
     browser_caps = yield browscap_provider.query(request_data['device']['ua'])
-
     if browser_caps:
         # Choose data to return
         user['keywords'].update({'platform': browser_caps.get('platform'),
@@ -63,7 +62,8 @@ def update_data_from_browscap(user, request_data):
                                  'javascript': browser_caps.get('javascript'),
                                  'browser': browser_caps.get('browser')})
 
-        if browser_caps.is_crawler():
+        # Process bot classification
+        if browser_caps.get('crawler'):
             user['human_score'] = 0.0
         else:
             user['human_score'] = 1.0

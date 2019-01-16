@@ -31,7 +31,6 @@ def pixel(request):
 def update_data(user, request_data):
     # Request data
     data = yield geolite_provider.query(request_data['device']['ip'])
-
     if data:
         # Choose data to return
         user['keywords'].update({'country': data['country']})
