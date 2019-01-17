@@ -4,15 +4,10 @@ from base64 import b64decode
 
 logger = logging.getLogger(__name__)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
-taxonomy = {}
 
+taxonomy = {}
 taxonomy_name = 'example'
 taxonomy_version = '0.0.1'
-
-
-def init():
-    logger.info("Initializing example data plugin.")
-    generate_taxonomy()
 
 
 def pixel(request):
@@ -65,3 +60,8 @@ def generate_taxonomy():
     taxonomy = {'meta': {'name': taxonomy_name,
                          'version': taxonomy_version},
                 'data': values}
+
+    return taxonomy
+
+
+taxonomy = generate_taxonomy()

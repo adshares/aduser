@@ -9,5 +9,7 @@ omit =
     */lib/python*/site-packages/*
     # omit pipenv
     .venv/*
-    # omit pybrowscap
-    pybrowscap/*
+
+[report]
+exclude_lines =
+    if __name__ == .__main__.:

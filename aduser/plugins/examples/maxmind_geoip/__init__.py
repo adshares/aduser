@@ -1,10 +1,10 @@
 import logging
+import os
 from base64 import b64decode
 
-from aduser.plugins.examples.maxmind_geoip import const, utils
+from twisted.internet import defer
 
-db = None
-mmdb_path = const.GEOLITE_PATH
+from aduser.plugins.unix_client import UnixDataProvider
 
 taxonomy_name = 'examples.maxmind_geoip'
 taxonomy_version = '0.0.1'
@@ -17,33 +17,24 @@ taxonomy = {'meta': {'name': taxonomy_name,
 logger = logging.getLogger(__name__)
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
 
+GEOLITE_SERVICE_SOCKET = os.getenv('ADUSER_DATA_GEOLITE_SOCK_FILE', '/tmp/aduser-data-geolite.sock')
+
+geolite_provider = UnixDataProvider(GEOLITE_SERVICE_SOCKET)
+
 
 def pixel(request):
     request.setHeader(b"content-type", b"image/gif")
     return PIXEL_GIF
 
 
-def init():
-    global db
-
-    if not db:
-        logger.info("Initializing GeoIP database.")
-        db = utils.Database(mmdb_path)
-        db.init()
-        if db.db:
-            logger.info("GeoIP database initialized.")
-        else:
-            db = None
-
-
+@defer.inlineCallbacks
 def update_data(user, request_data):
-    global db
+    # Request data
+    data = yield geolite_provider.query(request_data['device']['ip'])
+    if data:
+        # Choose data to return
+        user['keywords'].update({'country': data['country']})
+    else:
+        logger.warning("IP not found in GeoIP db.")
 
-    if db:
-        data = db.get_info(request_data['device']['ip'])
-        if data:
-            user['keywords'].update({'country': data['country']})
-        else:
-            logger.warning("IP not found in GeoIP db.")
-
-    return user
+    defer.returnValue(user)

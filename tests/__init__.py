@@ -1,4 +1,5 @@
 import json
+import logging
 
 import txmongo
 from mock import MagicMock, patch
@@ -11,6 +12,8 @@ from zope.interface import implementer
 
 import aduser.db as aduser_db
 from aduser import const, plugin, server_utils
+
+logging.disable(logging.WARNING)
 
 
 class WebclientTestCase(TestCase):

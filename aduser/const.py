@@ -27,6 +27,11 @@ COOKIE_NAME = bytes(os.getenv('ADUSER_COOKIE_NAME', 'AdsharesAdUserTracking'))
 #: `Environmental variable override: ADUSER_DATA_PROVIDER`
 DATA_PROVIDER = os.getenv('ADUSER_DATA_PROVIDER', 'aduser.plugins.examples.example')
 
+#: Enable or disable request cache. 1 for cache disabled, 0 for enabled.
+#:
+#: `Environmental variable override: ADUSER_DEBUG_WITHOUT_CACHE`
+DEBUG_WITHOUT_CACHE = bool(int(os.getenv('ADUSER_DEBUG_WITHOUT_CACHE', 0)))
+
 #: Tracking cookie expiry period. The enviromental variable accepts 'w' for weeks and 'd' for days. Format: {num}{format}, eg. '`4w`' for 4 weeks.
 #:
 #: `Environmental variable override: ADUSER_EXPIRY_PERIOD`

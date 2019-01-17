@@ -17,6 +17,4 @@ def initialize():
     :return:
     """
     global data
-
     data = importlib.import_module(const.DATA_PROVIDER)
-    data.init()

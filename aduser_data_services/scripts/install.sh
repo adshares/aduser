@@ -2,24 +2,22 @@
 
 set -e
 
+if [[ -v ${INSTALLATION_PATH} ]]; then
+
+    printf "INSTALLATION_PATH not defined"
+    exit 1
+
+fi
+
 # Create directories
 mkdir -p ${INSTALLATION_PATH}
-
-if [[ ${INSTALL_DATA_SERVICES_ONLY:-0} -eq 1 ]]; then
-    cd aduser_data_services
-fi
 
 mv Pipfile ${INSTALLATION_PATH}/
 mv Pipfile.lock ${INSTALLATION_PATH}/
 
 mv .venv ${INSTALLATION_PATH}/
 
-if [[ ${INSTALL_DATA_SERVICES_ONLY:-0} -eq 1 ]]; then
-    mv aduser_data_services ${INSTALLATION_PATH}/
-else
-    mv aduser ${INSTALLATION_PATH}/
-    mv daemon.py ${INSTALLATION_PATH}/
-fi
+mv aduser_data_services ${INSTALLATION_PATH}/
 
 cd ${INSTALLATION_PATH}/
 

@@ -105,7 +105,7 @@ class DataResource(Resource):
 
         req_text = request.content.read()
 
-        if req_text in cache:
+        if not const.DEBUG_WITHOUT_CACHE and req_text in cache:
             yield request.write(cache[req_text])
             yield request.finish()
             return
