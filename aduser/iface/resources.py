@@ -150,6 +150,7 @@ class DataResource(Resource):
         try:
             user_map = yield db_utils.get_mapping(post_data['uid'])
             cached_data = yield db_utils.get_user_data(user_map['tracking_id'])
+
         except TypeError:
             logger.debug('User not found')
 
@@ -157,8 +158,7 @@ class DataResource(Resource):
             request.finish()
             return
 
-        logger.debug('Cached data: ')
-        logger.debug(cached_data)
+        logger.debug('Cached data: {0}'.format(cached_data))
 
         # Update data with cached data
         if cached_data:
@@ -178,8 +178,7 @@ class DataResource(Resource):
         # Remove tracking info from response
         del data['tracking_id']
 
-        logger.debug('User data: ')
-        logger.debug(data)
+        logger.debug('User data: {0}'.format(data))
 
         # Update cache and return data in JSON.
         json_data = json.dumps(data)
@@ -208,6 +207,6 @@ class ApiInfoResource(Resource):
     isLeaf = True
 
     @staticmethod
-    def render_GET(request):
+    def render_GET(request):  # NOSONAR
         request.setHeader(b"content-type", b"application/json")
         return json.dumps({})

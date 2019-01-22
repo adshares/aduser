@@ -51,14 +51,14 @@ class WebclientTestCase(TestCase):
             self.body = json.dumps(body)
             self.length = len(self.body)
 
-        def startProducing(self, consumer):
+        def startProducing(self, consumer):  # NOSONAR
             consumer.write(self.body)
             return defer.succeed(None)
 
-        def pauseProducing(self):
+        def pauseProducing(self):  # NOSONAR
             pass
 
-        def stopProducing(self):
+        def stopProducing(self):  # NOSONAR
             pass
 
     @defer.inlineCallbacks
@@ -176,11 +176,11 @@ class AdUserTestCase:
         self.web_test_case = WebclientTestCase()
 
     @defer.inlineCallbacks
-    def setUp(self):
+    def setUp(self):  # NOSONAR
         yield self.db_test_case.setUp()
         self.web_test_case.setUp()
 
     @defer.inlineCallbacks
-    def tearDown(self):
+    def tearDown(self):  # NOSONAR
         yield self.db_test_case.tearDown()
         self.web_test_case.tearDown()

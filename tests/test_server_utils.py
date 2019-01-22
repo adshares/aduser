@@ -29,7 +29,7 @@ class TestServer(AdUserTestCase):
         self.assertEquals(404, response.code)
 
     @defer.inlineCallbacks
-    def test_getPixelPath(self):
+    def test_get_pixel_path(self):
 
         response = yield self.agent.request('GET', self.url + '/getPixelPath')
         self.assertEquals(200, response.code)
@@ -85,11 +85,10 @@ class TestServer(AdUserTestCase):
                                                 self.JsonBytesProducer(request_data))
             self.assertEquals(200, response.code)
             data = yield self.return_response_json(response)
-            print data
+
             for key in ['keywords', 'human_score', 'uid']:
                 self.assertIn(key, data.keys())
                 self.assertIsNotNone(data[key])
-            print data
 
     @defer.inlineCallbacks
     def test_data_with_cache(self):
@@ -107,7 +106,7 @@ class TestServer(AdUserTestCase):
                                                 None,
                                                 self.JsonBytesProducer(request_data))
             self.assertEquals(200, response.code)
-            print response
+
             data = yield self.return_response_json(response)
 
             response = yield self.agent.request('POST',
@@ -118,7 +117,6 @@ class TestServer(AdUserTestCase):
             data_cached = yield self.return_response_json(response)
 
             self.assertEqual(data, data_cached)
-            print data
 
     @defer.inlineCallbacks
     def test_taxonomy(self):
@@ -131,6 +129,6 @@ class TestServer(AdUserTestCase):
             self.assertIsNotNone(data[key])
 
     @defer.inlineCallbacks
-    def test_ApiInfo(self):
+    def test_api_info(self):
         response = yield self.agent.request('GET', self.url + '/info')
         self.assertEquals(200, response.code)
