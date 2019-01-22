@@ -5,9 +5,12 @@ from twisted.internet import defer
 from twisted.web.resource import NoResource, Resource
 from twisted.web.server import NOT_DONE_YET
 
-from aduser import const, plugin, utils
+import aduser.data as data_backend
 from aduser.db import utils as db_utils
+from aduser.iface import const as iface_const
+from aduser.utils import utils
 
+#: This cache is never cleared! Please improve.
 cache = {}
 
 
@@ -22,7 +25,7 @@ class PixelPathResource(Resource):
         request.setHeader(b"content-type", b"application/json")
         return '"http://{0}:{1}/{2}'.format(request.getHost().host,
                                             request.getHost().port,
-                                            const.PIXEL_PATH) + '/{adserver_id}/{user_id}/{nonce}.gif"'
+                                            iface_const.PIXEL_PATH) + '/{adserver_id}/{user_id}/{nonce}.gif"'
 
 
 class PixelFactory(Resource):
@@ -85,7 +88,7 @@ class UserPixelResource(Resource):
         logger.info({'tracking_id': tid,
                      'request': [h for h in request.requestHeaders.getAllRawHeaders()]})
 
-        return plugin.data.pixel(request)
+        return data_backend.provider.pixel(request)
 
 
 class DataResource(Resource):
@@ -101,15 +104,19 @@ class DataResource(Resource):
 
     @defer.inlineCallbacks
     def handle_data(self, request):
+        global cache
+
         logger = logging.getLogger(__name__)
 
         req_text = request.content.read()
 
-        if not const.DEBUG_WITHOUT_CACHE and req_text in cache:
+        # Check cache
+        if not iface_const.DEBUG_WITHOUT_CACHE and req_text in cache:
             yield request.write(cache[req_text])
             yield request.finish()
             return
 
+        # Parse data from request
         try:
             post_data = json.loads(req_text)
         except ValueError:
@@ -131,6 +138,7 @@ class DataResource(Resource):
                             'human_score': 0.5,
                             'keywords': {}}
 
+        # Missing fields in request
         except KeyError:
             logger.debug('Data invalid (KeyError)')
 
@@ -138,6 +146,7 @@ class DataResource(Resource):
             request.finish()
             return
 
+        # Try to get mapping and user data from db
         try:
             user_map = yield db_utils.get_mapping(post_data['uid'])
             cached_data = yield db_utils.get_user_data(user_map['tracking_id'])
@@ -150,11 +159,12 @@ class DataResource(Resource):
 
         logger.debug('Cached data: ')
         logger.debug(cached_data)
+
+        # Update data with cached data
         if cached_data:
             default_data['keywords'] = cached_data['keywords']
 
-        data = yield plugin.data.update_data(default_data, request_data)
-
+        data = yield data_backend.provider.update_data(default_data, request_data)
         data.update({'tracking_id': user_map['tracking_id']})
 
         if cached_data:
@@ -165,11 +175,13 @@ class DataResource(Resource):
         else:
             yield db_utils.update_user_data(data)
 
+        # Remove tracking info from response
         del data['tracking_id']
 
         logger.debug('User data: ')
         logger.debug(data)
 
+        # Update cache and return data in JSON.
         json_data = json.dumps(data)
         cache[req_text] = json_data
         yield request.write(json_data)
@@ -186,7 +198,7 @@ class TaxonomyResource(Resource):
     def render_GET(request):  # NOSONAR
 
         request.setHeader(b"content-type", b"application/json")
-        return json.dumps(plugin.data.taxonomy)
+        return json.dumps(data_backend.provider.taxonomy)
 
 
 class ApiInfoResource(Resource):

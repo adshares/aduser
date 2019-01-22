@@ -13,16 +13,9 @@ env:
     - HOST_PATH=/home/travis/build/adshares/aduser
     - BUILD_PATH=/build/aduser
     - BUILD_NAME=aduser_build
-    - ADUSER_PORT=9000
-    - ADUSER_TRACKING_SECRET=NotVerySecret_Proxy
-    - ADUSER_COOKIE_NAME=aduser_proxy_tid
-    - ADUSER_EXPIRY_PERIOD=4w
-    - ADUSER_LOG_CONFIG_FILE=$BUILD_PATH/config/log_config.json
-    - ADUSER_DATA_PROVIDER=aduser.plugins.examples.example
     - ADUSER_DATA_PATH=$BUILD_PATH/data
     - ADUSER_GEOLITE_PATH=$ADUSER_DATA_PATH/GeoLite2-City.mmdb
     - ADUSER_BROWSCAP_CSV_PATH=$ADUSER_DATA_PATH/browscap.csv
-    - ADUSER_PIXEL_PATH=pixel_path
     - PIPENV_DONT_LOAD_ENV=true
 
   matrix:

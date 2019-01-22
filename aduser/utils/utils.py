@@ -6,9 +6,7 @@ from datetime import datetime
 from hashlib import sha1
 from random import getrandbits
 
-from aduser import const
-
-logger = logging.getLogger(__name__)
+from aduser.utils import const
 
 
 def create_tracking_id(request):
@@ -18,6 +16,7 @@ def create_tracking_id(request):
     :param request: Instance of `twisted.web.http.Request`.
     :return: Base64 encoded tracking id with checksum.
     """
+    logger = logging.getLogger(__name__)
     logger.info("Creating new tracking id.")
 
     tid_elements = [int(time.time()) * 1000000,                                           # Microsecond epoch time
@@ -40,7 +39,7 @@ def tracking_id_checksum(uid):
     :return: Checksum for uid tracking id.
     """
     checksum_sha1 = sha1()
-    checksum_sha1.update(uid + const.SECRET)
+    checksum_sha1.update(uid + const.COOKIE_SECRET)
     return checksum_sha1.digest()[:6]
 
 
@@ -65,6 +64,7 @@ def attach_tracking_cookie(request):
     :param request: Instance of `twisted.web.http.Request` to attach the cookie to.
     :return: Tracking id.
     """
+    logger = logging.getLogger(__name__)
     tid = request.getCookie(const.COOKIE_NAME)
 
     if not (tid and is_tracking_id_valid(tid)):
@@ -73,7 +73,7 @@ def attach_tracking_cookie(request):
 
     logger.info("Updating tracking id.")
 
-    expiry_time = datetime.now() + const.EXPIRY_PERIOD
+    expiry_time = datetime.now() + const.COOKIE_EXPIRY_PERIOD
     expiry_string = 'Date: {0}'.format(expiry_time.strftime("%a, %d %b %Y %H:%M:%S GMT"))
 
     request.addCookie(const.COOKIE_NAME, tid, expires=expiry_string)

@@ -1,6 +1,6 @@
 import json
 
-from aduser.plugins.demo import const
+from aduser.data.demo import const as demo_const
 
 mock = None
 default_mock = {"label": "Interest",
@@ -25,4 +25,4 @@ def init(mock_data_file=None):
 
 
 if not mock:
-    init(const.MOCK_DATA_PATH)
+    init(demo_const.MOCK_DATA_PATH)

@@ -10,14 +10,18 @@ from twisted.web.client import Agent
 from twisted.web.iweb import IBodyProducer
 from zope.interface import implementer
 
+import aduser.data as aduser_data
 import aduser.db as aduser_db
-from aduser import const, plugin, server_utils
+from aduser.data import const as data_const
+from aduser.iface import server as iface_server
+import twisted
 
+twisted.internet.base.DelayedCall.debug = True
 logging.disable(logging.WARNING)
 
 
 class WebclientTestCase(TestCase):
-    data_plugin = const.DATA_PROVIDER
+    data_plugin = data_const.DATA_PROVIDER
 
     class ReceiverProtocol(Protocol):
         def __init__(self, finished):
@@ -73,29 +77,32 @@ class WebclientTestCase(TestCase):
 
     def setUp(self):  # NOSONAR
 
-        self.agent = Agent(reactor)
+        with patch('aduser.data.const.DATA_PROVIDER', self.data_plugin):
+            aduser_data.configure_plugin()
 
-        with patch('aduser.const.DATA_PROVIDER', self.data_plugin):
-            self.port = server_utils.configure_server()
+        self.port = iface_server.configure_server()
 
         self.url = 'http://{0}:{1}'.format(self.port.getHost().host,
                                            self.port.getHost().port)
 
-        self.timeout = 5
+        self.agent = Agent(reactor)
+        self.timeout = 1
 
     def tearDown(self):  # NOSONAR
+
         self.port.stopListening()
-        plugin.data = None
+        aduser_data.provider = None
 
 
 class DBTestCase(TestCase):
+
     @defer.inlineCallbacks
     def setUp(self):
         self.conn = yield aduser_db.get_mongo_connection()
         self.db = yield aduser_db.get_mongo_db()
 
         yield aduser_db.configure_db()
-        self.timeout = 5
+        self.timeout = 1
 
     @defer.inlineCallbacks
     def tearDown(self):
@@ -106,7 +113,6 @@ class DBTestCase(TestCase):
 
 try:
     import mongomock
-
 
     class MongoMockTestCase(TestCase):
 
@@ -161,3 +167,20 @@ try:
     db_test_case = MongoMockTestCase
 except ImportError:
     db_test_case = DBTestCase
+
+
+class AdUserTestCase:
+
+    def __init__(self):
+        self.db_test_case = db_test_case()
+        self.web_test_case = WebclientTestCase()
+
+    @defer.inlineCallbacks
+    def setUp(self):
+        yield self.db_test_case.setUp()
+        self.web_test_case.setUp()
+
+    @defer.inlineCallbacks
+    def tearDown(self):
+        yield self.db_test_case.tearDown()
+        self.web_test_case.tearDown()

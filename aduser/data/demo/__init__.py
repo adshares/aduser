@@ -3,8 +3,8 @@ import random
 
 from twisted.internet import defer
 
-import aduser.plugins.simple as simple_plugin
-from aduser.plugins.demo import mock_data
+import aduser.data.simple as simple_plugin
+from aduser.data.demo import mock_data
 
 taxonomy_name = 'demo'
 taxonomy_version = '0.0.1'

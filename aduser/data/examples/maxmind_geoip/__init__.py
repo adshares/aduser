@@ -4,7 +4,7 @@ from base64 import b64decode
 
 from twisted.internet import defer
 
-from aduser.plugins.unix_client import UnixDataProvider
+from aduser.data import UnixDataProvider
 
 taxonomy_name = 'examples.maxmind_geoip'
 taxonomy_version = '0.0.1'

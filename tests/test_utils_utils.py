@@ -5,8 +5,7 @@ from hashlib import sha1
 from mock import MagicMock
 from twisted.trial import unittest
 
-from aduser import utils
-from aduser.utils import is_tracking_id_valid, tracking_id_checksum
+from aduser.utils import utils
 
 logging.disable(logging.WARNING)
 
@@ -37,10 +36,10 @@ class TestTrackingId(unittest.TestCase):
         uid_sha1.update('')
         uid = uid_sha1.digest()[:16]
 
-        tid = b64encode(uid + tracking_id_checksum(uid))
+        tid = b64encode(uid + utils.tracking_id_checksum(uid))
 
-        self.assertTrue(is_tracking_id_valid(tid))
+        self.assertTrue(utils.is_tracking_id_valid(tid))
 
     def test_tracking_id_checksum(self):
 
-        self.assertEqual(6, len(tracking_id_checksum('fake_uid')))
+        self.assertEqual(6, len(utils.tracking_id_checksum('fake_uid')))

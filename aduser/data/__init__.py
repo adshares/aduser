@@ -1,8 +1,27 @@
+import importlib
 import json
 
 from twisted.internet import defer, protocol, reactor
 from twisted.internet.endpoints import UNIXClientEndpoint
 from twisted.internet.error import ConnectError
+
+from aduser.data import const as data_const
+
+#: Attribute where the data plugin is instantiated.
+provider = None
+
+
+def configure_plugin():
+    """
+    Initialize the plugin by name.
+    Searches for a package with the same name in ADUSER_PLUGINS_PATH and imports it.
+    Allows access via `data` attribute.
+
+    :return:
+    """
+    global provider
+    provider = importlib.import_module(data_const.DATA_PROVIDER)
+    return provider
 
 
 class JSONProtocol(protocol.Protocol):
@@ -17,6 +36,7 @@ class JSONProtocol(protocol.Protocol):
         :return:
         """
         self.dataDeferred.callback(json.loads(data))
+
 
     def connectionMade(self):
         """
@@ -40,7 +60,7 @@ class UnixDataProvider:
     """
 
     def __init__(self, socket_path):
-        self.endpoint = UNIXClientEndpoint(reactor, socket_path)
+        self.endpoint = UNIXClientEndpoint(reactor, socket_path, timeout=1)
 
     @defer.inlineCallbacks
     def query(self, data):

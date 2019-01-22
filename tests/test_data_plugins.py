@@ -2,37 +2,37 @@ from mock import mock_open, patch
 from twisted.internet import defer
 from twisted.trial.unittest import TestCase
 
-from aduser.plugins import demo
-from aduser.plugins.demo import mock_data as demo_mock_data
+from aduser.data import demo
+from aduser.data.demo import mock_data as demo_mock_data
 from test_server_utils import TestServer
 
 
-class ExampleTestServer(TestServer):
-    data_plugin = 'aduser.plugins.examples.example'
+class ExampleBrowscapTestServer(TestServer):
+    data_plugin = 'aduser.data.examples.browscap'
 
 
-class MaxmindTestServer(TestServer):
-    data_plugin = 'aduser.plugins.examples.maxmind_geoip'
+class ExampleExampleTestServer(TestServer):
+    data_plugin = 'aduser.data.examples.example'
+
+
+class ExampleIPapiTestServer(TestServer):
+    data_plugin = 'aduser.data.examples.ipapi'
+
+
+class ExampleMaxmindTestServer(TestServer):
+    data_plugin = 'aduser.data.examples.maxmind_geoip'
 
 
 class SkeletonTestServer(TestServer):
-    data_plugin = 'aduser.plugins.skeleton'
-
-
-class IPapiTestServer(TestServer):
-    data_plugin = 'aduser.plugins.examples.ipapi'
-
-
-class BrowscapTestServer(TestServer):
-    data_plugin = 'aduser.plugins.examples.browscap'
+    data_plugin = 'aduser.data.skeleton'
 
 
 class SimpleTestServer(TestServer):
-    data_plugin = 'aduser.plugins.simple'
+    data_plugin = 'aduser.data.simple'
 
 
 class DemoTestServer(SimpleTestServer):
-    data_plugin = 'aduser.plugins.demo'
+    data_plugin = 'aduser.data.demo'
 
 
 class ExtraDemoTestServer(TestCase):

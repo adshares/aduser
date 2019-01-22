@@ -3,7 +3,7 @@ from mock import Mock, MagicMock
 from twisted.trial.unittest import TestCase as TrialTestCase
 
 from unittest import TestCase
-from aduser.plugins.unix_client import JSONProtocol, DataClientFactory, UnixDataProvider
+from aduser.data import JSONProtocol, DataClientFactory, UnixDataProvider
 from twisted.internet import defer
 
 

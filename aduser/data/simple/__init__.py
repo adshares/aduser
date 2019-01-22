@@ -4,8 +4,8 @@ from base64 import b64decode
 
 from twisted.internet import defer
 
-from aduser.plugins.simple import taxonomy_utils
-from aduser.plugins.unix_client import UnixDataProvider
+from aduser.data import UnixDataProvider
+from aduser.data.simple import taxonomy_utils
 
 taxonomy_name = 'simple'
 taxonomy_version = '0.0.1'
