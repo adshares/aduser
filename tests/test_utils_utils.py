@@ -5,7 +5,7 @@ from hashlib import sha1
 from mock import MagicMock
 from twisted.trial import unittest
 
-from aduser.utils import utils
+from aduser.utils import const, utils
 
 logging.disable(logging.WARNING)
 
@@ -43,3 +43,33 @@ class TestTrackingId(unittest.TestCase):
     def test_tracking_id_checksum(self):
 
         self.assertEqual(6, len(utils.tracking_id_checksum('fake_uid')))
+
+    def test_attach_tracking_cookie(self):
+
+        # Unknown user
+        request = MagicMock()
+
+        # No cookie found
+        request.getCookie.return_value = None
+
+        tid = utils.attach_tracking_cookie(request)
+        self.assertIsNotNone(tid)
+
+        # Make sure adding cookie worked
+        self.assertTrue(request.addCookie.called)
+        self.assertTrue(request.addCookie.called_with(const.COOKIE_NAME, tid))
+
+        # Known user
+        request = MagicMock()
+
+        # No cookie found
+        request.getCookie.return_value = tid
+
+        new_tid = utils.attach_tracking_cookie(request)
+        self.assertIsNotNone(new_tid)
+        # tid and new_tid should be the same
+        self.assertEqual(tid, new_tid)
+
+        # Make sure adding cookie worked
+        self.assertTrue(request.addCookie.called)
+        self.assertTrue(request.addCookie.called_with(const.COOKIE_NAME, new_tid))
