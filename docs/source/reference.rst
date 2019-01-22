@@ -5,5 +5,5 @@ Reference
    :maxdepth: 0
 
    aduser
-   aduser.plugins
+   aduser.data
    daemon

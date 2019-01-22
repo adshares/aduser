@@ -1,13 +1,23 @@
 Contributing
 ============
 
-Code
-----
+Code and issues
+---------------
 
 The code is on github: https://github.com/adshares/aduser
 
+Please submit issues there.
+
+
+Installation for development
+----------------------------
+
+Please see `deploy` for detailed instructions.
+
 Documentation
 -------------
+
+All documentation dependencies are installed together with development dependencies.
 
 The documentation can be build using Sphinx with the following extensions:
 
@@ -15,12 +25,16 @@ The documentation can be build using Sphinx with the following extensions:
 * sphinxcontrib-httpdomain (api documentation)
 * sphinx-jsondomain (fork by boolangery) (api/json objects documentation)
 
-**Installation**
 
-``pipenv install --dev``
+**Building documentation**
 
-**Building**
+.. code-block:: sh
 
-``pipenv run build_docs``
+    pipenv run build_docs
 
-When documenting the API
+When documenting the API, you should first update the JSON objects in `aduser.iface.proto`. You can then use Sphinx generated documentation to paste response examples into API methods documentation.
+
+Tests
+-----
+
+Please see `testing` for detailed instructions.

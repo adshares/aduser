@@ -1,10 +1,10 @@
-aduser.plugins.examples.ipapi package
+aduser.data.examples.ipapi package
 =====================================
 
 Module contents
 ---------------
 
-.. automodule:: aduser.plugins.examples.ipapi
+.. automodule:: aduser.data.examples.ipapi
     :members:
     :undoc-members:
     :show-inheritance:

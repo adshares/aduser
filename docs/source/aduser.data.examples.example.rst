@@ -1,10 +1,10 @@
-aduser.plugins.examples.example package
+aduser.data.examples.example package
 =======================================
 
 Module contents
 ---------------
 
-.. automodule:: aduser.plugins.examples.example
+.. automodule:: aduser.data.examples.example
     :members:
     :undoc-members:
     :show-inheritance:

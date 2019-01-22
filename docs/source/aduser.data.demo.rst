@@ -1,14 +1,12 @@
-aduser.plugins.simple package
+aduser.data.demo package
 =============================
 
-.. toctree::
 
-    aduser.plugins.simple.utils
 
 Module contents
 ---------------
 
-.. automodule:: aduser.plugins.simple
+.. automodule:: aduser.data.demo
     :members:
     :undoc-members:
     :show-inheritance:
