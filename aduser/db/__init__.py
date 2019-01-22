@@ -9,6 +9,8 @@ from aduser.db import const as db_consts
 def configure_db():
     """
     Configures the database
+
+    :return:
     """
     yield get_mongo_db()
 
@@ -27,6 +29,7 @@ def configure_db():
 
 def get_mongo_db():
     """
+    Get MongoDB database.
 
     :return: MongoDB instance
     """
@@ -36,9 +39,10 @@ def get_mongo_db():
 
 def get_collection(name):
     """
+    Get MongoDB collection.
 
     :param name: Name of MongoDB collection
-    :return: deferred instance of :class:`txmongo.collection.Collection`.
+    :return: Deferred instance of :class:`txmongo.collection.Collection`.
     """
     db = get_mongo_db()
     return getattr(db, name)
@@ -50,6 +54,7 @@ MONGO_CONNECTION = None
 
 def get_mongo_connection():
     """
+    Make MongoDB connection available.
 
     :return: Global connection to MongoDB
     """
@@ -64,6 +69,8 @@ def get_mongo_connection():
 def disconnect():
     """
     Disconnects asynchronously and removes global connection.
+
+    :return:
     """
     global MONGO_CONNECTION
     if MONGO_CONNECTION:
