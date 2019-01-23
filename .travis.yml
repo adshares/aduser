@@ -80,6 +80,9 @@ jobs:
 
         - in_docker pipenv run coverage report -m"
 
+        # Test documentation building
+        - in_docker pipenv run build_docs -W --keep-going"
+
         - sonar-scanner
 
         - in_docker /bin/bash scripts/install.sh"
