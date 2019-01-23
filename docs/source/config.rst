@@ -4,10 +4,12 @@ Configuration
 Configuration is controlled through environmental variables. Default values are provided below.
 
 .. NOTE::
-    Configuration items you should specially consider in initial deployment:
+    Configuration items you should especially consider in initial deployment:
 
     * Tracking cookie name
+    * Tracking cookie secret
     * Tracking id expiration
+    * Data provider
 
 Data providers (aduser.data.consts)
 -----------------------------------
