@@ -19,7 +19,7 @@ def pixel(request):
     Return a valid pixel.
 
     :param request: Instance of `twisted.web.http.Request`.
-    :return:
+    :return: Pixel value
     """
     request.setHeader(b"content-type", b"image/gif")
     return PIXEL_GIF

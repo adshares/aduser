@@ -1,5 +1,4 @@
 import json
-import logging
 from base64 import b64decode
 
 from twisted.internet import defer, reactor
@@ -8,8 +7,7 @@ from twisted.web.client import Agent
 
 # http://ip-api.com/docs/api:serialized_php#usage_limits
 
-logger = logging.getLogger(__name__)
-
+#: Meta information - taxonomy name
 taxonomy_name = 'examples.ipapi'
 taxonomy_version = '0.0.1'
 taxonomy = {'meta': {'name': taxonomy_name,
@@ -18,6 +16,7 @@ taxonomy = {'meta': {'name': taxonomy_name,
                       'key': 'countryCode',
                       'type': 'input'}]}
 
+#: Twisted web client
 agent = Agent(reactor)
 
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
@@ -42,7 +41,13 @@ def pixel(request):
 
 @defer.inlineCallbacks
 def update_data(user, request_data):
+    """
+    Update user data
 
+    :param user: User data to update
+    :param request_data: Request data - must include IP address.
+    :return: Updated user data (via deferred)
+    """
     url = 'http://ip-api.com/json/' + request_data['device']['ip']
 
     response = yield agent.request('GET', bytes(url))

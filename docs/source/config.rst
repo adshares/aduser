@@ -9,8 +9,8 @@ Configuration is controlled through environmental variables. Default values are 
     * Tracking cookie name
     * Tracking id expiration
 
-Calculations (aduser.stats.consts)
----------------------------------
+Data providers (aduser.data.consts)
+-----------------------------------
 
 .. automodule:: aduser.data.const
     :members:
@@ -18,7 +18,7 @@ Calculations (aduser.stats.consts)
     :show-inheritance:
 
 Database (aduser.db.const)
--------------------------
+--------------------------
 
 .. automodule:: aduser.db.const
     :members:
@@ -26,7 +26,7 @@ Database (aduser.db.const)
     :show-inheritance:
 
 Interface (aduser.iface.consts)
-------------------------------
+-------------------------------
 
 .. automodule:: aduser.iface.const
     :members:
@@ -34,15 +34,12 @@ Interface (aduser.iface.consts)
     :show-inheritance:
 
 Utilities (aduser.utils.consts)
-------------------------------
+-------------------------------
 
 .. automodule:: aduser.utils.const
     :members:
     :undoc-members:
     :show-inheritance:
-
-
-
 
 Logging
 -------

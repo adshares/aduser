@@ -1,8 +1,13 @@
 aduser.iface package
 ====================
 
-Submodules
-----------
+aduser.iface module
+-------------------
+
+.. automodule:: aduser.iface
+    :members:
+    :show-inheritance:
+
 
 aduser.iface.resources module
 -----------------------------
@@ -16,13 +21,5 @@ aduser.iface.server module
 --------------------------
 
 .. automodule:: aduser.iface.server
-    :members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: aduser.iface
     :members:
     :show-inheritance:

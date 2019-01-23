@@ -1,8 +1,6 @@
-aduser.data.examples.example package
-=======================================
+aduser.data.examples.example module
+===================================
 
-Module contents
----------------
 
 .. automodule:: aduser.data.examples.example
     :members:

@@ -1,8 +1,12 @@
 aduser.utils package
 ====================
 
-Submodules
-----------
+aduser.utils module
+-------------------
+
+.. automodule:: aduser.utils
+    :members:
+    :show-inheritance:
 
 aduser.utils.logs module
 ------------------------
@@ -19,9 +23,3 @@ aduser.utils.utils module
     :show-inheritance:
 
 
-Module contents
----------------
-
-.. automodule:: aduser.utils
-    :members:
-    :show-inheritance:

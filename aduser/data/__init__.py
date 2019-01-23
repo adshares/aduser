@@ -25,22 +25,27 @@ def configure_plugin():
 
 
 class JSONProtocol(protocol.Protocol):
+    """
+    Simple data protocol which receives JSON data.
 
+    """
     def __init__(self):
+        """
+        Creates the deferred that waits for response data.
+        """
         self.dataDeferred = defer.Deferred()
 
     def dataReceived(self, data):
         """
-        Get data and send it to data callback
+        Get response data and send it to data callback.
 
         :return:
         """
         self.dataDeferred.callback(json.loads(data))
 
-
     def connectionMade(self):
         """
-        Send query to data backend (data stored in factory object)
+        Send query to data backend (query value is stored in factory object)
 
         :return:
         """
@@ -48,18 +53,31 @@ class JSONProtocol(protocol.Protocol):
 
 
 class DataClientFactory(protocol.ClientFactory):
+    """
+    Simple factory for JSON communication.
+    """
     protocol = JSONProtocol
 
     def __init__(self, data):
+        """
+        Store query value (for use by child protocols)
+
+        :param data: Query value
+        """
         self.data = data
 
 
 class UnixDataProvider:
     """
-    Actual client
+    Actual Unix socket client.
     """
 
     def __init__(self, socket_path):
+        """
+        Configure the endpoint
+
+        :param socket_path: Path to server socket.
+        """
         self.endpoint = UNIXClientEndpoint(reactor, socket_path, timeout=1)
 
     @defer.inlineCallbacks

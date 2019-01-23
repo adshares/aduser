@@ -1,5 +1,5 @@
-Plugins (aduser.plugins package)
-================================
+aduser.data package
+===================
 
 .. toctree::
 

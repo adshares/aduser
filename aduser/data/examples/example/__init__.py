@@ -1,11 +1,16 @@
 import random
 from base64 import b64decode
 
+#: Base64 encoded 1x1 GIF
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
 
-
+#: Meta information - taxonomy name
 taxonomy_name = 'example'
+
+#: Meta information - taxonomy version
 taxonomy_version = '0.0.1'
+
+#: Taxonomy meta information with data
 taxonomy = {'meta': {'name': taxonomy_name,
                      'version': taxonomy_version},
             'data': [{'label': 'Interests',
@@ -37,7 +42,13 @@ def pixel(request):
 
 
 def update_data(data, request_data):
-    # Ignore request_data
+    """
+    Choose random values from a small list.
+
+    :param data: User data to update
+    :param request_data: Request data (ignored)
+    :return: Updated user data
+    """
     global taxonomy
 
     input_choices = ['Professor X', 'Deadpool', 'Aquaman', 'professorX']
