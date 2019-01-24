@@ -1,5 +1,5 @@
 import json
-import logging
+import logging.config
 import os
 from aduser.utils import const as utils_const
 
@@ -13,10 +13,8 @@ def setup():
 
     :return:
     """
-    if hasattr(logging, utils_const.LOG_LEVEL):
-        loglevel = getattr(logging, utils_const.LOG_LEVEL)
-    else:
-        loglevel = logging.DEBUG
+
+    loglevel = getattr(logging, utils_const.LOG_LEVEL)
 
     # Default logging config
     logging.basicConfig(format='[%(asctime)s] %(name)-20s %(levelname)-9s %(message)s',
