@@ -136,7 +136,7 @@ def get_values():
                       {"key": "EH", "label": "Western Sahara"}, {"key": "YE", "label": "Yemen"},
                       {"key": "ZM", "label": "Zambia"}, {"key": "ZW", "label": "Zimbabwe"}]
              },
-            {'label': 'Device type', 'key': 'device_type',
+            {'label': 'Device type', 'key': 'deviceType',
              'type': 'dict',
              'data': [{'key': 'car_entertainment_system', 'label': 'Car Entertainment System'},
                       {'key': 'console', 'label': 'Console'}, {'key': 'desktop', 'label': 'Desktop'},
