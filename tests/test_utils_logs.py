@@ -64,7 +64,7 @@ class TestContribLogs(unittest.TestCase):
                       """
 
         # Test custom setup
-        utils_logs.utils_consts.LOG_CONFIG_JSON_FILE = True
+        utils_logs.utils_const.LOG_CONFIG_JSON_FILE = True
         with patch("os.path.exists", MagicMock(return_value=True)):
             with patch("__builtin__.open", mock_open(read_data=json_config)):
                 utils_logs.setup()
