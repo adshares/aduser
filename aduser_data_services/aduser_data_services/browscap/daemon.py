@@ -63,8 +63,7 @@ def init_database():
 
 def configure_server():
     endpoint = UNIXServerEndpoint(reactor, SOCK_FILE)
-    endpoint.listen(BrowscapProtocolFactory())
-    return endpoint
+    return endpoint.listen(BrowscapProtocolFactory())
 
 
 if __name__ == '__main__':
@@ -73,7 +72,7 @@ if __name__ == '__main__':
 
     init_database()
 
-    server = configure_server()
+    port = configure_server()
 
     print("Listening on {0}.".format(SOCK_FILE))
 
