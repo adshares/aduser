@@ -16,6 +16,7 @@ SOCK_FILE = os.getenv('ADUSER_DATA_GEOLITE_SOCK_FILE', '/tmp/aduser-data-geolite
 #: Path for GeoLite database file (mmdb)
 GEOLITE_PATH = os.getenv('ADUSER_DATA_GEOLITE_PATH', '/var/www/aduser_data/GeoLite2-City.mmdb')
 
+#: Geolite database instance
 geolite_database = None
 
 
@@ -70,8 +71,7 @@ def init_database():
 
 def configure_server():
     endpoint = UNIXServerEndpoint(reactor, SOCK_FILE)
-    endpoint.listen(GeoLiteProtocolFactory())
-    return endpoint
+    return endpoint.listen(GeoLiteProtocolFactory())
 
 
 if __name__ == '__main__':
@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
     init_database()
 
-    server = configure_server()
+    port = configure_server()
 
     print("Listening on {0}.".format(SOCK_FILE))
 

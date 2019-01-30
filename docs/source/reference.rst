@@ -2,8 +2,8 @@ Reference
 =========
 
 .. toctree::
-   :maxdepth: 0
+   :maxdepth: 2
 
    aduser
-   aduser.plugins
+   aduser.data
    daemon

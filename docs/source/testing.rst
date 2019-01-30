@@ -1,20 +1,46 @@
 Testing
 =======
 
-For testing you'll need additional libraries (mock and mongomock). Install the environment:
+For testing you'll need additional libraries (mock, mongomock, behave). Install the environment:
 
-    ``pipenv install --dev``
+.. code-block:: sh
+
+    pipenv install --dev
+
+You might need to set PYTHONPATH. If you're in the checkout directory, you can:
+
+.. code-block:: sh
+
+    export PYTHONPATH=`pwd`
 
 Test using Twisted Trial and mongomock:
 
-    ``pipenv run tests``
+.. code-block:: sh
+
+    pipenv run tests
 
 Test with a live MongoDB instance, without mongomock:
 
-    ``pipenv run tests_mongo``
+.. code-block:: sh
+
+    pipenv run tests_mongo
 
 Test code coverage, after running tests run:
 
-    ``pipenv run quality``
+.. code-block:: sh
 
-See ``Pipfile`` for command details.
+    pipenv run quality
+
+To see code coverage, run:
+
+.. code-block:: sh
+
+    pipenv run python coverage report -m
+
+To do behavioural tests, run:
+
+.. code-block:: sh
+
+    pipenv run behave
+
+See `Pipfile` for command details.

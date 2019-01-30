@@ -7,7 +7,6 @@ When run, it does the following (in order):
 
 * sets up logging
 * configures database
-* initializes cache
-* loads and initializes data plugins
+* configures data plugin
 * sets up the interface
 * starts listening for connections

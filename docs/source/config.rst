@@ -3,10 +3,18 @@ Configuration
 
 Configuration is controlled through environmental variables. Default values are provided below.
 
-Application (aduser.const)
---------------------------
+.. NOTE::
+    Configuration items you should especially consider in initial deployment:
 
-.. automodule:: aduser.const
+    * Tracking cookie name
+    * Tracking cookie secret
+    * Tracking id expiration
+    * Data provider
+
+Data providers (aduser.data.consts)
+-----------------------------------
+
+.. automodule:: aduser.data.const
     :members:
     :undoc-members:
     :show-inheritance:
@@ -19,21 +27,23 @@ Database (aduser.db.const)
     :undoc-members:
     :show-inheritance:
 
+Interface (aduser.iface.consts)
+-------------------------------
+
+.. automodule:: aduser.iface.const
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Utilities (aduser.utils.consts)
+-------------------------------
+
+.. automodule:: aduser.utils.const
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Logging
 -------
 
-*config/log_config.json* contains Python logging configuration. You can learn more about it `here. <https://docs.python.org/2/library/logging.config.html>`_ The AdUser daemon will look for this file in the ``$ADUSER_ROOT/aduser/config`` directory, where ``$ADUSER_ROOT`` is an environmental variable.
-
-Logging config for the Python app can be found in the *config/log_config.json* file. By default, it's captured by supervisor to ``$ADUSER_ROOT/log/aduser.log``. Other logs (MongoDB, supervisord) can also be found in the same directory.
-4
-
-.. NOTE::
-    Configuration items you should specially consider in initial deployment:
-
-    * Tracking cookie name
-    * Tracking id expiration
-
-Supervisor
-----------
-
-Config for supervisor daemon is in *config/aduser.conf*.
+Log messages are by default sent to stdout/stderr.

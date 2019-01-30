@@ -1,63 +1,37 @@
-import logging
-
-from mock import MagicMock, patch
+from mock import patch
 from twisted.internet import defer
-from twisted.trial.unittest import TestCase
 
-from aduser import const, server_utils
-from tests import WebclientTestCase
-
-
-class InvalidPluginServer(TestCase):
-
-    def test_main(self):
-
-        with self.assertRaises(SystemExit):
-            with patch('aduser.plugin.initialize', MagicMock()):
-                # Suppress this case of error logging
-                logging.disable(logging.ERROR)
-                self.port = server_utils.configure_server()
-
-        # Reset logging
-        logging.disable(logging.WARNING)
+from aduser.iface import const as iface_const
+from tests import AdUserTestCase
 
 
-class TestServer(WebclientTestCase):
+class TestServer(AdUserTestCase):
 
     @defer.inlineCallbacks
     def test_pixel(self):
+
+        base_pixel_url = self.url + '/' + iface_const.PIXEL_PATH
+
         response = yield self.agent.request('GET',
-                                            self.url +
-                                            '/' +
-                                            const.PIXEL_PATH +
-                                            '/serverid/userid/nonce.gif')
+                                            base_pixel_url + '/serverid/userid/nonce.gif')
         self.assertEquals(200, response.code)
 
         response = yield self.agent.request('GET',
-                                            self.url +
-                                            '/' +
-                                            const.PIXEL_PATH +
-                                            '/')
+                                            base_pixel_url + '/')
         self.assertEquals(404, response.code)
 
         response = yield self.agent.request('GET',
-                                            self.url +
-                                            '/' +
-                                            const.PIXEL_PATH +
-                                            '/serverid/')
+                                            base_pixel_url + '/serverid/')
         self.assertEquals(404, response.code)
 
         response = yield self.agent.request('GET',
-                                            self.url +
-                                            '/' +
-                                            const.PIXEL_PATH +
-                                            '/serverid/userid/')
+                                            base_pixel_url + '/serverid/userid/')
         self.assertEquals(404, response.code)
 
     @defer.inlineCallbacks
-    def test_getPixelPath(self):
-        response = yield self.agent.request('GET',
-                                            self.url + '/getPixelPath')
+    def test_get_pixel_path(self):
+
+        response = yield self.agent.request('GET', self.url + '/getPixelPath')
         self.assertEquals(200, response.code)
 
         data = yield self.return_response_json(response)
@@ -69,7 +43,7 @@ class TestServer(WebclientTestCase):
     @defer.inlineCallbacks
     def test_data(self):
 
-        with patch('aduser.const.DEBUG_WITHOUT_CACHE', 1):
+        with patch('aduser.iface.const.DEBUG_WITHOUT_CACHE', 1):
             request_data = {'uid': "000_111",
                             'domain': 'http://example.com',
                             'ua': '',
@@ -84,7 +58,7 @@ class TestServer(WebclientTestCase):
             response = yield self.agent.request('GET',
                                                 self.url +
                                                 '/' +
-                                                const.PIXEL_PATH +
+                                                iface_const.PIXEL_PATH +
                                                 '/0/111/nonce.gif')
             self.assertEquals(200, response.code)
 
@@ -119,7 +93,7 @@ class TestServer(WebclientTestCase):
     @defer.inlineCallbacks
     def test_data_with_cache(self):
 
-        with patch('aduser.const.DEBUG_WITHOUT_CACHE', 0):
+        with patch('aduser.iface.const.DEBUG_WITHOUT_CACHE', 0):
             # Cache test
 
             request_data = {'uid': "0_111",
@@ -132,6 +106,7 @@ class TestServer(WebclientTestCase):
                                                 None,
                                                 self.JsonBytesProducer(request_data))
             self.assertEquals(200, response.code)
+
             data = yield self.return_response_json(response)
 
             response = yield self.agent.request('POST',
@@ -154,6 +129,6 @@ class TestServer(WebclientTestCase):
             self.assertIsNotNone(data[key])
 
     @defer.inlineCallbacks
-    def test_ApiInfo(self):
+    def test_api_info(self):
         response = yield self.agent.request('GET', self.url + '/info')
         self.assertEquals(200, response.code)
