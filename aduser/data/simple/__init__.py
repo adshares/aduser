@@ -58,7 +58,7 @@ def update_data_from_browscap(user, request_data):
     if browser_caps:
         # Choose data to return
         user['keywords'].update({'platform': browser_caps.get('platform'),
-                                 'device_type': browser_caps.get('device_type'),
+                                 'deviceType': browser_caps.get('device_type'),
                                  'javascript': browser_caps.get('javascript'),
                                  'browser': browser_caps.get('browser')})
 
