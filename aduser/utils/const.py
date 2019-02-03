@@ -16,7 +16,7 @@ COOKIE_NAME = bytes(os.getenv('ADUSER_COOKIE_NAME', 'AdsharesAdUserTracking'))
 #:
 #: `Environmental variable override: ADUSER_EXPIRY_PERIOD`
 COOKIE_EXPIRY_PERIOD = timedelta(weeks=4)
-config_period = re.match('^(\d+)(\w)$', os.getenv('ADUSER_COOKIE_EXPIRY_PERIOD', '4w'))
+config_period = re.match(r'^(\d+)(\w)$', os.getenv('ADUSER_COOKIE_EXPIRY_PERIOD', '4w'))
 
 if config_period:
     count = int(config_period.group(1))

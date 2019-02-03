@@ -5,14 +5,14 @@ from twisted.internet import defer
 from twisted.trial.unittest import TestCase
 from twisted.web.resource import NoResource, Resource
 
-import aduser
 from aduser.iface import resources
+from aduser.data import configure_plugin
 
 
 class TestResources(TestCase):
 
     def setUp(self):
-        aduser.data.configure_plugin()
+        configure_plugin()
 
     def test_pixel_path_resource(self):
 
@@ -101,7 +101,7 @@ class TestResources(TestCase):
         request = MagicMock()
 
         request.content.read.return_value = '{}'
-        ret = yield dr.handle_data(request)
+        yield dr.handle_data(request)
 
         request.write.assert_not_called()
         request.finish.assert_called()
@@ -113,7 +113,7 @@ class TestResources(TestCase):
         request = MagicMock()
 
         request.content.read.return_value = '}{'
-        ret = yield dr.handle_data(request)
+        yield dr.handle_data(request)
 
         request.write.assert_not_called()
         request.finish.assert_called()
@@ -125,7 +125,7 @@ class TestResources(TestCase):
         request = MagicMock()
 
         request.content.read.return_value = '{"ip": "1", "ua": "agent", "uid": "uid"}'
-        ret = yield dr.handle_data(request)
+        yield dr.handle_data(request)
 
         request.write.assert_not_called()
         request.finish.assert_called()
@@ -145,7 +145,7 @@ class TestResources(TestCase):
                                                'human_score': 1.0}
 
         with patch('aduser.iface.resources.db_utils', db_utils):
-            ret = yield dr.handle_data(request)
+            yield dr.handle_data(request)
 
         request.write.assert_called()
         request.finish.assert_called()
@@ -155,7 +155,7 @@ class TestResources(TestCase):
         request = MagicMock()
         request.content.read.return_value = '{"ip": "1", "ua": "agent", "uid": "uid"}'
 
-        ret = yield dr.handle_data(request)
+        yield dr.handle_data(request)
 
         request.write.assert_called()
         request.finish.assert_called()
@@ -174,7 +174,7 @@ class TestResources(TestCase):
 
         with patch('aduser.iface.resources.iface_const.DEBUG_WITHOUT_CACHE', 1):
             with patch('aduser.iface.resources.db_utils', db_utils):
-                ret = yield dr.handle_data(request)
+                yield dr.handle_data(request)
 
         request.write.assert_called()
         request.finish.assert_called()

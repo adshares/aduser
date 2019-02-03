@@ -77,7 +77,7 @@ class ExtraDemoTestServer(TestCase):
         self.assertIn(user['keywords']['interest'], ["1", "2"])
 
     def test_mock_file(self):
-        with patch('__builtin__.open', mock_open(read_data='{}')) as m:
+        with patch('__builtin__.open', mock_open(read_data='{}')):
             demo_mock_data.init('fake_path')
 
         self.assertIsNotNone(demo_mock_data.mock)
