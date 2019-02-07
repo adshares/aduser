@@ -3,7 +3,7 @@ import os
 #: Twisted TCP port number, ie. AdUser server port
 #:
 #: `Environmental variable override: ADUSER_PORT`
-SERVER_PORT = int(os.getenv('ADUSER_PORT', 9090))
+SERVER_PORT = int(os.getenv('ADUSER_PORT', 8010))
 
 #: Configurable path to pixel. Becomes start of pixel request paths returned by getPixelPath.
 #:
