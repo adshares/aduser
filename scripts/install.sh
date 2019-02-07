@@ -18,8 +18,6 @@ fi
 mv Pipfile ${INSTALLATION_PATH}/
 mv Pipfile.lock ${INSTALLATION_PATH}/
 
-mv .venv ${INSTALLATION_PATH}/
-
 if [[ ${INSTALL_DATA_SERVICES_ONLY:-0} -eq 1 ]]
 then
     mv aduser_data_services ${INSTALLATION_PATH}/
