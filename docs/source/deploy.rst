@@ -18,7 +18,6 @@ For a `tl;dr` solution, please check `Quick requirements install`_ for Ubuntu 18
 Python
 ~~~~~~
 
-
 You'll need Python 2.7. Other versions are untested. It may be already installed on your system, you can check it by typing:
 
 .. code-block:: sh
@@ -94,7 +93,6 @@ Quick requirements install
 The following scripts were designed for Ubuntu 18.04.
 
 .. code-block:: bash
-
 
     git clone https://github.com/adshares/aduser.git
     cd aduser

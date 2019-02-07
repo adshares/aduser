@@ -26,7 +26,7 @@
 AdUser is a back-end service for determining impression context.
 It accepts requests from [AdServer](https://github.com/adshares/adserver).
 
-## Quick Start (on Ubuntu 18.04 LTS)
+## Quick Start (on Ubuntu 18.04)
 
 Install dependencies
 ```bash
