@@ -2,10 +2,16 @@
 
 set -e
 
-# Create directories
+if [[ -v ${INSTALLATION_PATH} ]]
+then
+    printf "INSTALLATION_PATH not defined"
+    exit 1
+fi
+
 mkdir -p ${INSTALLATION_PATH}
 
-if [[ ${INSTALL_DATA_SERVICES_ONLY:-0} -eq 1 ]]; then
+if [[ ${INSTALL_DATA_SERVICES_ONLY:-0} -eq 1 ]]
+then
     cd aduser_data_services
 fi
 
@@ -14,7 +20,8 @@ mv Pipfile.lock ${INSTALLATION_PATH}/
 
 mv .venv ${INSTALLATION_PATH}/
 
-if [[ ${INSTALL_DATA_SERVICES_ONLY:-0} -eq 1 ]]; then
+if [[ ${INSTALL_DATA_SERVICES_ONLY:-0} -eq 1 ]]
+then
     mv aduser_data_services ${INSTALLATION_PATH}/
 else
     mv aduser ${INSTALLATION_PATH}/
@@ -23,7 +30,13 @@ fi
 
 cd ${INSTALLATION_PATH}/
 
-if [[ ${INSTALL_GEOLITE_DATA:-0} -eq 1 ]]; then
+if [[ ${INSTALL_GEOLITE_DATA:-0} -eq 1 ]]
+then
+    if [[ -v ${INSTALL_DATA_PATH} ]]
+    then
+        printf "INSTALL_DATA_PATH for geolite not defined"
+        exit 1
+    fi
 
     echo "Downloading geolite data"
     CWD=`pwd`
@@ -46,11 +59,17 @@ if [[ ${INSTALL_GEOLITE_DATA:-0} -eq 1 ]]; then
 
     cd  ${CWD}
     rm -r ${TEMP_DIR}
-    echo "Download finished"
 
+    echo "Download finished"
 fi
 
-if [[ ${INSTALL_BROWSCAP_DATA:-0} -eq 1 ]]; then
+if [[ ${INSTALL_BROWSCAP_DATA:-0} -eq 1 ]]
+then
+    if [[ -v ${INSTALL_DATA_PATH} ]]
+    then
+        printf "INSTALL_DATA_PATH for browscap not defined"
+        exit 1
+    fi
 
     echo "Downloading browscap data (this make take a while). \
           You can find the dataset here: https://browscap.org/"
@@ -58,6 +77,6 @@ if [[ ${INSTALL_BROWSCAP_DATA:-0} -eq 1 ]]; then
     pipenv run python -c "from pybrowscap.loader import Downloader; \
                           from pybrowscap.loader.csv import URL; \
                           Downloader(URL).get('${INSTALL_DATA_PATH}/browscap.csv')"
-    echo "Download finished"
 
+    echo "Download finished"
 fi
