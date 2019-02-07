@@ -15,6 +15,8 @@ then
     cd aduser_data_services
 fi
 
+mv .venv ${INSTALLATION_PATH}/
+
 mv Pipfile ${INSTALLATION_PATH}/
 mv Pipfile.lock ${INSTALLATION_PATH}/
 

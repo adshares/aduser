@@ -24,6 +24,8 @@ then
     cd aduser_data_services
 fi
 
+PIPENV_VENV_IN_PROJECT=$(PIPENV_VENV_IN_PROJECT:-1)
+
 if [[ ${ADUSER_APP_ENV} == 'dev' ]]
 then
     pipenv install --dev
