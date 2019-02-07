@@ -11,10 +11,10 @@ from twisted.internet.endpoints import UNIXServerEndpoint
 from twisted.internet.protocol import Factory, Protocol
 
 #: Socket file
-SOCK_FILE = os.getenv('ADUSER_DATA_BROWSCAP_SOCK_FILE', '/tmp/aduser-data-browscap.sock')
+SOCK_FILE = os.getenv('ADUSER_DATA_BROWSCAP_SOCK_FILE', '/tmp/apshares/aduser-data-browscap.sock')
 
 #: Path for Browscap database file (csv)
-CSV_PATH = os.getenv('ADUSER_DATA_BROWSCAP_CSV_PATH', '/var/www/aduser_data/browscap.csv')
+CSV_PATH = os.getenv('ADUSER_DATA_BROWSCAP_CSV_PATH', '/opt/adshares/aduser_data/browscap.csv')
 
 browscap_database = None
 
