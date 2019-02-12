@@ -30,7 +30,8 @@ It accepts requests from [AdServer](https://github.com/adshares/adserver).
 
 Install dependencies
 ```bash
-apt-get -y install --no-install-recommends python python-pip python-dev gcc
+sudo apt-get update
+sudo apt-get -y install --no-install-recommends python python-pip python-dev gcc
 pip install pipenv
 ```
 
