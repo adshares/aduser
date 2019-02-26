@@ -26,12 +26,12 @@ def pixel(request):
     return _PIXEL_GIF
 
 
-def update_data(data, request):
+def update_data(data, request_data):
     """
     Update data object with plugin data.
 
     :param data: Data object with default data.
-    :param request: Instance of `twisted.web.http.Request`
+    :param request_data: Instance of `twisted.web.http.Request`
     :return: Updated data object.
     """
     return data
