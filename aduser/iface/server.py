@@ -30,4 +30,4 @@ def configure_server():
     """
     # Set up endpoints.
     root = configure_entrypoint()
-    return reactor.listenTCP(iface_const.SERVER_PORT, Site(root))
+    return reactor.listenTCP(iface_const.SERVER_PORT, Site(root), iface_const.SERVER_INTERFACE)
