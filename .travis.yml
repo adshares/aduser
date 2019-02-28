@@ -50,6 +50,7 @@ jobs:
           -e BUILD_PATH=$BUILD_PATH
           -e ADUSER_BROWSCAP_CSV_PATH=$BUILD_PATH/.venv/lib/python2.7/site-packages/pybrowscap/test/data/browscap_14_05_2012.csv
           -e BUILD_WITH_GEOIP=true
+          -e ADUSER_SERVER_INTERFACE=""
           -e BUILD_WITH_PYBROWSCAP=true
           -e INSTALLATION_PATH=/var/www/aduser
           --env-file aduser.env

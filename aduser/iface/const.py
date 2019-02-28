@@ -4,6 +4,7 @@ import os
 #:
 #: `Environmental variable override: ADUSER_PORT`
 SERVER_PORT = int(os.getenv('ADUSER_PORT', 8010))
+SERVER_INTERFACE = os.getenv('ADUSER_INTERFACE', '127.0.0.1')
 
 #: Configurable path to pixel. Becomes start of pixel request paths returned by getPixelPath.
 #:

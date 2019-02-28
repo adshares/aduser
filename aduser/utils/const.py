@@ -5,12 +5,12 @@ from datetime import timedelta
 #: Secret used for creating a tracking id.
 #:
 #: `Environmental variable override: ADUSER_TRACKING_SECRET`
-COOKIE_SECRET = os.getenv('ADUSER_TRACKING_SECRET', 'ChangeMe!')
+COOKIE_SECRET = os.getenv('ADUSER_TRACKING_SECRET', 'secret')
 
 #: Name of the cookie used for tracking.
 #:
 #: `Environmental variable override: ADUSER_COOKIE_NAME`
-COOKIE_NAME = bytes(os.getenv('ADUSER_COOKIE_NAME', 'AdsharesAdUserTracking'))
+COOKIE_NAME = bytes(os.getenv('ADUSER_COOKIE_NAME', 'cookie_name'))
 
 #: Tracking cookie expiry period. The enviromental variable accepts 'w' for weeks and 'd' for days. Format: {num}{format}, eg. '`4w`' for 4 weeks.
 #:
