@@ -4,6 +4,7 @@ from base64 import b64decode
 from twisted.internet import defer, reactor
 from twisted.internet.protocol import Protocol
 from twisted.web.client import Agent
+from aduser.data import const as data_const
 
 # http://ip-api.com/docs/api:serialized_php#usage_limits
 
@@ -34,7 +35,15 @@ class JsonProtocol(Protocol):
         self.finished.callback(json.loads(''.join(self.body)))
 
 
-def pixel(request):
+def score(tracking_id, request):
+    return None
+
+
+def score_data(tracking_id, token, request):
+    return data_const.DEFAULT_HUMAN_SCORE
+
+
+def pixel(tracking_id, request):
     request.setHeader(b"content-type", b"image/gif")
     return PIXEL_GIF
 

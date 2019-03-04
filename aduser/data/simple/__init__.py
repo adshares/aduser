@@ -6,6 +6,7 @@ from twisted.internet import defer
 
 from aduser.data import UnixDataProvider
 from aduser.data.simple import taxonomy_utils
+import aduser.data.recaptcha as recaptcha
 
 taxonomy_name = 'simple'
 taxonomy_version = '0.0.1'
@@ -23,7 +24,15 @@ browscap_provider = UnixDataProvider(BROWSCAP_SERVICE_SOCKET)
 geolite_provider = UnixDataProvider(GEOLITE_SERVICE_SOCKET)
 
 
-def pixel(request):
+def score(tracking_id, request):
+    return recaptcha.score_code(tracking_id, request)
+
+
+def score_data(tracking_id, token, request):
+    return recaptcha.user_score(tracking_id, token, request)
+
+
+def pixel(tracking_id, request):
     request.setHeader(b"content-type", b"image/gif")
     return PIXEL_GIF
 

@@ -1,5 +1,6 @@
 import random
 from base64 import b64decode
+from aduser.data import const as data_const
 
 #: Base64 encoded 1x1 GIF
 PIXEL_GIF = b64decode("R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
@@ -33,7 +34,21 @@ taxonomy = {'meta': {'name': taxonomy_name,
                      ]}
 
 
-def pixel(request):
+def score(tracking_id, request):
+    """
+    :return: score JS
+    """
+    return None
+
+
+def score_data(tracking_id, token, request):
+    """
+    :return: human score
+    """
+    return data_const.DEFAULT_HUMAN_SCORE
+
+
+def pixel(tracking_id, request):
     """
     :return: pixel image
     """

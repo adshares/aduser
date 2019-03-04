@@ -10,7 +10,7 @@ COOKIE_SECRET = os.getenv('ADUSER_TRACKING_SECRET', 'secret')
 #: Name of the cookie used for tracking.
 #:
 #: `Environmental variable override: ADUSER_COOKIE_NAME`
-COOKIE_NAME = bytes(os.getenv('ADUSER_COOKIE_NAME', 'cookie_name'))
+COOKIE_NAME = bytes(os.getenv('ADUSER_COOKIE_NAME', '__au'))
 
 #: Tracking cookie expiry period. The enviromental variable accepts 'w' for weeks and 'd' for days. Format: {num}{format}, eg. '`4w`' for 4 weeks.
 #:
@@ -34,4 +34,4 @@ LOG_CONFIG_JSON_FILE = os.getenv('ADUSER_LOG_CONFIG_JSON_FILE', None)
 #: Log level names must be Python logging level names.
 #:
 #: `Environmental variable override: ADUSER_LOG_LEVEL`
-LOG_LEVEL = os.getenv('ADUSER_LOG_LEVEL', 'DEBUG').upper()
+LOG_LEVEL = os.getenv('ADUSER_LOG_LEVEL', 'ERROR').upper()

@@ -18,6 +18,7 @@ def configure_entrypoint():
     root.putChild("getTaxonomy", iface_resources.TaxonomyResource())
     root.putChild("info", iface_resources.ApiInfoResource())
     root.putChild(iface_const.PIXEL_PATH, iface_resources.PixelFactory())
+    root.putChild(iface_const.SCORE_PATH, iface_resources.ScoreFactory())
 
     return root
 

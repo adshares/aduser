@@ -52,9 +52,9 @@ def update_user_data(data_doc):
     :param data_doc: User data document.
     :return: Deferred instance of :class:`pymongo.results.UpdateResult`.
     """
-    return_value = yield db.get_collection('data').replace_one({'tracking_id': data_doc['tracking_id']},
-                                                               data_doc,
-                                                               upsert=True)
+    return_value = yield db.get_collection('data').update_one({'tracking_id': data_doc['tracking_id']},
+                                                              {'$set': data_doc},
+                                                              upsert=True)
     defer.returnValue(return_value)
 
 

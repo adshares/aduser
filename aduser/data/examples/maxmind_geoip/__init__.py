@@ -5,6 +5,7 @@ from base64 import b64decode
 from twisted.internet import defer
 
 from aduser.data import UnixDataProvider
+from aduser.data import const as data_const
 
 taxonomy_name = 'examples.maxmind_geoip'
 taxonomy_version = '0.0.1'
@@ -22,7 +23,15 @@ GEOLITE_SERVICE_SOCKET = os.getenv('ADUSER_DATA_GEOLITE_SOCK_FILE', '/tmp/aduser
 geolite_provider = UnixDataProvider(GEOLITE_SERVICE_SOCKET)
 
 
-def pixel(request):
+def score(tracking_id, request):
+    return None
+
+
+def score_data(tracking_id, token, request):
+    return data_const.DEFAULT_HUMAN_SCORE
+
+
+def pixel(tracking_id, request):
     request.setHeader(b"content-type", b"image/gif")
     return PIXEL_GIF
 

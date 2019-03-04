@@ -30,7 +30,7 @@ class PixelPathResource(Resource):
 
 class PixelFactory(Resource):
     """
-    Router handler for endpoints of pixel requests. This is a `twisted.web.resource.Resource`.
+    Router handler for endpoints of register pixel requests. This is a `twisted.web.resource.Resource`.
     """
 
     def getChild(self, adserver_id, request):
@@ -88,7 +88,54 @@ class UserPixelResource(Resource):
         logger.info({'tracking_id': tid,
                      'request': [h for h in request.requestHeaders.getAllRawHeaders()]})
 
-        return data_backend.provider.pixel(request)
+        return data_backend.provider.score(tid, request) or data_backend.provider.pixel(tid, request)
+
+
+class ScoreFactory(Resource):
+    """
+    Router handler for endpoints of score pixel requests. This is a `twisted.web.resource.Resource`.
+    """
+
+    def getChild(self, token, request):
+        if token == '':
+            return NoResource()
+        return AdServerScoreFactory(token)
+
+
+class AdServerScoreFactory(Resource):
+
+    def __init__(self, token):
+        Resource.__init__(self)
+        self.token = token
+
+    def getChild(self, nonce, request):
+        if nonce == '':
+            return NoResource()
+        return UserScoreResource(self.token, nonce)
+
+
+class UserScoreResource(Resource):
+
+    isLeaf = True
+
+    def __init__(self, token, nonce):
+        Resource.__init__(self)
+        self.token = token
+        self.nonce = nonce
+
+    def render_GET(self, request):  # NOSONAR
+
+        tid = utils.attach_tracking_cookie(request)
+        score = data_backend.provider.score_data(tid, self.token, request)
+        db_utils.update_user_data({'tracking_id': tid, 'score': score})
+        logging.debug({'tracking_id': tid, 'score': score})
+
+        # Log request
+        logger = logging.getLogger(__name__)
+        logger.info({'tracking_id': tid,
+                     'request': [h for h in request.requestHeaders.getAllRawHeaders()]})
+
+        return data_backend.provider.pixel(tid, request)
 
 
 class DataResource(Resource):
