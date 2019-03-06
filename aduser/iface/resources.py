@@ -181,7 +181,8 @@ class DataResource(Resource):
             request_data['device']['ip'] = post_data['ip']
             request_data['device']['ua'] = post_data['ua']
 
-            default_data = {'uid': post_data['uid'],
+            default_data = {'adserver_id': post_data['adserver_id'],
+                            'user_id': post_data['user_id'],
                             'human_score': 0.5,
                             'keywords': {}}
 
@@ -195,7 +196,7 @@ class DataResource(Resource):
 
         # Try to get mapping and user data from db
         try:
-            user_map = yield db_utils.get_mapping(post_data['uid'])
+            user_map = yield db_utils.get_mapping(post_data['adserver_id'] + '_' + post_data['user_id'])
             cached_data = yield db_utils.get_user_data(user_map['tracking_id'])
 
         except TypeError:
@@ -208,15 +209,16 @@ class DataResource(Resource):
         logger.debug('Cached data: {0}'.format(cached_data))
 
         # Update data with cached data
-        if cached_data:
+        if 'keywords' in cached_data:
             default_data['keywords'] = cached_data['keywords']
 
         data = yield data_backend.provider.update_data(default_data, request_data)
-        data.update({'tracking_id': user_map['tracking_id']})
+        # data.update({'tracking_id': user_map['tracking_id']})
+        logger.debug('Data: {0}'.format(data))
 
         if cached_data:
             for k in ['keywords', 'human_score']:
-                if data[k] != cached_data[k]:
+                if k in data and data[k] != cached_data[k]:
                     yield db_utils.update_user_data(data)
                     break
         else:

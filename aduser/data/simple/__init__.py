@@ -71,11 +71,11 @@ def update_data_from_browscap(user, request_data):
                                  'javascript': browser_caps.get('javascript'),
                                  'browser': browser_caps.get('browser')})
 
-        # Process bot classification
-        if browser_caps.get('crawler'):
-            user['human_score'] = 0.0
-        else:
-            user['human_score'] = 1.0
+        # # Process bot classification
+        # if browser_caps.get('crawler'):
+        #     user['human_score'] = 0.0
+        # else:
+        #     user['human_score'] = 1.0
 
     else:
         logger.warning("User agent not identified.")
