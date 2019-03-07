@@ -1,4 +1,0 @@
-@startuml
-AdServer -> AdUser: Request available schemas
-AdServer <-- AdUser: Respond with schemas
-@enduml

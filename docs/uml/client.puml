@@ -1,7 +1,0 @@
-@startuml
-AdServer -> AdUser: Request user (consumer) information
-AdUser -> AdUser: Map user identifier with internal database
-AdUser -> Data_Provider: Request user information with mapped ids
-AdUser <-- Data_Provider: Provide information
-AdServer <-- AdUser: Return information
-@enduml

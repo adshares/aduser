@@ -1,0 +1,21 @@
+index:
+    path: /
+    controller: Adshares\Aduser\Controller\InfoController::index
+
+info:
+    path: /info.{_format}
+    controller: Adshares\Aduser\Controller\InfoController::info
+    defaults:
+        _format: json
+    requirements:
+        _format:  json|txt
+
+privacy:
+    path: /privacy.html
+    controller: Adshares\Aduser\Controller\InfoController::privacy
+
+pixel_register:
+    path: /register/{adserver}/{user}/{nonce}.{_format}
+    controller: Adshares\Aduser\Controller\PixelController::register
+    requirements:
+        _format:  html|gif
