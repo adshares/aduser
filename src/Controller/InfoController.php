@@ -17,9 +17,9 @@ class InfoController extends AbstractController
     public function info(Request $request)
     {
         $info = [
-            'serviceType' => 'ADUSER',
+            'module' => 'aduser',
             'name' => getenv('ADUSER_NAME'),
-            'softwareVersion' => getenv('ADUSER_VERSION'),
+            'version' => getenv('ADUSER_VERSION'),
             'pixelUrl' => str_replace(['%7B', '%7D', '.html'], ['{', '}', '.{format}'], $this->generateUrl(
                 'pixel_register',
                 [
