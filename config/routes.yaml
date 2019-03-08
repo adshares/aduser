@@ -18,4 +18,27 @@ pixel_register:
     path: /register/{adserver}/{user}/{nonce}.{_format}
     controller: Adshares\Aduser\Controller\PixelController::register
     requirements:
+        adserver:  '[a-zA-Z0-9_:.-]+'
+        user:  '[a-zA-Z0-9_:.-]+'
+        nonce: '[a-zA-Z0-9]+'
         _format:  html|gif
+
+pixel_provider:
+    path: /data/{provider}/{tracking}/{nonce}.{_format}
+    controller: Adshares\Aduser\Controller\PixelController::provider
+    requirements:
+        provider:  '[a-z]+'
+        tracking:  '[a-zA-Z0-9+/=]+'
+        nonce: '[a-zA-Z0-9]+'
+        _format:  html|gif
+
+taxonomy:
+    path: /api/v0/taxonomy
+    controller: Adshares\Aduser\Controller\DataController::taxonomy
+
+data:
+    path: /api/v0/data/{adserver}/{user}
+    controller: Adshares\Aduser\Controller\DataController::data
+    requirements:
+        adserver:  '[a-zA-Z0-9_:.-]+'
+        user:  '[a-zA-Z0-9_:.-]+'

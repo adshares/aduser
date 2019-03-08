@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PixelController extends AbstractController
 {
@@ -67,6 +68,16 @@ class PixelController extends AbstractController
         ));
 
         return $response;
+    }
+
+    public function provider(Request $request, Connection $connection)
+    {
+        $name = $request->get('provider');
+        if (!isset($this->providers[$name])) {
+            throw new NotFoundHttpException(sprintf('Provider "%s" is not registered', $name));
+        }
+
+        return $this->providers[$name]->register($request, $connection);
     }
 
     private function logRequest(Request $request, Connection $connection)
