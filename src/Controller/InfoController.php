@@ -20,12 +20,12 @@ class InfoController extends AbstractController
             'module' => 'aduser',
             'name' => getenv('ADUSER_NAME'),
             'version' => getenv('ADUSER_VERSION'),
-            'pixelUrl' => str_replace(['%7B', '%7D', '.html'], ['{', '}', '.{format}'], $this->generateUrl(
+            'pixelUrl' => str_replace(['_:', ':_', '.html'], ['{', '}', '.{format}'], $this->generateUrl(
                 'pixel_register',
                 [
-                    'adserver' => '{adserver}',
-                    'user' => '{user}',
-                    'nonce' => '{nonce}',
+                    'adserver' => '_:adserver:_',
+                    'user' => '_:user:_',
+                    'nonce' => '_:nonce:_',
                     '_format' => 'html'
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL)),

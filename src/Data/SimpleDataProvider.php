@@ -2,19 +2,20 @@
 
 namespace Adshares\Aduser\Data;
 
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class ReCaptchaDataProvider extends AbstractDataProvider
+class SimpleDataProvider extends AbstractDataProvider
 {
-    public const NAME = 'rec';
+    public const NAME = 'sim';
 
     /**
      * @param string $trackingId
      * @param Request $request
      * @return string|null
      */
-    public function getPageUrl(string $trackingId, Request $request): ?string
+    public function getImageUrl(string $trackingId, Request $request): ?string
     {
         return $this->generateUrl(
             'pixel_provider',
@@ -22,7 +23,7 @@ class ReCaptchaDataProvider extends AbstractDataProvider
                 'provider' => self::NAME,
                 'tracking' => $trackingId,
                 'nonce' => self::generateNonce(),
-                '_format' => 'html',
+                '_format' => 'gif',
             ],
             UrlGeneratorInterface::ABSOLUTE_URL
         );

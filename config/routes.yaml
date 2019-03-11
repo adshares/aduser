@@ -20,7 +20,7 @@ pixel_register:
     requirements:
         adserver:  '[a-zA-Z0-9_:.-]+'
         user:  '[a-zA-Z0-9_:.-]+'
-        nonce: '[a-zA-Z0-9]+'
+        nonce: '[a-zA-Z0-9_:.-]+'
         _format:  html|gif
 
 pixel_provider:
@@ -29,7 +29,7 @@ pixel_provider:
     requirements:
         provider:  '[a-z]+'
         tracking:  '[a-zA-Z0-9+/=]+'
-        nonce: '[a-zA-Z0-9]+'
+        nonce: '[a-zA-Z0-9_:.-]+'
         _format:  html|gif
 
 taxonomy:

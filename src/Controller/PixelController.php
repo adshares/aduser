@@ -2,6 +2,7 @@
 
 namespace Adshares\Aduser\Controller;
 
+use Adshares\Aduser\Data\DataProviderManager;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,10 +14,16 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PixelController extends AbstractController
 {
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
-    private $providers = [];
+    /**
+     * @var DataProviderManager
+     */
+    private $providers;
 
-    public function __construct(array $providers = [], LoggerInterface $logger = null)
+    public function __construct(DataProviderManager $providers, LoggerInterface $logger = null)
     {
         if ($logger === null) {
             $logger = new \Psr\Log\NullLogger();
@@ -201,10 +208,10 @@ class PixelController extends AbstractController
     {
         $content = '<!DOCTYPE html><html lang="en"><body><script type="text/javascript">';
         foreach ($images as $image) {
-            $content .= 'parent.postMessage({"adsharesTrack":[{"type": "image", "url": "' . $image . '"}]})';
+            $content .= 'parent.postMessage({"adsharesTrack":[{"type": "image", "url": "' . $image . '"}]});';
         }
         foreach ($pages as $page) {
-            $content .= 'parent.postMessage({"adsharesTrack":[{"type": "iframe", "url": "' . $page . '"}]})';
+            $content .= 'parent.postMessage({"adsharesTrack":[{"type": "iframe", "url": "' . $page . '"}]});';
         }
         $content .= '</script></body></html>';
 
