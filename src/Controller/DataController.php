@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class DataController extends AbstractController
@@ -45,11 +46,11 @@ class DataController extends AbstractController
             'data' => $data,
         ];
 
-        return new Response(json_encode($taxonomy));
+        return new JsonResponse($taxonomy);
     }
 
     public function data(): Response
     {
-        return new Response('data');
+        return new JsonResponse('data');
     }
 }
