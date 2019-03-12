@@ -198,8 +198,12 @@ class PixelController extends AbstractController
             if ($redirect === null && ($r = (string)$provider->getRedirectUrl($trackingId, $request))) {
                 $redirect = $r;
             }
-            if ($response === null && ($r = (string)$provider->register($trackingId, $request))) {
-                $response = $r;
+
+            if ($response === null) {
+                $r = $provider->register($trackingId, $request);
+                if ((string)$r) {
+                    $response = $r;
+                }
             }
         }
 
