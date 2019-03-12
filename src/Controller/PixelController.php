@@ -195,12 +195,9 @@ class PixelController extends AbstractController
                 }
             }
 
-            if ($response === null) {
-                $r = $provider->register($trackingId, $request);
-
-                if (!$r->isEmpty()) {
-                    $response = $r;
-                }
+            $r = $provider->register($trackingId, $request);
+            if (($response === null) && !$r->isEmpty()) {
+                $response = $r;
             }
         }
 
