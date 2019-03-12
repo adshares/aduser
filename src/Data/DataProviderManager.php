@@ -1,18 +1,14 @@
 <?php
+declare(strict_types = 1);
 
 namespace Adshares\Aduser\Data;
 
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+
 final class DataProviderManager implements \IteratorAggregate
 {
-    /**
-     * @var array
-     */
     private $providers = [];
 
-    /**
-     * DataProviderManager constructor.
-     * @param array $providers
-     */
     public function __construct(array $providers = [])
     {
         foreach ($providers as $provider) {
@@ -20,28 +16,22 @@ final class DataProviderManager implements \IteratorAggregate
         }
     }
 
-    /**
-     * @param DataProviderInterface $provider
-     */
-    public function registerProvider(DataProviderInterface $provider)
+    public function registerProvider(DataProviderInterface $provider): void
     {
         $this->providers[$provider->getName()] = $provider;
     }
 
-    /**
-     * @return \Traversable
-     */
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->providers);
     }
 
-    /**
-     * @param string $name
-     * @return DataProviderInterface
-     */
     public function get(string $name): DataProviderInterface
     {
-        return array_key_exists($name, $this->providers) ? $this->providers[$name] : null;
+        if (!array_key_exists($name, $this->providers)) {
+            throw new ResourceNotFoundException(sprintf('Provider "%s" is not registered', $name));
+        }
+
+        return $this->providers[$name];
     }
 }

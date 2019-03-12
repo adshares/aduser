@@ -1,41 +1,30 @@
 <?php
+declare(strict_types = 1);
 
 namespace Adshares\Aduser\Data;
 
+use Adshares\Share\Url;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class SimpleDataProvider extends AbstractDataProvider
+final class SimpleDataProvider extends AbstractDataProvider
 {
-    /**
-     * @return string
-     */
+    private const NAME = 'sim';
+
     public function getName(): string
     {
-        return 'sim';
+        return self::NAME;
     }
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     * @return string|null
-     */
-    public function getImageUrl(string $trackingId, Request $request): ?string
+    public function getImageUrl(string $trackingId, Request $request): Url
     {
         return $this->generatePixelUrl($trackingId);
     }
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     * @return Response
-     */
     public function register(string $trackingId, Request $request): Response
     {
-        // log request
         $this->logRequest($trackingId, $request);
 
-        // render
-        return $this->createImageResponse();
+        return self::createImageResponse();
     }
 }

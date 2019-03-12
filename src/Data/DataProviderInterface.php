@@ -1,42 +1,22 @@
 <?php
+declare(strict_types = 1);
 
 namespace Adshares\Aduser\Data;
 
+use Adshares\Share\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 interface DataProviderInterface
 {
-    /**
-     * @return string
-     */
     public function getName(): string;
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     * @return string|null
-     */
-    public function getRedirectUrl(string $trackingId, Request $request): ?string;
+    public function getRedirect(string $trackingId, Request $request): RedirectResponse;
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     * @return string|null
-     */
-    public function getImageUrl(string $trackingId, Request $request): ?string;
+    public function getImageUrl(string $trackingId, Request $request): Url;
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     * @return string|null
-     */
-    public function getPageUrl(string $trackingId, Request $request): ?string;
+    public function getPageUrl(string $trackingId, Request $request): Url;
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     * @return Response
-     */
     public function register(string $trackingId, Request $request): Response;
 }

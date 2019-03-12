@@ -1,28 +1,25 @@
 <?php
+declare(strict_types = 1);
 
 namespace Adshares\Aduser\Data;
 
+use Adshares\Share\Url;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
-class ReCaptchaDataProvider extends AbstractDataProvider
+final class ReCaptchaDataProvider extends AbstractDataProvider
 {
-    /**
-     * @var string
-     */
+    private const NAME = 'rec';
+
     private $siteKey;
 
-    /**
-     * @var string
-     */
     private $secretKey;
 
-    /**
-     * @var float
-     */
     private $defaultScore;
 
     public function __construct(RouterInterface $router, Connection $connection, LoggerInterface $logger)
@@ -33,62 +30,47 @@ class ReCaptchaDataProvider extends AbstractDataProvider
         parent::__construct($router, $connection, $logger);
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
-        return 'rec';
+        return self::NAME;
     }
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     * @return string|null
-     */
-    public function getPageUrl(string $trackingId, Request $request): ?string
+    public function getPageUrl(string $trackingId, Request $request): Url
     {
         return $this->generatePixelUrl($trackingId, 'html');
     }
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     * @return Response
-     */
     public function register(string $trackingId, Request $request): Response
     {
-        // log request
         $this->logRequest($trackingId, $request);
 
-        // handle data
         if ($request->getRequestFormat() === 'gif') {
             $this->saveScore($trackingId, $request);
-            $response = $this->createImageResponse();
+            $response = self::createImageResponse();
         } else {
-            $response = $this->createHtmlResponse($this->getSiteScript($trackingId));
+            $response = self::createHtmlResponse($this->getSiteScript($trackingId));
         }
 
-        // render
         return $response;
     }
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     */
-    private function saveScore(string $trackingId, Request $request)
+    private function saveScore(string $trackingId, Request $request): void
     {
         $url = 'https://www.google.com/recaptcha/api/siteverify';
         $payload = [
             'secret' => $this->secretKey,
             'response' => $request->get('token'),
         ];
-        $response = self::httpPost($url, $payload);
-        $this->logger->debug(sprintf('reCaptcha score response: %s', $response));
-        if ($response === false) {
+
+        try {
+            $response = self::httpPost($url, $payload);
+        } catch (RuntimeException $e) {
+            $this->logger->debug($e->getMessage(), $payload);
+
             return;
         }
+
+        $this->logger->debug(sprintf('reCaptcha score response: %s', $response));
 
         $data = json_decode($response, true);
         $score = $this->defaultScore;
@@ -99,34 +81,31 @@ class ReCaptchaDataProvider extends AbstractDataProvider
         }
 
         try {
-            $this->connection->insert("{$this->getName()}_score", [
-                'tracking_id' => $trackingId,
-                'success' => (int)$success,
-                'score' => $score,
-                'data' => json_encode($data),
-            ]);
-        } catch (\Doctrine\DBAL\DBALException $e) {
+            $this->connection->insert("{$this->getName()}_score",
+                [
+                    'tracking_id' => $trackingId,
+                    'success' => (int)$success,
+                    'score' => $score,
+                    'data' => json_encode($data),
+                ]);
+        } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
         }
     }
 
-    /**
-     * @param string $trackingId
-     * @return string
-     */
     private function getSiteScript(string $trackingId): string
     {
-        $url = $this->generatePixelUrl($trackingId);
-
-        return "<script src=\"https://www.google.com/recaptcha/api.js?render={$this->siteKey}\"></script>
+        return <<<SCRIPT
+<script src="https://www.google.com/recaptcha/api.js?render={$this->siteKey}"></script>
 <script>
   grecaptcha.ready(function() {
       grecaptcha.execute('{$this->siteKey}', {action: 'pixel'}).then(function(token) {
         var img = document.createElement('img');
-        img.src = '{$url}?token=' + token;
+        img.src = '{$this->generatePixelUrl($trackingId)}?token=' + token;
         document.body.appendChild(img);
       });
   });
-</script>";
+</script>
+SCRIPT;
     }
 }

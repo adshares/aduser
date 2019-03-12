@@ -38,6 +38,7 @@
         "symfony/yaml": "^4.2"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-master",
         "symfony/var-dumper": "4.2.*",
         "symfony/web-server-bundle": "4.2.*",
         "squizlabs/php_codesniffer": "^3.3",
@@ -54,7 +55,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Adshares\\Aduser\\": "src/"
+            "Adshares\\Aduser\\": "src/",
+            "Adshares\\Share\\": "share/"
         }
     },
     "autoload-dev": {

@@ -1,55 +1,60 @@
 <?php
+declare(strict_types = 1);
 
 namespace Adshares\Aduser\Controller;
 
+use Adshares\Aduser\Data\DataProviderInterface;
 use Adshares\Aduser\Data\DataProviderManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
+use Exception;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use function base64_decode;
+use function base64_encode;
+use function getenv;
+use function implode;
+use function json_encode;
+use function microtime;
+use function sprintf;
+use function substr;
+use function time;
 
 class PixelController extends AbstractController
 {
-    /**
-     * @var DataProviderManager
-     */
+    /** @var DataProviderManager|DataProviderInterface[] */
     private $providers;
-    /**
-     * @var Connection
-     */
+
     private $connection;
-    /**
-     * @var LoggerInterface
-     */
+
     private $logger;
 
     public function __construct(DataProviderManager $providers, Connection $connection, LoggerInterface $logger)
     {
         if ($logger === null) {
-            $logger = new \Psr\Log\NullLogger();
+            $logger = new NullLogger();
         }
         $this->providers = $providers;
         $this->connection = $connection;
         $this->logger = $logger;
     }
 
-    public function register(Request $request)
+    public function register(Request $request): Response
     {
-        // get tracking id
         $trackingId = $this->loadTrackingId($request);
-        // log request
+
         $this->logRequest('pixel', $trackingId, $request);
-        // register
+
         if ($request->getRequestFormat() === 'gif') {
             $response = $this->syncRegister($trackingId, $request);
         } else {
             $response = $this->asyncRegister($trackingId, $request);
         }
-        // cookie
+
         $response->headers->setCookie(new Cookie(
             getenv('ADUSER_COOKIE_NAME'),
             $trackingId,
@@ -57,87 +62,7 @@ class PixelController extends AbstractController
             '/'
         ));
 
-        // render
         return $response;
-    }
-
-    public function provider(Request $request)
-    {
-        // get tracking id
-        if (($trackingId = $request->get('tracking')) === null) {
-            $trackingId = $this->generateTrackingId($request);
-        }
-        // log request
-        $this->logRequest('provider', $trackingId, $request);
-        // get data provider
-        $name = $request->get('provider');
-        /* @var $provider \Adshares\Aduser\Data\DataProviderInterface */
-        if (($provider = $this->providers->get($name)) === null) {
-            throw new NotFoundHttpException(sprintf('Provider "%s" is not registered', $name));
-        }
-
-        // register
-        return $provider->register($trackingId, $request);
-    }
-
-    private function syncRegister(string $trackingId, Request $request): Response
-    {
-        $redirect = null;
-        $response = null;
-
-        /* @var $provider \Adshares\Aduser\Data\DataProviderInterface */
-        foreach ($this->providers as $provider) {
-            if (($r = $provider->getRedirectUrl($trackingId, $request)) && $redirect === null) {
-                $redirect = $r;
-            }
-            if (($r = $provider->register($trackingId, $request)) && $response === null) {
-                $response = $r;
-            }
-        }
-
-        if ($redirect !== null) {
-            $response = new RedirectResponse($redirect);
-        }
-
-        return $response;
-    }
-
-    private function asyncRegister(string $trackingId, Request $request): Response
-    {
-        $images = [];
-        $pages = [];
-
-        /* @var $provider \Adshares\Aduser\Data\DataProviderInterface */
-        foreach ($this->providers as $provider) {
-            if ($image = $provider->getImageUrl($trackingId, $request)) {
-                $images[] = $image;
-            }
-            if ($page = $provider->getPageUrl($trackingId, $request)) {
-                $pages[] = $page;
-            }
-        }
-
-        return new Response($this->getHtmlPixel($images, $pages));
-    }
-
-    private function logRequest(string $type, string $trackingId, Request $request)
-    {
-        $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
-        try {
-            $this->connection->insert("{$type}_log", [
-                'tracking_id' => $trackingId,
-                'uri' => $request->getRequestUri(),
-                'attributes' => json_encode($request->attributes->get('_route_params')),
-                'query' => json_encode($request->query->all()),
-                'headers' => json_encode($request->headers->all()),
-                'cookies' => json_encode($request->cookies->all()),
-                'ip' => $request->getClientIp(),
-                'ips' => json_encode($request->getClientIps()),
-                'port' => (int)$request->getPort(),
-            ]);
-        } catch (\Doctrine\DBAL\DBALException $e) {
-            $this->logger->error($e->getMessage());
-        }
     }
 
     private function loadTrackingId(Request $request)
@@ -151,7 +76,7 @@ class PixelController extends AbstractController
                     $request->get('user'),
                 ]
             );
-        } catch (\Doctrine\DBAL\DBALException $e) {
+        } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
             $dbTid = null;
         }
@@ -173,7 +98,7 @@ class PixelController extends AbstractController
                     $this->connection->update(
                         'user_map',
                         [
-                            'tracking_id' => $trackingId
+                            'tracking_id' => $trackingId,
                         ],
                         [
                             'adserver_id' => $request->get('adserver'),
@@ -190,52 +115,114 @@ class PixelController extends AbstractController
                         ]
                     );
                 }
-            } catch (\Doctrine\DBAL\DBALException $e) {
+            } catch (DBALException $e) {
                 $this->logger->error($e->getMessage());
             }
         }
 
         $this->logger->info(sprintf('Tracking id: %s', $trackingId));
+
         return $trackingId;
     }
 
-    private static function validTrackingId($trackingId)
+    private static function validTrackingId($trackingId): bool
     {
         $id = base64_decode($trackingId);
         $userId = substr($id, 0, 16);
         $checksum = substr($id, 16, 22);
 
-        return self::trackingIdChecksum($userId) == $checksum;
+        return self::trackingIdChecksum($userId) === $checksum;
     }
 
-    private static function trackingIdChecksum($userId)
+    private static function trackingIdChecksum(string $userId): string
     {
         return substr(sha1($userId . getenv('ADUSER_TRACKING_SECRET')), 0, 6);
     }
 
-    private function generateTrackingId(Request $request)
+    private function generateTrackingId(Request $request): string
     {
         $elements = [
-            // Microsecond epoch time
             microtime(true),
-            // Client IP
             $request->getClientIp(),
-            // Client port
             $request->getPort(),
-            // Client request time (float)
             $request->server->get('REQUEST_TIME_FLOAT'),
         ];
 
         try {
-            // 22 random bytes
             $elements[] = random_bytes(22);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $elements[] = microtime(true);
         }
 
         $userId = substr(sha1(implode(':', $elements)), 0, 16);
 
         return base64_encode($userId . self::trackingIdChecksum($userId));
+    }
+
+    private function logRequest(string $type, string $trackingId, Request $request): void
+    {
+        $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
+
+        try {
+            $this->connection->insert("{$type}_log",
+                [
+                    'tracking_id' => $trackingId,
+                    'uri' => $request->getRequestUri(),
+                    'attributes' => json_encode($request->attributes->get('_route_params')),
+                    'query' => json_encode($request->query->all()),
+                    'headers' => json_encode($request->headers->all()),
+                    'cookies' => json_encode($request->cookies->all()),
+                    'ip' => $request->getClientIp(),
+                    'ips' => json_encode($request->getClientIps()),
+                    'port' => (int)$request->getPort(),
+                ]);
+        } catch (DBALException $e) {
+            $this->logger->error($e->getMessage());
+        }
+    }
+
+    private function syncRegister(string $trackingId, Request $request): Response
+    {
+        $redirect = null;
+        $response = null;
+
+        foreach ($this->providers as $provider) {
+            if ($redirect === null) {
+                $r = $provider->getRedirect($trackingId, $request);
+
+                if (!$r->isEmpty()) {
+                    $redirect = $r;
+                }
+            }
+
+            $r = $provider->register($trackingId, $request);
+            if (($response === null) && !$r->isEmpty()) {
+                $response = $r;
+            }
+        }
+
+        if ($redirect !== null) {
+            return $redirect;
+        }
+
+        return $response;
+    }
+
+    private function asyncRegister(string $trackingId, Request $request): Response
+    {
+        $images = [];
+        $pages = [];
+
+        foreach ($this->providers as $provider) {
+            if ($image = (string)$provider->getImageUrl($trackingId, $request)) {
+                $images[] = $image;
+            }
+            if ($page = (string)$provider->getPageUrl($trackingId, $request)) {
+                $pages[] = $page;
+            }
+        }
+
+        return new Response($this->getHtmlPixel($images, $pages));
     }
 
     private function getHtmlPixel(array $images, array $pages): string
@@ -250,5 +237,20 @@ class PixelController extends AbstractController
         $content .= '</script></body></html>';
 
         return $content;
+    }
+
+    public function provider(Request $request): Response
+    {
+        if (($trackingId = $request->get('tracking')) === null) {
+            $trackingId = $this->generateTrackingId($request);
+        }
+
+        $this->logRequest('provider', $trackingId, $request);
+
+        $name = $request->get('provider');
+
+        $provider = $this->providers->get($name);
+
+        return $provider->register($trackingId, $request);
     }
 }
