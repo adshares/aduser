@@ -8,6 +8,7 @@ use Adshares\Aduser\Data\DataProviderManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,7 +35,7 @@ class PixelController extends AbstractController
     public function __construct(DataProviderManager $providers, Connection $connection, LoggerInterface $logger)
     {
         if ($logger === null) {
-            $logger = new \Psr\Log\NullLogger();
+            $logger = new NullLogger();
         }
         $this->providers = $providers;
         $this->connection = $connection;
