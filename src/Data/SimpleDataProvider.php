@@ -4,11 +4,17 @@ namespace Adshares\Aduser\Data;
 
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class SimpleDataProvider extends AbstractDataProvider
 {
-    public const NAME = 'sim';
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return 'sim';
+    }
 
     /**
      * @param string $trackingId
@@ -17,15 +23,20 @@ class SimpleDataProvider extends AbstractDataProvider
      */
     public function getImageUrl(string $trackingId, Request $request): ?string
     {
-        return $this->generateUrl(
-            'pixel_provider',
-            [
-                'provider' => self::NAME,
-                'tracking' => $trackingId,
-                'nonce' => self::generateNonce(),
-                '_format' => 'gif',
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        return $this->generatePixelUrl($trackingId);
+    }
+
+    /**
+     * @param string $trackingId
+     * @param Request $request
+     * @return Response
+     */
+    public function register(string $trackingId, Request $request): Response
+    {
+        // log request
+        $this->logRequest($trackingId, $request);
+
+        // render
+        return $this->createImageResponse();
     }
 }
