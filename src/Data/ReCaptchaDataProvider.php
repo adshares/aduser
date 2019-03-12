@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Adshares\Aduser\Data;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,29 +35,16 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
         parent::__construct($router, $connection, $logger);
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return 'rec';
     }
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     * @return string|null
-     */
     public function getPageUrl(string $trackingId, Request $request): ?string
     {
         return $this->generatePixelUrl($trackingId, 'html');
     }
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     * @return Response
-     */
     public function register(string $trackingId, Request $request): Response
     {
         // log request
@@ -74,10 +62,6 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
         return $response;
     }
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     */
     private function saveScore(string $trackingId, Request $request)
     {
         $url = 'https://www.google.com/recaptcha/api/siteverify';
@@ -100,34 +84,31 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
         }
 
         try {
-            $this->connection->insert("{$this->getName()}_score", [
-                'tracking_id' => $trackingId,
-                'success' => (int)$success,
-                'score' => $score,
-                'data' => json_encode($data),
-            ]);
-        } catch (\Doctrine\DBAL\DBALException $e) {
+            $this->connection->insert("{$this->getName()}_score",
+                [
+                    'tracking_id' => $trackingId,
+                    'success' => (int)$success,
+                    'score' => $score,
+                    'data' => json_encode($data),
+                ]);
+        } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
         }
     }
 
-    /**
-     * @param string $trackingId
-     * @return string
-     */
     private function getSiteScript(string $trackingId): string
     {
-        $url = $this->generatePixelUrl($trackingId);
-
-        return "<script src=\"https://www.google.com/recaptcha/api.js?render={$this->siteKey}\"></script>
+        return <<<SCRIPT
+<script src="https://www.google.com/recaptcha/api.js?render={$this->siteKey}"></script>
 <script>
   grecaptcha.ready(function() {
       grecaptcha.execute('{$this->siteKey}', {action: 'pixel'}).then(function(token) {
         var img = document.createElement('img');
-        img.src = '{$url}?token=' + token;
+        img.src = '{$this->generatePixelUrl($trackingId)}?token=' + token;
         document.body.appendChild(img);
       });
   });
-</script>";
+</script>
+SCRIPT;
     }
 }

@@ -7,12 +7,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use function getenv;
+use function implode;
+use function is_array;
+use function json_encode;
+use function preg_replace;
+use function str_replace;
+use function strpos;
+use function strtoupper;
 
 class InfoController extends AbstractController
 {
     public function index(): Response
     {
-        return new Response('<h1>'.getenv('ADUSER_NAME').' v'.getenv('ADUSER_VERSION').'</h1>');
+        return new Response('<h1>' . getenv('ADUSER_NAME') . ' v' . getenv('ADUSER_VERSION') . '</h1>');
     }
 
     public function info(Request $request): Response
@@ -46,16 +54,6 @@ class InfoController extends AbstractController
         );
     }
 
-    public function privacy(): Response
-    {
-        return new Response('<h1>Privacy</h1>');
-    }
-
-    private static function formatJson(array $data): string
-    {
-        return json_encode($data);
-    }
-
     private static function formatTxt(array $data): string
     {
         $response = '';
@@ -65,11 +63,21 @@ class InfoController extends AbstractController
                 $value = implode(',', $value);
             }
             if (strpos($value, ' ') !== false) {
-                $value = '"'.$value.'"';
+                $value = '"' . $value . '"';
             }
             $response .= sprintf("%s=%s\n", $key, $value);
         }
 
         return $response;
+    }
+
+    private static function formatJson(array $data): string
+    {
+        return json_encode($data);
+    }
+
+    public function privacy(): Response
+    {
+        return new Response('<h1>Privacy</h1>');
     }
 }

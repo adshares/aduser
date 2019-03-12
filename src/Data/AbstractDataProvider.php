@@ -34,47 +34,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
         $this->logger = $logger;
     }
 
-    public function getRedirectUrl(string $trackingId, Request $request): ?string
-    {
-        return null;
-    }
-
-    public function getImageUrl(string $trackingId, Request $request): ?string
-    {
-        return null;
-    }
-
-    public function getPageUrl(string $trackingId, Request $request): ?string
-    {
-        return null;
-    }
-
-    public function register(string $trackingId, Request $request): Response
-    {
-        return null;
-    }
-
-    protected function logRequest(string $trackingId, Request $request): void
-    {
-        $type = $this->getName();
-        $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
-        try {
-            $this->connection->insert("{$type}_log", [
-                'tracking_id' => $trackingId,
-                'uri' => $request->getRequestUri(),
-                'attributes' => json_encode($request->attributes->get('_route_params')),
-                'query' => json_encode($request->query->all()),
-                'headers' => json_encode($request->headers->all()),
-                'cookies' => json_encode($request->cookies->all()),
-                'ip' => $request->getClientIp(),
-                'ips' => json_encode($request->getClientIps()),
-                'port' => (int)$request->getPort(),
-            ]);
-        } catch (\Doctrine\DBAL\DBALException $e) {
-            $this->logger->error($e->getMessage());
-        }
-    }
-
     protected static function createImageResponse(?string $data = null): Response
     {
         if ($data === null) {
@@ -100,16 +59,58 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    protected function generateUrl(
-        string $route,
-        array $parameters = [],
-        int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH
-    ): string {
-        return $this->router->generate(
-            $route,
-            $parameters,
-            $referenceType
-        );
+    protected static function httpPost($url, array $data = [])
+    {
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        return $response;
+    }
+
+    public function getRedirectUrl(string $trackingId, Request $request): ?string
+    {
+        return null;
+    }
+
+    public function getImageUrl(string $trackingId, Request $request): ?string
+    {
+        return null;
+    }
+
+    public function getPageUrl(string $trackingId, Request $request): ?string
+    {
+        return null;
+    }
+
+    public function register(string $trackingId, Request $request): Response
+    {
+        return null;
+    }
+
+    protected function logRequest(string $trackingId, Request $request): void
+    {
+        $type = $this->getName();
+        $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
+        try {
+            $this->connection->insert("{$type}_log",
+                [
+                    'tracking_id' => $trackingId,
+                    'uri' => $request->getRequestUri(),
+                    'attributes' => json_encode($request->attributes->get('_route_params')),
+                    'query' => json_encode($request->query->all()),
+                    'headers' => json_encode($request->headers->all()),
+                    'cookies' => json_encode($request->cookies->all()),
+                    'ip' => $request->getClientIp(),
+                    'ips' => json_encode($request->getClientIps()),
+                    'port' => (int)$request->getPort(),
+                ]);
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 
     protected function generatePixelUrl(
@@ -124,21 +125,22 @@ abstract class AbstractDataProvider implements DataProviderInterface
                 'tracking' => $trackingId,
                 'nonce' => self::generateNonce(),
                 '_format' => $format,
-            ], $parameters),
+            ],
+                $parameters),
             UrlGeneratorInterface::ABSOLUTE_URL
         );
     }
 
-    protected static function httpPost($url, array $data = [])
-    {
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-        return $response;
+    protected function generateUrl(
+        string $route,
+        array $parameters = [],
+        int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH
+    ): string {
+        return $this->router->generate(
+            $route,
+            $parameters,
+            $referenceType
+        );
     }
 
     protected static function generateNonce($length = 8): string
