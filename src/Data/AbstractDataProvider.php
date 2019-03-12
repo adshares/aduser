@@ -82,6 +82,11 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
+    public function getTaxonomy(): array
+    {
+        return [];
+    }
+
     public function getRedirect(string $trackingId, Request $request): RedirectResponse
     {
         return new EmptyRedirectResponse();
