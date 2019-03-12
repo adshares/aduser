@@ -1,4 +1,10 @@
 {
+    "composer/ca-bundle": {
+        "version": "1.1.4"
+    },
+    "dealerdirect/phpcodesniffer-composer-installer": {
+        "version": "v0.4.4"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -78,6 +84,9 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "jakub-onderka/php-parallel-lint": {
+        "version": "v1.0.0"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
@@ -98,6 +107,30 @@
     },
     "psr/simple-cache": {
         "version": "1.0.1"
+    },
+    "sensiolabs/security-checker": {
+        "version": "4.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.0",
+            "ref": "05daf6b214e54aed4089f3480f944a67ac3a7889"
+        },
+        "files": [
+            "./config/packages/security_checker.yaml"
+        ]
+    },
+    "squizlabs/php_codesniffer": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.0",
+            "ref": "0dc9cceda799fd3a08b96987e176a261028a3709"
+        },
+        "files": [
+            "./phpcs.xml.dist"
+        ]
     },
     "symfony/cache": {
         "version": "v4.2.4"
@@ -226,6 +259,9 @@
     },
     "symfony/yaml": {
         "version": "v4.2.4"
+    },
+    "wimg/php-compatibility": {
+        "version": "8.2.0"
     },
     "zendframework/zend-code": {
         "version": "3.3.1"

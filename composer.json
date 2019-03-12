@@ -39,7 +39,12 @@
     },
     "require-dev": {
         "symfony/var-dumper": "4.2.*",
-        "symfony/web-server-bundle": "4.2.*"
+        "symfony/web-server-bundle": "4.2.*",
+        "squizlabs/php_codesniffer": "^3.3",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.4.4",
+        "jakub-onderka/php-parallel-lint": "^1.0",
+        "wimg/php-compatibility": "^8.1",
+        "sensiolabs/security-checker": "^5.0"
     },
     "config": {
         "preferred-install": {
@@ -68,13 +73,23 @@
     "scripts": {
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+            "assets:install %PUBLIC_DIR%": "symfony-cmd",
+            "security-checker security:check": "script"
         },
         "post-install-cmd": [
             "@auto-scripts"
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "install-codestandards": [
+            "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
+        ],
+        "qa-check": [
+            "security-checker security:check",
+            "parallel-lint --no-colors --blame --exclude vendor .",
+            "phpcs -s src --standard=PHPCompatibility",
+            "phpcs -s src --standard=PSR2"
         ]
     },
     "conflict": {

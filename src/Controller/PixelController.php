@@ -149,7 +149,8 @@ class PixelController extends AbstractController
                 [
                     $request->get('adserver'),
                     $request->get('user'),
-                ]);
+                ]
+            );
         } catch (\Doctrine\DBAL\DBALException $e) {
             $this->logger->error($e->getMessage());
             $dbTid = null;
@@ -169,21 +170,25 @@ class PixelController extends AbstractController
         if ($trackingId !== $dbTid) {
             try {
                 if (!empty($dbTid)) {
-                    $this->connection->update('user_map',
+                    $this->connection->update(
+                        'user_map',
                         [
                             'tracking_id' => $trackingId
                         ],
                         [
                             'adserver_id' => $request->get('adserver'),
                             'adserver_user_id' => $request->get('user'),
-                        ]);
+                        ]
+                    );
                 } else {
-                    $this->connection->insert('user_map',
+                    $this->connection->insert(
+                        'user_map',
                         [
                             'tracking_id' => $trackingId,
                             'adserver_id' => $request->get('adserver'),
                             'adserver_user_id' => $request->get('user'),
-                        ]);
+                        ]
+                    );
                 }
             } catch (\Doctrine\DBAL\DBALException $e) {
                 $this->logger->error($e->getMessage());
@@ -206,7 +211,6 @@ class PixelController extends AbstractController
     private static function trackingIdChecksum($userId)
     {
         return substr(sha1($userId . getenv('ADUSER_TRACKING_SECRET')), 0, 6);
-
     }
 
     private function generateTrackingId(Request $request)

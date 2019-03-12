@@ -28,7 +28,8 @@ class InfoController extends AbstractController
                     'nonce' => '_:nonce:_',
                     '_format' => 'html'
                 ],
-                UrlGeneratorInterface::ABSOLUTE_URL)),
+                UrlGeneratorInterface::ABSOLUTE_URL
+            )),
             'supportedFormats' => ['gif', 'html'],
             'privacyUrl' => $this->generateUrl('privacy', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ];

@@ -2,7 +2,6 @@
 
 namespace Adshares\Aduser\Data;
 
-
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;

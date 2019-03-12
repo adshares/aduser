@@ -2,7 +2,6 @@
 
 namespace Adshares\Aduser\Data;
 
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 

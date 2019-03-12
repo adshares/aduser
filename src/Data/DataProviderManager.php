@@ -2,7 +2,6 @@
 
 namespace Adshares\Aduser\Data;
 
-
 final class DataProviderManager implements \IteratorAggregate
 {
     /**
