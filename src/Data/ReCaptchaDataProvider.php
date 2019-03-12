@@ -3,28 +3,21 @@ declare(strict_types = 1);
 
 namespace Adshares\Aduser\Data;
 
+use Adshares\Share\Url;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 final class ReCaptchaDataProvider extends AbstractDataProvider
 {
-    /**
-     * @var string
-     */
     private $siteKey;
 
-    /**
-     * @var string
-     */
     private $secretKey;
 
-    /**
-     * @var float
-     */
     private $defaultScore;
 
     public function __construct(RouterInterface $router, Connection $connection, LoggerInterface $logger)
@@ -40,40 +33,42 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
         return 'rec';
     }
 
-    public function getPageUrl(string $trackingId, Request $request): ?string
+    public function getPageUrl(string $trackingId, Request $request): Url
     {
         return $this->generatePixelUrl($trackingId, 'html');
     }
 
     public function register(string $trackingId, Request $request): Response
     {
-        // log request
         $this->logRequest($trackingId, $request);
 
-        // handle data
         if ($request->getRequestFormat() === 'gif') {
             $this->saveScore($trackingId, $request);
-            $response = $this->createImageResponse();
+            $response = self::createImageResponse();
         } else {
-            $response = $this->createHtmlResponse($this->getSiteScript($trackingId));
+            $response = self::createHtmlResponse($this->getSiteScript($trackingId));
         }
 
-        // render
         return $response;
     }
 
-    private function saveScore(string $trackingId, Request $request)
+    private function saveScore(string $trackingId, Request $request): void
     {
         $url = 'https://www.google.com/recaptcha/api/siteverify';
         $payload = [
             'secret' => $this->secretKey,
             'response' => $request->get('token'),
         ];
-        $response = self::httpPost($url, $payload);
-        $this->logger->debug(sprintf('reCaptcha score response: %s', $response));
-        if ($response === false) {
+
+        try {
+            $response = self::httpPost($url, $payload);
+        } catch (RuntimeException $e) {
+            $this->logger->debug($e->getMessage(), $payload);
+
             return;
         }
+
+        $this->logger->debug(sprintf('reCaptcha score response: %s', $response));
 
         $data = json_decode($response, true);
         $score = $this->defaultScore;

@@ -195,16 +195,16 @@ class PixelController extends AbstractController
         $response = null;
 
         foreach ($this->providers as $provider) {
-            if (($r = $provider->getRedirectUrl($trackingId, $request)) && $redirect === null) {
+            if ($redirect === null && ($r = (string)$provider->getRedirectUrl($trackingId, $request))) {
                 $redirect = $r;
             }
-            if (($r = $provider->register($trackingId, $request)) && $response === null) {
+            if ($response === null && ($r = (string)$provider->register($trackingId, $request))) {
                 $response = $r;
             }
         }
 
         if ($redirect !== null) {
-            $response = new RedirectResponse($redirect);
+            return new RedirectResponse($redirect);
         }
 
         return $response;
@@ -216,10 +216,10 @@ class PixelController extends AbstractController
         $pages = [];
 
         foreach ($this->providers as $provider) {
-            if ($image = $provider->getImageUrl($trackingId, $request)) {
+            if ($image = (string)$provider->getImageUrl($trackingId, $request)) {
                 $images[] = $image;
             }
-            if ($page = $provider->getPageUrl($trackingId, $request)) {
+            if ($page = (string)$provider->getPageUrl($trackingId, $request)) {
                 $pages[] = $page;
             }
         }

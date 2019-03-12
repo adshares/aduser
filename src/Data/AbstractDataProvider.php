@@ -3,8 +3,12 @@ declare(strict_types = 1);
 
 namespace Adshares\Aduser\Data;
 
+use Adshares\Share\Response\NoResponse;
+use Adshares\Share\Url;
 use Doctrine\DBAL\Connection;
+use Exception;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -37,8 +41,9 @@ abstract class AbstractDataProvider implements DataProviderInterface
     protected static function createImageResponse(?string $data = null): Response
     {
         if ($data === null) {
-            $data = "R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+            $data = 'R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
         }
+
         $response = new Response(base64_decode($data));
         $response->headers->set('Content-Type', 'image/gif');
 
@@ -59,7 +64,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    protected static function httpPost($url, array $data = [])
+    protected static function httpPost($url, array $data = []): string
     {
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_POST, true);
@@ -68,27 +73,31 @@ abstract class AbstractDataProvider implements DataProviderInterface
         $response = curl_exec($curl);
         curl_close($curl);
 
+        if ($response === false) {
+            throw new RuntimeException("POST request to $url failed");
+        }
+
         return $response;
     }
 
-    public function getRedirectUrl(string $trackingId, Request $request): ?string
+    public function getRedirectUrl(string $trackingId, Request $request): Url
     {
-        return null;
+        return new Url\EmptyUrl();
     }
 
-    public function getImageUrl(string $trackingId, Request $request): ?string
+    public function getImageUrl(string $trackingId, Request $request): Url
     {
-        return null;
+        return new Url\EmptyUrl();
     }
 
-    public function getPageUrl(string $trackingId, Request $request): ?string
+    public function getPageUrl(string $trackingId, Request $request): Url
     {
-        return null;
+        return new Url\EmptyUrl();
     }
 
     public function register(string $trackingId, Request $request): Response
     {
-        return null;
+        return new NoResponse();
     }
 
     protected function logRequest(string $trackingId, Request $request): void
@@ -117,7 +126,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
         string $trackingId,
         $format = 'gif',
         array $parameters = []
-    ): string {
+    ): Url {
         return $this->generateUrl(
             'pixel_provider',
             array_merge([
@@ -131,23 +140,23 @@ abstract class AbstractDataProvider implements DataProviderInterface
         );
     }
 
-    protected function generateUrl(
+    private function generateUrl(
         string $route,
         array $parameters = [],
         int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH
-    ): string {
-        return $this->router->generate(
+    ): Url {
+        return new Url\SimpleUrl($this->router->generate(
             $route,
             $parameters,
             $referenceType
-        );
+        ));
     }
 
-    protected static function generateNonce($length = 8): string
+    private static function generateNonce($length = 8): string
     {
         try {
             return substr(sha1(random_bytes(256)), 0, $length);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return '';
         }
     }
