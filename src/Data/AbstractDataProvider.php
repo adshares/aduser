@@ -6,9 +6,11 @@ namespace Adshares\Aduser\Data;
 use Adshares\Share\Response\EmptyRedirectResponse;
 use Adshares\Share\Url;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Exception;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -80,7 +82,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    public function getRedirect(string $trackingId, Request $request): Response
+    public function getRedirect(string $trackingId, Request $request): RedirectResponse
     {
         return new EmptyRedirectResponse();
     }
@@ -103,7 +105,9 @@ abstract class AbstractDataProvider implements DataProviderInterface
     protected function logRequest(string $trackingId, Request $request): void
     {
         $type = $this->getName();
+
         $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
+
         try {
             $this->connection->insert("{$type}_log",
                 [
@@ -117,7 +121,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
                     'ips' => json_encode($request->getClientIps()),
                     'port' => (int)$request->getPort(),
                 ]);
-        } catch (\Doctrine\DBAL\DBALException $e) {
+        } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
         }
     }

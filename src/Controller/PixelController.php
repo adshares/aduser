@@ -7,6 +7,7 @@ use Adshares\Aduser\Data\DataProviderInterface;
 use Adshares\Aduser\Data\DataProviderManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -141,20 +142,15 @@ class PixelController extends AbstractController
     private function generateTrackingId(Request $request): string
     {
         $elements = [
-            // Microsecond epoch time
             microtime(true),
-            // Client IP
             $request->getClientIp(),
-            // Client port
             $request->getPort(),
-            // Client request time (float)
             $request->server->get('REQUEST_TIME_FLOAT'),
         ];
 
         try {
-            // 22 random bytes
             $elements[] = random_bytes(22);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $elements[] = microtime(true);
         }
 
@@ -166,6 +162,7 @@ class PixelController extends AbstractController
     private function logRequest(string $type, string $trackingId, Request $request): void
     {
         $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
+
         try {
             $this->connection->insert("{$type}_log",
                 [
