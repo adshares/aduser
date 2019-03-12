@@ -51,6 +51,6 @@ class DataController extends AbstractController
 
     public function data(): Response
     {
-        return new Response('data');
+        return new JsonResponse('data');
     }
 }
