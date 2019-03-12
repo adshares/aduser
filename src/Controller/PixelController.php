@@ -10,10 +10,8 @@ use Doctrine\DBAL\DBALException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use function base64_decode;
 use function base64_encode;
 use function getenv;
@@ -29,10 +27,8 @@ class PixelController extends AbstractController
     /** @var DataProviderManager|DataProviderInterface[] */
     private $providers;
 
-    /** @var Connection */
     private $connection;
 
-    /** @var LoggerInterface */
     private $logger;
 
     public function __construct(DataProviderManager $providers, Connection $connection, LoggerInterface $logger)
@@ -47,17 +43,16 @@ class PixelController extends AbstractController
 
     public function register(Request $request): Response
     {
-        // get tracking id
         $trackingId = $this->loadTrackingId($request);
-        // log request
+
         $this->logRequest('pixel', $trackingId, $request);
-        // register
+
         if ($request->getRequestFormat() === 'gif') {
             $response = $this->syncRegister($trackingId, $request);
         } else {
             $response = $this->asyncRegister($trackingId, $request);
         }
-        // cookie
+
         $response->headers->setCookie(new Cookie(
             getenv('ADUSER_COOKIE_NAME'),
             $trackingId,
@@ -65,7 +60,6 @@ class PixelController extends AbstractController
             '/'
         ));
 
-        // render
         return $response;
     }
 
@@ -143,7 +137,7 @@ class PixelController extends AbstractController
         return substr(sha1($userId . getenv('ADUSER_TRACKING_SECRET')), 0, 6);
     }
 
-    private function generateTrackingId(Request $request)
+    private function generateTrackingId(Request $request): string
     {
         $elements = [
             // Microsecond epoch time
@@ -195,20 +189,25 @@ class PixelController extends AbstractController
         $response = null;
 
         foreach ($this->providers as $provider) {
-            if ($redirect === null && ($r = (string)$provider->getRedirectUrl($trackingId, $request))) {
-                $redirect = $r;
+            if ($redirect === null) {
+                $r = $provider->getRedirect($trackingId, $request);
+
+                if (!$r->isEmpty()) {
+                    $redirect = $r;
+                }
             }
 
             if ($response === null) {
                 $r = $provider->register($trackingId, $request);
-                if ((string)$r) {
+
+                if (!$r->isEmpty()) {
                     $response = $r;
                 }
             }
         }
 
         if ($redirect !== null) {
-            return new RedirectResponse($redirect);
+            return $redirect;
         }
 
         return $response;
@@ -247,20 +246,16 @@ class PixelController extends AbstractController
 
     public function provider(Request $request): Response
     {
-        // get tracking id
         if (($trackingId = $request->get('tracking')) === null) {
             $trackingId = $this->generateTrackingId($request);
         }
-        // log request
-        $this->logRequest('provider', $trackingId, $request);
-        // get data provider
-        $name = $request->get('provider');
-        /* @var $provider DataProviderInterface */
-        if (($provider = $this->providers->get($name)) === null) {
-            throw new NotFoundHttpException(sprintf('Provider "%s" is not registered', $name));
-        }
 
-        // register
+        $this->logRequest('provider', $trackingId, $request);
+
+        $name = $request->get('provider');
+
+        $provider = $this->providers->get($name);
+
         return $provider->register($trackingId, $request);
     }
 }

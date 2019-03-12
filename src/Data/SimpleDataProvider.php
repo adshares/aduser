@@ -9,9 +9,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class SimpleDataProvider extends AbstractDataProvider
 {
+    private const NAME = 'sim';
+
     public function getName(): string
     {
-        return 'sim';
+        return self::NAME;
     }
 
     public function getImageUrl(string $trackingId, Request $request): Url

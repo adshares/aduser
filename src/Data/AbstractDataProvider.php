@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Adshares\Aduser\Data;
 
-use Adshares\Share\Response\NoResponse;
+use Adshares\Share\Response\EmptyRedirectResponse;
 use Adshares\Share\Url;
 use Doctrine\DBAL\Connection;
 use Exception;
@@ -80,9 +80,9 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    public function getRedirectUrl(string $trackingId, Request $request): Url
+    public function getRedirect(string $trackingId, Request $request): Response
     {
-        return new Url\EmptyUrl();
+        return new EmptyRedirectResponse();
     }
 
     public function getImageUrl(string $trackingId, Request $request): Url
@@ -97,7 +97,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
 
     public function register(string $trackingId, Request $request): Response
     {
-        return new NoResponse();
+        return new EmptyRedirectResponse();
     }
 
     protected function logRequest(string $trackingId, Request $request): void

@@ -14,6 +14,8 @@ use Symfony\Component\Routing\RouterInterface;
 
 final class ReCaptchaDataProvider extends AbstractDataProvider
 {
+    private const NAME = 'rec';
+
     private $siteKey;
 
     private $secretKey;
@@ -30,7 +32,7 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
 
     public function getName(): string
     {
-        return 'rec';
+        return self::NAME;
     }
 
     public function getPageUrl(string $trackingId, Request $request): Url

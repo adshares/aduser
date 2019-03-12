@@ -11,7 +11,7 @@ interface DataProviderInterface
 {
     public function getName(): string;
 
-    public function getRedirectUrl(string $trackingId, Request $request): Url;
+    public function getRedirect(string $trackingId, Request $request): Response;
 
     public function getImageUrl(string $trackingId, Request $request): Url;
 

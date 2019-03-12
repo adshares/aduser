@@ -47,10 +47,8 @@ class InfoController extends AbstractController
 
         return new Response(
             $request->getRequestFormat() === 'txt'
-                ?
-                self::formatTxt($info)
-                :
-                self::formatJson($info)
+                ? self::formatTxt($info)
+                : self::formatJson($info)
         );
     }
 
