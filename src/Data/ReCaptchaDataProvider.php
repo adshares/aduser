@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Adshares\Aduser\Data;
 
@@ -8,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
-class ReCaptchaDataProvider extends AbstractDataProvider
+final class ReCaptchaDataProvider extends AbstractDataProvider
 {
     /**
      * @var string

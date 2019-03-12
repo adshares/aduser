@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Adshares\Aduser\Controller;
 
@@ -14,17 +15,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PixelController extends AbstractController
 {
-    /**
-     * @var DataProviderManager
-     */
+    /** @var DataProviderManager */
     private $providers;
-    /**
-     * @var Connection
-     */
+    /** @var Connection */
     private $connection;
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     private $logger;
 
     public function __construct(DataProviderManager $providers, Connection $connection, LoggerInterface $logger)
@@ -37,7 +32,7 @@ class PixelController extends AbstractController
         $this->logger = $logger;
     }
 
-    public function register(Request $request)
+    public function register(Request $request): Response
     {
         // get tracking id
         $trackingId = $this->loadTrackingId($request);
@@ -61,7 +56,7 @@ class PixelController extends AbstractController
         return $response;
     }
 
-    public function provider(Request $request)
+    public function provider(Request $request): Response
     {
         // get tracking id
         if (($trackingId = $request->get('tracking')) === null) {
@@ -199,7 +194,7 @@ class PixelController extends AbstractController
         return $trackingId;
     }
 
-    private static function validTrackingId($trackingId)
+    private static function validTrackingId($trackingId): bool
     {
         $id = base64_decode($trackingId);
         $userId = substr($id, 0, 16);
@@ -208,7 +203,8 @@ class PixelController extends AbstractController
         return self::trackingIdChecksum($userId) == $checksum;
     }
 
-    private static function trackingIdChecksum($userId)
+    /** @deprecated because of multiple return types */
+    private static function trackingIdChecksum(string $userId)
     {
         return substr(sha1($userId . getenv('ADUSER_TRACKING_SECRET')), 0, 6);
     }

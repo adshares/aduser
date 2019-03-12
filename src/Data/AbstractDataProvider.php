@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Adshares\Aduser\Data;
 
@@ -26,12 +27,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
      */
     protected $logger;
 
-    /**
-     * AbstractDataProvider constructor.
-     * @param RouterInterface $router
-     * @param Connection $connection
-     * @param LoggerInterface $logger
-     */
     public function __construct(RouterInterface $router, Connection $connection, LoggerInterface $logger)
     {
         $this->router = $router;
@@ -39,59 +34,27 @@ abstract class AbstractDataProvider implements DataProviderInterface
         $this->logger = $logger;
     }
 
-    /**
-     * @see DataProviderInterface
-     *
-     * @param string $trackingId
-     * @param Request $request
-     * @return string|null
-     */
     public function getRedirectUrl(string $trackingId, Request $request): ?string
     {
         return null;
     }
 
-    /**
-     * @see DataProviderInterface
-     *
-     * @param string $trackingId
-     * @param Request $request
-     * @return string|null
-     */
     public function getImageUrl(string $trackingId, Request $request): ?string
     {
         return null;
     }
 
-    /**
-     * @see DataProviderInterface
-     *
-     * @param string $trackingId
-     * @param Request $request
-     * @return string|null
-     */
     public function getPageUrl(string $trackingId, Request $request): ?string
     {
         return null;
     }
 
-    /**
-     * @see DataProviderInterface
-     *
-     * @param string $trackingId
-     * @param Request $request
-     * @return Response
-     */
     public function register(string $trackingId, Request $request): Response
     {
         return null;
     }
 
-    /**
-     * @param string $trackingId
-     * @param Request $request
-     */
-    protected function logRequest(string $trackingId, Request $request)
+    protected function logRequest(string $trackingId, Request $request): void
     {
         $type = $this->getName();
         $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
@@ -112,11 +75,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
         }
     }
 
-    /**
-     * @param string|null $data
-     * @return Response
-     */
-    protected static function createImageResponse(?string $data = null)
+    protected static function createImageResponse(?string $data = null): Response
     {
         if ($data === null) {
             $data = "R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
@@ -127,11 +86,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    /**
-     * @param string|null $body
-     * @return Response
-     */
-    protected static function createHtmlResponse(?string $body = null)
+    protected static function createHtmlResponse(?string $body = null): Response
     {
         $content = '<!DOCTYPE html><html lang="en">';
         if ($body !== null) {
@@ -145,15 +100,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    /**
-     * Generates a URL from the given parameters.
-     * @see UrlGeneratorInterface
-     *
-     * @param string $route
-     * @param array $parameters
-     * @param int $referenceType
-     * @return string
-     */
     protected function generateUrl(
         string $route,
         array $parameters = [],
@@ -166,12 +112,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
         );
     }
 
-    /**
-     * @param string $trackingId
-     * @param string $format
-     * @param array $parameters
-     * @return string
-     */
     protected function generatePixelUrl(
         string $trackingId,
         $format = 'gif',
@@ -189,11 +129,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
         );
     }
 
-    /**
-     * @param $url
-     * @param array $data
-     * @return bool|string
-     */
     protected static function httpPost($url, array $data = [])
     {
         $curl = curl_init($url);
@@ -206,12 +141,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    /**
-     * Generate random nonce string.
-     *
-     * @param int $length
-     * @return string
-     */
     protected static function generateNonce($length = 8): string
     {
         try {

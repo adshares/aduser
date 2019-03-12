@@ -1,11 +1,12 @@
 <?php
+declare(strict_types = 1);
 
 namespace Adshares\Aduser\Data;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class SimpleDataProvider extends AbstractDataProvider
+final class SimpleDataProvider extends AbstractDataProvider
 {
     /**
      * @return string

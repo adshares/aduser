@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Adshares\Aduser\Controller;
 
@@ -9,49 +10,53 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class InfoController extends AbstractController
 {
-    public function index()
+    public function index(): Response
     {
-        return new Response('<h1>' . getenv('ADUSER_NAME') . ' v' . getenv('ADUSER_VERSION') . '</h1>');
+        return new Response('<h1>'.getenv('ADUSER_NAME').' v'.getenv('ADUSER_VERSION').'</h1>');
     }
 
-    public function info(Request $request)
+    public function info(Request $request): Response
     {
         $info = [
             'module' => 'aduser',
             'name' => getenv('ADUSER_NAME'),
             'version' => getenv('ADUSER_VERSION'),
-            'pixelUrl' => str_replace(['_:', ':_', '.html'], ['{', '}', '.{format}'], $this->generateUrl(
-                'pixel_register',
-                [
-                    'adserver' => '_:adserver:_',
-                    'user' => '_:user:_',
-                    'nonce' => '_:nonce:_',
-                    '_format' => 'html'
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            )),
+            'pixelUrl' => str_replace(['_:', ':_', '.html'],
+                ['{', '}', '.{format}'],
+                $this->generateUrl(
+                    'pixel_register',
+                    [
+                        'adserver' => '_:adserver:_',
+                        'user' => '_:user:_',
+                        'nonce' => '_:nonce:_',
+                        '_format' => 'html',
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                )),
             'supportedFormats' => ['gif', 'html'],
             'privacyUrl' => $this->generateUrl('privacy', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ];
 
         return new Response(
-            $request->getRequestFormat() === 'txt' ?
-                self::formatTxt($info) :
+            $request->getRequestFormat() === 'txt'
+                ?
+                self::formatTxt($info)
+                :
                 self::formatJson($info)
         );
     }
 
-    public function privacy()
+    public function privacy(): Response
     {
         return new Response('<h1>Privacy</h1>');
     }
 
-    private static function formatJson(array $data)
+    private static function formatJson(array $data): string
     {
         return json_encode($data);
     }
 
-    private static function formatTxt(array $data)
+    private static function formatTxt(array $data): string
     {
         $response = '';
         foreach ($data as $key => $value) {
@@ -60,7 +65,7 @@ class InfoController extends AbstractController
                 $value = implode(',', $value);
             }
             if (strpos($value, ' ') !== false) {
-                $value = '"' . $value . '"';
+                $value = '"'.$value.'"';
             }
             $response .= sprintf("%s=%s\n", $key, $value);
         }
