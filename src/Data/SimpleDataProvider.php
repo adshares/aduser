@@ -20,6 +20,16 @@ final class SimpleDataProvider extends AbstractDataProvider
     {
         return [
             [
+                'label' => 'Domain',
+                'key' => 'domain',
+                'type' => 'input',
+            ],
+            [
+                'label' => 'Keyword',
+                'key' => 'keyword',
+                'type' => 'input',
+            ],
+            [
                 'label' => 'Country',
                 'key' => 'country',
                 'type' => 'dict',
@@ -32,11 +42,6 @@ final class SimpleDataProvider extends AbstractDataProvider
                 'data' => self::sanitazeData(self::getDeviceTypes()),
             ],
             [
-                'label' => 'JavaScript',
-                'key' => 'javascript',
-                'type' => 'bool',
-            ],
-            [
                 'label' => 'Operating System',
                 'key' => 'platform',
                 'type' => 'dict',
@@ -47,6 +52,11 @@ final class SimpleDataProvider extends AbstractDataProvider
                 'key' => 'browser',
                 'type' => 'dict',
                 'data' => self::sanitazeData(self::getBrowsers()),
+            ],
+            [
+                'label' => 'JavaScript',
+                'key' => 'javascript',
+                'type' => 'bool',
             ],
         ];
     }
