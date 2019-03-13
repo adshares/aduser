@@ -18,19 +18,13 @@ use Symfony\Component\Routing\RouterInterface;
 
 abstract class AbstractDataProvider implements DataProviderInterface
 {
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     protected $router;
 
-    /**
-     * @var Connection
-     */
+    /** @var Connection */
     protected $connection;
 
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     protected $logger;
 
     public function __construct(RouterInterface $router, Connection $connection, LoggerInterface $logger)
@@ -82,11 +76,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    public function getTaxonomy(): array
-    {
-        return [];
-    }
-
     public function getRedirect(string $trackingId, Request $request): RedirectResponse
     {
         return new EmptyRedirectResponse();
@@ -107,6 +96,21 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return new EmptyRedirectResponse();
     }
 
+    public function getTaxonomy(): array
+    {
+        return [];
+    }
+
+    public function getHumanScore(string $trackingId): float
+    {
+        return -1.0;
+    }
+
+    public function getKeywords(string $trackingId): array
+    {
+        return [];
+    }
+
     protected function logRequest(string $trackingId, Request $request): void
     {
         $type = $this->getName();
@@ -114,7 +118,8 @@ abstract class AbstractDataProvider implements DataProviderInterface
         $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
 
         try {
-            $this->connection->insert("{$type}_log",
+            $this->connection->insert(
+                "{$type}_log",
                 [
                     'tracking_id' => $trackingId,
                     'uri' => $request->getRequestUri(),
@@ -125,7 +130,8 @@ abstract class AbstractDataProvider implements DataProviderInterface
                     'ip' => $request->getClientIp(),
                     'ips' => json_encode($request->getClientIps()),
                     'port' => (int)$request->getPort(),
-                ]);
+                ]
+            );
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
         }
@@ -138,13 +144,15 @@ abstract class AbstractDataProvider implements DataProviderInterface
     ): Url {
         return $this->generateUrl(
             'pixel_provider',
-            array_merge([
+            array_merge(
+                [
                 'provider' => $this->getName(),
                 'tracking' => $trackingId,
                 'nonce' => self::generateNonce(),
                 '_format' => $format,
-            ],
-                $parameters),
+                ],
+                $parameters
+            ),
             UrlGeneratorInterface::ABSOLUTE_URL
         );
     }

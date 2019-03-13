@@ -29,7 +29,8 @@ class InfoController extends AbstractController
             'module' => 'aduser',
             'name' => getenv('ADUSER_NAME'),
             'version' => getenv('ADUSER_VERSION'),
-            'pixelUrl' => str_replace(['_:', ':_', '.html'],
+            'pixelUrl' => str_replace(
+                ['_:', ':_', '.html'],
                 ['{', '}', '.{format}'],
                 $this->generateUrl(
                     'pixel_register',
@@ -40,7 +41,8 @@ class InfoController extends AbstractController
                         '_format' => 'html',
                     ],
                     UrlGeneratorInterface::ABSOLUTE_URL
-                )),
+                )
+            ),
             'supportedFormats' => ['gif', 'html'],
             'privacyUrl' => $this->generateUrl('privacy', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ];
