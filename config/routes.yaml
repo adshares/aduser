@@ -1,10 +1,12 @@
 index:
     path: /
     controller: Adshares\Aduser\Controller\InfoController::index
+    methods: GET
 
 info:
     path: /info.{_format}
     controller: Adshares\Aduser\Controller\InfoController::info
+    methods: GET
     defaults:
         _format: json
     requirements:
@@ -13,10 +15,12 @@ info:
 privacy:
     path: /privacy.html
     controller: Adshares\Aduser\Controller\InfoController::privacy
+    methods: GET
 
 pixel_register:
     path: /register/{adserver}/{user}/{nonce}.{_format}
     controller: Adshares\Aduser\Controller\PixelController::register
+    methods: GET
     requirements:
         adserver:  '[a-zA-Z0-9_:.-]+'
         user:  '[a-zA-Z0-9_:.-]+'
@@ -26,6 +30,7 @@ pixel_register:
 pixel_provider:
     path: /data/{provider}/{tracking}/{nonce}.{_format}
     controller: Adshares\Aduser\Controller\PixelController::provider
+    methods: GET|POST
     requirements:
         provider:  '[a-z]+'
         tracking:  '[a-zA-Z0-9+/=]+'
@@ -35,10 +40,12 @@ pixel_provider:
 taxonomy:
     path: /api/v0/taxonomy
     controller: Adshares\Aduser\Controller\DataController::taxonomy
+    methods: GET
 
 data:
     path: /api/v0/data/{adserver}/{user}
     controller: Adshares\Aduser\Controller\DataController::data
+    methods: GET|POST
     requirements:
         adserver:  '[a-zA-Z0-9_:.-]+'
         user:  '[a-zA-Z0-9_:.-]+'
