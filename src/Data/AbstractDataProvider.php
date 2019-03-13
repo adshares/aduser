@@ -118,7 +118,8 @@ abstract class AbstractDataProvider implements DataProviderInterface
         $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
 
         try {
-            $this->connection->insert("{$type}_log",
+            $this->connection->insert(
+                "{$type}_log",
                 [
                     'tracking_id' => $trackingId,
                     'uri' => $request->getRequestUri(),
@@ -129,7 +130,8 @@ abstract class AbstractDataProvider implements DataProviderInterface
                     'ip' => $request->getClientIp(),
                     'ips' => json_encode($request->getClientIps()),
                     'port' => (int)$request->getPort(),
-                ]);
+                ]
+            );
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
         }
@@ -142,13 +144,15 @@ abstract class AbstractDataProvider implements DataProviderInterface
     ): Url {
         return $this->generateUrl(
             'pixel_provider',
-            array_merge([
+            array_merge(
+                [
                 'provider' => $this->getName(),
                 'tracking' => $trackingId,
                 'nonce' => self::generateNonce(),
                 '_format' => $format,
-            ],
-                $parameters),
+                ],
+                $parameters
+            ),
             UrlGeneratorInterface::ABSOLUTE_URL
         );
     }

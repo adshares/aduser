@@ -164,7 +164,8 @@ class PixelController extends AbstractController
         $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
 
         try {
-            $this->connection->insert("{$type}_log",
+            $this->connection->insert(
+                "{$type}_log",
                 [
                     'tracking_id' => $trackingId,
                     'uri' => $request->getRequestUri(),
@@ -175,7 +176,8 @@ class PixelController extends AbstractController
                     'ip' => $request->getClientIp(),
                     'ips' => json_encode($request->getClientIps()),
                     'port' => (int)$request->getPort(),
-                ]);
+                ]
+            );
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
         }
