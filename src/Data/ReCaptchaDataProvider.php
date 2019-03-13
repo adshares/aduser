@@ -16,17 +16,18 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
 {
     private const NAME = 'rec';
 
+    private const NO_SCORE = -1.0;
+
+    /** @var string */
     private $siteKey;
 
+    /** @var string */
     private $secretKey;
-
-    private $defaultScore;
 
     public function __construct(RouterInterface $router, Connection $connection, LoggerInterface $logger)
     {
-        $this->siteKey = getenv('RECAPTCHA_SITE_KEY');
-        $this->secretKey = getenv('RECAPTCHA_SECRET_KEY');
-        $this->defaultScore = getenv('ADUSER_DEFAULT_HUMAN_SCORE');
+        $this->siteKey = (string)getenv('RECAPTCHA_SITE_KEY');
+        $this->secretKey = (string)getenv('RECAPTCHA_SECRET_KEY');
         parent::__construct($router, $connection, $logger);
     }
 
@@ -54,6 +55,23 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
         return $response;
     }
 
+    public function getHumanScore(string $trackingId): float
+    {
+        try {
+            $score = $this->connection->fetchColumn(
+                'SELECT score FROM rec_score WHERE tracking_id = ? AND success = 1 ORDER BY date DESC',
+                [$trackingId]
+            );
+        } catch (DBALException $e) {
+            $this->logger->error($e->getMessage());
+            $score = false;
+        }
+
+        $this->logger->debug(sprintf('reCaptcha score: %s -> %s', $trackingId, $score));
+
+        return $score === false ? self::NO_SCORE : (float)$score;
+    }
+
     private function saveScore(string $trackingId, Request $request): void
     {
         $url = 'https://www.google.com/recaptcha/api/siteverify';
@@ -70,10 +88,10 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
             return;
         }
 
-        $this->logger->debug(sprintf('reCaptcha score response: %s', $response));
+        $this->logger->debug(sprintf('reCaptcha score response: %s -> %s', $trackingId, $response));
 
         $data = json_decode($response, true);
-        $score = $this->defaultScore;
+        $score = self::NO_SCORE;
         $success = false;
         if (isset($data['success']) && $data['success']) {
             $score = $data['score'];
@@ -81,13 +99,15 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
         }
 
         try {
-            $this->connection->insert("{$this->getName()}_score",
+            $this->connection->insert(
+                "{$this->getName()}_score",
                 [
                     'tracking_id' => $trackingId,
                     'success' => (int)$success,
                     'score' => $score,
                     'data' => json_encode($data),
-                ]);
+                ]
+            );
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
         }
