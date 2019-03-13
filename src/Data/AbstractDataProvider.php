@@ -18,19 +18,13 @@ use Symfony\Component\Routing\RouterInterface;
 
 abstract class AbstractDataProvider implements DataProviderInterface
 {
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     protected $router;
 
-    /**
-     * @var Connection
-     */
+    /** @var Connection */
     protected $connection;
 
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     protected $logger;
 
     public function __construct(RouterInterface $router, Connection $connection, LoggerInterface $logger)
@@ -82,11 +76,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    public function getTaxonomy(): array
-    {
-        return [];
-    }
-
     public function getRedirect(string $trackingId, Request $request): RedirectResponse
     {
         return new EmptyRedirectResponse();
@@ -105,6 +94,21 @@ abstract class AbstractDataProvider implements DataProviderInterface
     public function register(string $trackingId, Request $request): Response
     {
         return new EmptyRedirectResponse();
+    }
+
+    public function getTaxonomy(): array
+    {
+        return [];
+    }
+
+    public function getHumanScore(string $trackingId): float
+    {
+        return -1.0;
+    }
+
+    public function getKeywords(string $trackingId): array
+    {
+        return [];
     }
 
     protected function logRequest(string $trackingId, Request $request): void
