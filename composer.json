@@ -26,9 +26,10 @@
     "require": {
         "php": "^7.2",
         "ext-ctype": "*",
+        "ext-curl": "*",
         "ext-iconv": "*",
         "ext-json": "*",
-        "ext-curl": "*",
+        "browscap/browscap-php": "^4.2",
         "psr/log": "^1.0",
         "symfony/console": "^4.2",
         "symfony/dotenv": "^4.2",

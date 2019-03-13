@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Adshares\Aduser\Data;
+namespace Adshares\Aduser\DataProvider;
 
 use Adshares\Share\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -19,6 +19,8 @@ interface DataProviderInterface
     public function getPageUrl(string $trackingId, Request $request): Url;
 
     public function register(string $trackingId, Request $request): Response;
+
+    public function updateData(): bool;
 
     public function getTaxonomy(): array;
 

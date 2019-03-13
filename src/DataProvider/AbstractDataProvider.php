@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Adshares\Aduser\Data;
+namespace Adshares\Aduser\DataProvider;
 
 use Adshares\Share\Response\EmptyRedirectResponse;
 use Adshares\Share\Url;
@@ -94,6 +94,11 @@ abstract class AbstractDataProvider implements DataProviderInterface
     public function register(string $trackingId, Request $request): Response
     {
         return new EmptyRedirectResponse();
+    }
+
+    public function updateData(): bool
+    {
+        return true;
     }
 
     public function getTaxonomy(): array

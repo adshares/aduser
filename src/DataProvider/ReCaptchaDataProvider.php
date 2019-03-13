@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Adshares\Aduser\Data;
+namespace Adshares\Aduser\DataProvider;
 
 use Adshares\Share\Url;
 use Doctrine\DBAL\Connection;
@@ -14,7 +14,7 @@ use Symfony\Component\Routing\RouterInterface;
 
 final class ReCaptchaDataProvider extends AbstractDataProvider
 {
-    private const NAME = 'rec';
+    private const NAME = 'recaptcha';
 
     private const NO_SCORE = -1.0;
 

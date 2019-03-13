@@ -3,8 +3,8 @@ declare(strict_types = 1);
 
 namespace Adshares\Aduser\Controller;
 
-use Adshares\Aduser\Data\DataProviderInterface;
-use Adshares\Aduser\Data\DataProviderManager;
+use Adshares\Aduser\DataProvider\DataProviderInterface;
+use Adshares\Aduser\DataProvider\DataProviderManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Psr\Log\LoggerInterface;

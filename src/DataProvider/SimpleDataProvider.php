@@ -1,19 +1,53 @@
 <?php
 declare(strict_types = 1);
 
-namespace Adshares\Aduser\Data;
+namespace Adshares\Aduser\DataProvider;
 
+use Adshares\Aduser\External\Browscap;
 use Adshares\Share\Url;
+use Doctrine\DBAL\Connection;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 
 final class SimpleDataProvider extends AbstractDataProvider
 {
-    private const NAME = 'sim';
+    private const NAME = 'simple';
+
+    /** @var Browscap */
+    protected $browscap;
+
+    public function __construct(Browscap $browscap, RouterInterface $router, Connection $connection, LoggerInterface $logger)
+    {
+        parent::__construct($router, $connection, $logger);
+        $this->browscap = $browscap;
+    }
 
     public function getName(): string
     {
         return self::NAME;
+    }
+
+    public function getImageUrl(string $trackingId, Request $request): Url
+    {
+        return $this->generatePixelUrl($trackingId);
+    }
+
+    public function register(string $trackingId, Request $request): Response
+    {
+        $this->logRequest($trackingId, $request);
+
+        return self::createImageResponse();
+    }
+
+    public function updateData(): bool
+    {
+        $status = true;
+
+        $status = $this->browscap->update() && $status;
+
+        return $status;
     }
 
     public function getTaxonomy(): array
@@ -45,7 +79,7 @@ final class SimpleDataProvider extends AbstractDataProvider
                 'label' => 'Operating System',
                 'key' => 'os',
                 'type' => 'dict',
-                'data' => self::sanitazeData(self::getPlatforms()),
+                'data' => self::sanitazeData(self::getOperatingSystems()),
             ],
             [
                 'label' => 'Browser',
@@ -53,24 +87,32 @@ final class SimpleDataProvider extends AbstractDataProvider
                 'type' => 'dict',
                 'data' => self::sanitazeData(self::getBrowsers()),
             ],
-            [
-                'label' => 'JavaScript',
-                'key' => 'js',
-                'type' => 'bool',
-            ],
         ];
     }
 
-    public function getImageUrl(string $trackingId, Request $request): Url
+    public function getKeywords(string $trackingId): array
     {
-        return $this->generatePixelUrl($trackingId);
+        return array_merge(
+            $this->getBrowscapKeywords()
+        );
     }
 
-    public function register(string $trackingId, Request $request): Response
+    public function getHumanScore(string $trackingId): float
     {
-        $this->logRequest($trackingId, $request);
+        $info = $this->browscap->getInfo();
 
-        return self::createImageResponse();
+        return $info->crawler ? 0.0 : -1.0;
+    }
+
+    private function getBrowscapKeywords(): array
+    {
+        $info = $this->browscap->getInfo();
+
+        return [
+            'device' => self::mapDeviceType($info->device_type),
+            'os' => self::mapOperatingSystem($info->platform),
+            'browser' => self::mapBrowser($info->browser),
+        ];
     }
 
     private static function sanitazeData(array $data): array
@@ -353,7 +395,24 @@ final class SimpleDataProvider extends AbstractDataProvider
         ];
     }
 
-    private static function getPlatforms(): array
+    private static function mapDeviceType($device): string
+    {
+        switch ($device) {
+            case 'Desktop':
+                return 'desktop';
+            case 'Mobile Device':
+            case 'Mobile Phone':
+                return 'mobile';
+            case 'Tablet':
+                return 'tablet';
+            case 'TV Device':
+                return 'tv';
+            default:
+                return '_other';
+        }
+    }
+
+    private static function getOperatingSystems(): array
     {
         return [
             'android' => 'Android',
@@ -362,6 +421,76 @@ final class SimpleDataProvider extends AbstractDataProvider
             'windows' => 'Windows',
             '_other' => 'Other',
         ];
+    }
+
+    private static function mapOperatingSystem($os): string
+    {
+        switch ($os) {
+            case 'Android':
+            case 'Android for GoogleTV':
+                return 'android';
+            case 'iOS':
+            case 'macOS':
+            case 'MacOSX':
+                return 'apple_os';
+            case 'AIX':
+            case 'Linux':
+            case 'BSD':
+            case 'Chromecast OS':
+            case 'ChromeOS':
+            case 'Darwin':
+            case 'Debian':
+            case 'DragonFly BSD':
+            case 'Fedora':
+            case 'FirefoxOS':
+            case 'FreeBSD':
+            case 'HP-UX':
+            case 'IRIX64':
+            case 'KaiOS':
+            case 'Maemo':
+            case 'MeeGo':
+            case 'NetBSD':
+            case 'OpenBSD':
+            case 'Red Hat':
+            case 'Solaris':
+            case 'SunOS':
+            case 'Tizen':
+            case 'Ubuntu':
+            case 'Ubuntu Touch':
+            case 'Unix':
+                return 'unix';
+            case 'Win10':
+            case 'Win16':
+            case 'Win2000':
+            case 'Win31':
+            case 'Win32':
+            case 'Win64':
+            case 'Win7':
+            case 'Win8':
+            case 'Win8.1':
+            case 'Win95':
+            case 'Win98':
+            case 'WinCE':
+            case 'WinME':
+            case 'WinMobile':
+            case 'WinNT':
+            case 'WinPhone':
+            case 'WinPhone10':
+            case 'WinPhone6':
+            case 'WinPhone7':
+            case 'WinPhone7.10':
+            case 'WinPhone7.5':
+            case 'WinPhone7.8':
+            case 'WinPhone8':
+            case 'WinPhone8.1':
+            case 'WinRT8':
+            case 'WinRT8.1':
+            case 'WinVista':
+            case 'WinXP':
+                return 'windows';
+            default:
+                return '_other';
+        }
     }
 
     private static function getBrowsers(): array
@@ -375,5 +504,37 @@ final class SimpleDataProvider extends AbstractDataProvider
             'safari	' => 'Safari',
             '_other' => 'Other',
         ];
+    }
+
+    private static function mapBrowser($device): string
+    {
+        switch ($device) {
+            case 'Chrome':
+            case 'ChromePlus':
+            case 'Chromium':
+                return 'chrome';
+            case 'Edge':
+            case 'Edge Mobile':
+                return 'edge';
+            case 'Firefox':
+            case 'Firefox Focus':
+            case 'Firefox for iOS':
+            case 'Mozilla':
+                return 'firefox';
+            case 'IE':
+            case 'IEMobile':
+                return 'msie';
+            case 'Opera':
+            case 'Opera Mini':
+            case 'Opera Mobile':
+            case 'Opera Neon':
+            case 'Opera Touch':
+                return 'opera';
+            case 'Mobile Safari UIWebView':
+            case 'Safari':
+                return 'safari';
+            default:
+                return '_other';
+        }
     }
 }
