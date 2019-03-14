@@ -52,12 +52,12 @@ final class Browscap
         return true;
     }
 
-    public function getInfo(string $userAgent = null): \stdClass
+    public function getInfo(string $userAgent = null): ?\stdClass
     {
         $bc = new BrowscapPHP($this->cache, $this->logger);
 
         try {
-            $result = $bc->getBrowser();
+            $result = $bc->getBrowser($userAgent);
         } catch (\BrowscapPHP\Exception $e) {
             return null;
         }

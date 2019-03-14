@@ -113,7 +113,14 @@ final class SimpleDataProvider extends AbstractDataProvider
 
     public function getHumanScore(string $trackingId, Request $request): float
     {
-        $info = $this->browscap->getInfo();
+        $device = $request->get('device');
+        if (!isset($device['user-agent'])) {
+            return -1.0;
+        }
+
+        if (($info = $this->browscap->getInfo($device['user-agent'])) === null) {
+            return -1.0;
+        }
 
         return $info->crawler ? 0.0 : -1.0;
     }
@@ -125,7 +132,9 @@ final class SimpleDataProvider extends AbstractDataProvider
             return [];
         }
 
-        $info = $this->browscap->getInfo($device['user-agent']);
+        if (($info = $this->browscap->getInfo($device['user-agent'])) === null) {
+            return [];
+        }
 
         return [
             'device' => [
@@ -147,6 +156,8 @@ final class SimpleDataProvider extends AbstractDataProvider
                 'user' => ['country' => $code],
             ];
         }
+
+        return [];
     }
 
     private function getCrawlerKeywords(Request $request): array
