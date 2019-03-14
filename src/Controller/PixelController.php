@@ -189,25 +189,16 @@ class PixelController extends AbstractController
         $response = null;
 
         foreach ($this->providers as $provider) {
-            if ($redirect === null) {
-                $r = $provider->getRedirect($trackingId, $request);
-
-                if (!$r->isEmpty()) {
-                    $redirect = $r;
-                }
-            }
-
             $r = $provider->register($trackingId, $request);
-            if (($response === null) && !$r->isEmpty()) {
+            if ($response === null) {
                 $response = $r;
             }
+            if ($redirect === null) {
+                $redirect = $provider->getRedirect($trackingId, $request);
+            }
         }
 
-        if ($redirect !== null) {
-            return $redirect;
-        }
-
-        return $response;
+        return $redirect !== null ? $redirect : $response;
     }
 
     private function asyncRegister(string $trackingId, Request $request): Response

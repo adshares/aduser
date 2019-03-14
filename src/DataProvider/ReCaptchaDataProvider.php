@@ -41,7 +41,7 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
         return $this->generatePixelUrl($trackingId, 'html');
     }
 
-    public function register(string $trackingId, Request $request): Response
+    public function register(string $trackingId, Request $request): ?Response
     {
         $this->logRequest($trackingId, $request);
 
@@ -55,11 +55,11 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
         return $response;
     }
 
-    public function getHumanScore(string $trackingId): float
+    public function getHumanScore(string $trackingId, Request $request): float
     {
         try {
             $score = $this->connection->fetchColumn(
-                'SELECT score FROM rec_score WHERE tracking_id = ? AND success = 1 ORDER BY date DESC',
+                'SELECT score FROM recaptcha_score WHERE tracking_id = ? AND success = 1 ORDER BY date DESC',
                 [$trackingId]
             );
         } catch (DBALException $e) {
@@ -74,6 +74,11 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
 
     private function saveScore(string $trackingId, Request $request): void
     {
+        if (empty($request->get('token'))) {
+            $this->logger->debug(sprintf('reCaptcha no token: %s', $trackingId));
+            return;
+        }
+
         $url = 'https://www.google.com/recaptcha/api/siteverify';
         $payload = [
             'secret' => $this->secretKey,
@@ -100,7 +105,7 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
 
         try {
             $this->connection->insert(
-                "{$this->getName()}_score",
+                "recaptcha_score",
                 [
                     'tracking_id' => $trackingId,
                     'success' => (int)$success,

@@ -18,8 +18,12 @@ final class SimpleDataProvider extends AbstractDataProvider
     /** @var Browscap */
     protected $browscap;
 
-    public function __construct(Browscap $browscap, RouterInterface $router, Connection $connection, LoggerInterface $logger)
-    {
+    public function __construct(
+        Browscap $browscap,
+        RouterInterface $router,
+        Connection $connection,
+        LoggerInterface $logger
+    ) {
         parent::__construct($router, $connection, $logger);
         $this->browscap = $browscap;
     }
@@ -34,7 +38,7 @@ final class SimpleDataProvider extends AbstractDataProvider
         return $this->generatePixelUrl($trackingId);
     }
 
-    public function register(string $trackingId, Request $request): Response
+    public function register(string $trackingId, Request $request): ?Response
     {
         $this->logRequest($trackingId, $request);
 
@@ -53,66 +57,101 @@ final class SimpleDataProvider extends AbstractDataProvider
     public function getTaxonomy(): array
     {
         return [
-            [
-                'label' => 'Domain',
-                'key' => 'domain',
-                'type' => 'input',
+            'user' => [
+                [
+                    'label' => 'Country',
+                    'key' => 'country',
+                    'type' => 'dict',
+                    'data' => self::sanitazeData(self::getCountries()),
+                ],
             ],
-            [
-                'label' => 'Keyword',
-                'key' => 'keyword',
-                'type' => 'input',
+            'site' => [
+                [
+                    'label' => 'Domain',
+                    'key' => 'domain',
+                    'type' => 'input',
+                ],
+                [
+                    'label' => 'Keyword',
+                    'key' => 'keyword',
+                    'type' => 'input',
+                ],
             ],
-            [
-                'label' => 'Country',
-                'key' => 'country',
-                'type' => 'dict',
-                'data' => self::sanitazeData(self::getCountries()),
-            ],
-            [
-                'label' => 'Device type',
-                'key' => 'device',
-                'type' => 'dict',
-                'data' => self::sanitazeData(self::getDeviceTypes()),
-            ],
-            [
-                'label' => 'Operating System',
-                'key' => 'os',
-                'type' => 'dict',
-                'data' => self::sanitazeData(self::getOperatingSystems()),
-            ],
-            [
-                'label' => 'Browser',
-                'key' => 'browser',
-                'type' => 'dict',
-                'data' => self::sanitazeData(self::getBrowsers()),
+            'device' => [
+                [
+                    'label' => 'Device type',
+                    'key' => 'type',
+                    'type' => 'dict',
+                    'data' => self::sanitazeData(self::getDeviceTypes()),
+                ],
+                [
+                    'label' => 'Operating System',
+                    'key' => 'os',
+                    'type' => 'dict',
+                    'data' => self::sanitazeData(self::getOperatingSystems()),
+                ],
+                [
+                    'label' => 'Browser',
+                    'key' => 'browser',
+                    'type' => 'dict',
+                    'data' => self::sanitazeData(self::getBrowsers()),
+                ],
             ],
         ];
     }
 
-    public function getKeywords(string $trackingId): array
+    public function getKeywords(string $trackingId, Request $request): array
     {
+        $log = $this->getRequestLog($trackingId);
+
         return array_merge(
-            $this->getBrowscapKeywords()
+            $this->getBrowscapKeywords($request),
+            $this->getCloudflareKeywords($log),
+            $this->getCrawlerKeywords($request)
         );
     }
 
-    public function getHumanScore(string $trackingId): float
+    public function getHumanScore(string $trackingId, Request $request): float
     {
         $info = $this->browscap->getInfo();
 
         return $info->crawler ? 0.0 : -1.0;
     }
 
-    private function getBrowscapKeywords(): array
+    private function getBrowscapKeywords(Request $request): array
     {
-        $info = $this->browscap->getInfo();
+        $device = $request->get('device');
+        if (!isset($device['user-agent'])) {
+            return [];
+        }
+
+        $info = $this->browscap->getInfo($device['user-agent']);
 
         return [
-            'device' => self::mapDeviceType($info->device_type),
-            'os' => self::mapOperatingSystem($info->platform),
-            'browser' => self::mapBrowser($info->browser),
+            'device' => [
+                'type' => self::mapDeviceType($info->device_type),
+                'os' => self::mapOperatingSystem($info->platform),
+                'browser' => self::mapBrowser($info->browser),
+            ],
         ];
+    }
+
+    private function getCloudflareKeywords(array $log): array
+    {
+        if (($code = $log['headers']->get('cf-ipcountry')) !== null) {
+            $code = strtolower($code);
+            if (!array_key_exists($code, self::getCountries())) {
+                $code = 'other';
+            }
+            return [
+                'user' => ['country' => $code],
+            ];
+        }
+    }
+
+    private function getCrawlerKeywords(Request $request): array
+    {
+        return [];
     }
 
     private static function sanitazeData(array $data): array
@@ -380,7 +419,7 @@ final class SimpleDataProvider extends AbstractDataProvider
             'ye' => 'Yemen',
             'zm' => 'Zambia',
             'zw' => 'Zimbabwe',
-            '_other' => 'Other',
+            'other' => 'Other',
         ];
     }
 
@@ -391,7 +430,7 @@ final class SimpleDataProvider extends AbstractDataProvider
             'mobile' => 'Mobile',
             'tablet' => 'Tablet',
             'tv' => 'TV',
-            '_other' => 'Other',
+            'other' => 'Other',
         ];
     }
 
@@ -408,7 +447,7 @@ final class SimpleDataProvider extends AbstractDataProvider
             case 'TV Device':
                 return 'tv';
             default:
-                return '_other';
+                return 'other';
         }
     }
 
@@ -419,7 +458,7 @@ final class SimpleDataProvider extends AbstractDataProvider
             'apple_os' => 'Apple OS',
             'unix' => 'Unix',
             'windows' => 'Windows',
-            '_other' => 'Other',
+            'other' => 'Other',
         ];
     }
 
@@ -489,7 +528,7 @@ final class SimpleDataProvider extends AbstractDataProvider
             case 'WinXP':
                 return 'windows';
             default:
-                return '_other';
+                return 'other';
         }
     }
 
@@ -502,7 +541,7 @@ final class SimpleDataProvider extends AbstractDataProvider
             'msie' => 'Internet Explorer',
             'opera' => 'Opera',
             'safari	' => 'Safari',
-            '_other' => 'Other',
+            'other' => 'Other',
         ];
     }
 
@@ -534,7 +573,7 @@ final class SimpleDataProvider extends AbstractDataProvider
             case 'Safari':
                 return 'safari';
             default:
-                return '_other';
+                return 'other';
         }
     }
 }

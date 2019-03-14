@@ -3,13 +3,14 @@ declare(strict_types = 1);
 
 namespace Adshares\Aduser\DataProvider;
 
-use Adshares\Share\Response\EmptyRedirectResponse;
 use Adshares\Share\Url;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Exception;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\HeaderBag;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -76,9 +77,9 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    public function getRedirect(string $trackingId, Request $request): RedirectResponse
+    public function getRedirect(string $trackingId, Request $request): ?RedirectResponse
     {
-        return new EmptyRedirectResponse();
+        return null;
     }
 
     public function getImageUrl(string $trackingId, Request $request): Url
@@ -91,9 +92,9 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return new Url\EmptyUrl();
     }
 
-    public function register(string $trackingId, Request $request): Response
+    public function register(string $trackingId, Request $request): ?Response
     {
-        return new EmptyRedirectResponse();
+        return null;
     }
 
     public function updateData(): bool
@@ -106,12 +107,12 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return [];
     }
 
-    public function getHumanScore(string $trackingId): float
+    public function getHumanScore(string $trackingId, Request $request): float
     {
         return -1.0;
     }
 
-    public function getKeywords(string $trackingId): array
+    public function getKeywords(string $trackingId, Request $request): array
     {
         return [];
     }
@@ -140,6 +141,30 @@ abstract class AbstractDataProvider implements DataProviderInterface
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
         }
+    }
+
+    protected function getRequestLog($trackingId): array
+    {
+        try {
+            $pixel = $this->connection->fetchAssoc(
+                'SELECT * FROM simple_log WHERE tracking_id = ? ORDER BY date DESC',
+                [$trackingId]
+            );
+            if ($pixel === false) {
+                $pixel = [];
+            } else {
+                $pixel['attributes'] = new ParameterBag(json_decode($pixel['attributes'], true));
+                $pixel['query'] = new ParameterBag(json_decode($pixel['query'], true));
+                $pixel['headers'] = new HeaderBag(json_decode($pixel['headers'], true));
+                $pixel['cookies'] = new ParameterBag(json_decode($pixel['cookies'], true));
+                $pixel['ips'] = json_decode($pixel['ips'], true);
+            }
+        } catch (DBALException $e) {
+            $this->logger->error($e->getMessage());
+            $pixel = [];
+        }
+
+        return $pixel;
     }
 
     protected function generatePixelUrl(
