@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Adshares\Aduser\Data;
+namespace Adshares\Aduser\DataProvider;
 
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
