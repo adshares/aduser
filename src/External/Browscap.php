@@ -2,7 +2,7 @@
 
 namespace Adshares\Aduser\External;
 
-use \BrowscapPHP\Browscap as BrowscapPHP;
+use BrowscapPHP\Browscap as BrowscapPHP;
 use BrowscapPHP\BrowscapUpdater;
 use BrowscapPHP\Exception\ErrorCachedVersionException;
 use BrowscapPHP\Exception\FetcherException;
@@ -52,16 +52,16 @@ final class Browscap
         return true;
     }
 
-    public function getInfo(string $userAgent = null): ?\stdClass
+    public function getInfo(string $userAgent): ?\stdClass
     {
         $bc = new BrowscapPHP($this->cache, $this->logger);
 
         try {
-            $result = $bc->getBrowser($userAgent);
+            $info = $bc->getBrowser($userAgent);
         } catch (\BrowscapPHP\Exception $e) {
             return null;
         }
 
-        return $result;
+        return $info;
     }
 }

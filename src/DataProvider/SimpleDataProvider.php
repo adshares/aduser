@@ -72,8 +72,8 @@ final class SimpleDataProvider extends AbstractDataProvider
                     'type' => 'input',
                 ],
                 [
-                    'label' => 'Keyword',
-                    'key' => 'keyword',
+                    'label' => 'Tag',
+                    'key' => 'tag',
                     'type' => 'input',
                 ],
             ],
@@ -107,7 +107,7 @@ final class SimpleDataProvider extends AbstractDataProvider
         return array_merge(
             $this->getBrowscapKeywords($request),
             $this->getCloudflareKeywords($log),
-            $this->getCrawlerKeywords($request)
+            $this->getSiteKeywords($request)
         );
     }
 
@@ -127,12 +127,12 @@ final class SimpleDataProvider extends AbstractDataProvider
 
     private function getBrowscapKeywords(Request $request): array
     {
-        $device = $request->get('device');
-        if (!isset($device['user-agent'])) {
+        $headers = $request->get('headers');
+        if (!isset($headers['User-Agent'])) {
             return [];
         }
 
-        if (($info = $this->browscap->getInfo($device['user-agent'])) === null) {
+        if (($info = $this->browscap->getInfo($headers['User-Agent'])) === null) {
             return [];
         }
 
@@ -152,6 +152,7 @@ final class SimpleDataProvider extends AbstractDataProvider
             if (!array_key_exists($code, self::getCountries())) {
                 $code = 'other';
             }
+
             return [
                 'user' => ['country' => $code],
             ];
@@ -160,9 +161,76 @@ final class SimpleDataProvider extends AbstractDataProvider
         return [];
     }
 
-    private function getCrawlerKeywords(Request $request): array
+    private function getSiteKeywords(Request $request): array
     {
-        return [];
+        $keywords = [];
+        if (($url = $request->get('url')) !== null) {
+            $keywords['site']['url'] = self::explodeUrl($url);
+        }
+        if (($tags = $request->get('tags')) !== null) {
+            $keywords['site']['tag'] = array_map(function ($item) {
+                return mb_strtolower($item);
+            }, $tags);
+        }
+
+        return $keywords;
+    }
+
+    private static function explodeUrl(string $url): array
+    {
+        if (strpos($url, '//') === false) {
+            $url = '//' . $url;
+        }
+
+        if (($parts = parse_url($url)) === false) {
+            return [];
+        }
+        $urls = [];
+
+        $cleanedHost = '';
+        $cleanedUrl = '';
+        if (isset($parts['host'])) {
+            $cleanedHost = preg_replace('/^www\./i', '', mb_strtolower($parts['host']));
+            $cleanedUrl = '//' . $cleanedHost;
+        }
+        if (isset($parts['port'])) {
+            $cleanedUrl .= ':' . $parts['port'];
+        }
+        if (!empty($cleanedUrl)) {
+            $urls[] = $cleanedUrl;
+        }
+
+        $path = '';
+        if (isset($parts['path'])) {
+            foreach (explode('/', $parts['path']) as $item) {
+                if (empty($item)) {
+                    continue;
+                }
+                $path .=  '/' . $item;
+                $urls[] = $cleanedUrl . $path;
+            }
+        }
+
+        if (isset($parts['query'])) {
+            $urls[] = $cleanedUrl . $path . '?' . $parts['query'];
+        }
+
+        if (!empty($cleanedHost)) {
+            $host = '';
+            foreach (array_reverse(explode('.', $cleanedHost)) as $item) {
+                if (empty($item)) {
+                    continue;
+                }
+                if (empty($host)) {
+                    $host = $item;
+                } else {
+                    $host = $item . '.' . $host;
+                }
+                $urls[] = $host;
+            }
+        }
+
+        return $urls;
     }
 
     private static function sanitazeData(array $data): array
@@ -466,7 +534,7 @@ final class SimpleDataProvider extends AbstractDataProvider
     {
         return [
             'android' => 'Android',
-            'apple_os' => 'Apple OS',
+            'apple-os' => 'Apple OS',
             'unix' => 'Unix',
             'windows' => 'Windows',
             'other' => 'Other',

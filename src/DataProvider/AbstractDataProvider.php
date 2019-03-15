@@ -131,6 +131,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
                     'uri' => $request->getRequestUri(),
                     'attributes' => json_encode($request->attributes->get('_route_params')),
                     'query' => json_encode($request->query->all()),
+                    'request' => json_encode($request->request->all()),
                     'headers' => json_encode($request->headers->all()),
                     'cookies' => json_encode($request->cookies->all()),
                     'ip' => $request->getClientIp(),
@@ -151,10 +152,18 @@ abstract class AbstractDataProvider implements DataProviderInterface
                 [$trackingId]
             );
             if ($pixel === false) {
-                $pixel = [];
+                $pixel = [
+                    'attributes' => new ParameterBag(),
+                    'query' => new ParameterBag(),
+                    'request' => new ParameterBag(),
+                    'headers' => new HeaderBag(),
+                    'cookies' => new ParameterBag(),
+                    'ips' => [],
+                ];
             } else {
                 $pixel['attributes'] = new ParameterBag(json_decode($pixel['attributes'], true));
                 $pixel['query'] = new ParameterBag(json_decode($pixel['query'], true));
+                $pixel['request'] = new ParameterBag(json_decode($pixel['request'], true));
                 $pixel['headers'] = new HeaderBag(json_decode($pixel['headers'], true));
                 $pixel['cookies'] = new ParameterBag(json_decode($pixel['cookies'], true));
                 $pixel['ips'] = json_decode($pixel['ips'], true);
