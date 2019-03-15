@@ -3,8 +3,8 @@ declare(strict_types = 1);
 
 namespace Adshares\Aduser\Controller;
 
-use Adshares\Aduser\Data\DataProviderInterface;
-use Adshares\Aduser\Data\DataProviderManager;
+use Adshares\Aduser\DataProvider\DataProviderInterface;
+use Adshares\Aduser\DataProvider\DataProviderManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Exception;
@@ -189,25 +189,16 @@ class PixelController extends AbstractController
         $response = null;
 
         foreach ($this->providers as $provider) {
-            if ($redirect === null) {
-                $r = $provider->getRedirect($trackingId, $request);
-
-                if (!$r->isEmpty()) {
-                    $redirect = $r;
-                }
-            }
-
             $r = $provider->register($trackingId, $request);
-            if (($response === null) && !$r->isEmpty()) {
+            if ($response === null) {
                 $response = $r;
             }
+            if ($redirect === null) {
+                $redirect = $provider->getRedirect($trackingId, $request);
+            }
         }
 
-        if ($redirect !== null) {
-            return $redirect;
-        }
-
-        return $response;
+        return $redirect !== null ? $redirect : $response;
     }
 
     private function asyncRegister(string $trackingId, Request $request): Response

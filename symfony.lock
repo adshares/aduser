@@ -1,6 +1,12 @@
 {
+    "browscap/browscap-php": {
+        "version": "4.2.0"
+    },
     "composer/ca-bundle": {
         "version": "1.1.4"
+    },
+    "daverandom/exceptional-json": {
+        "version": "v1.0.4"
     },
     "dealerdirect/phpcodesniffer-composer-installer": {
         "version": "v0.4.4"
@@ -84,11 +90,23 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "guzzlehttp/guzzle": {
+        "version": "6.3.3"
+    },
+    "guzzlehttp/promises": {
+        "version": "v1.3.1"
+    },
+    "guzzlehttp/psr7": {
+        "version": "1.5.2"
+    },
     "jakub-onderka/php-parallel-lint": {
         "version": "v1.0.0"
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
+    },
+    "monolog/monolog": {
+        "version": "1.24.0"
     },
     "ocramius/package-versions": {
         "version": "1.4.0"
@@ -96,17 +114,29 @@
     "ocramius/proxy-manager": {
         "version": "2.2.2"
     },
+    "phpcompatibility/php-compatibility": {
+        "version": "9.1.1"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },
     "psr/container": {
         "version": "1.0.0"
     },
+    "psr/http-message": {
+        "version": "1.0.1"
+    },
     "psr/log": {
         "version": "1.1.0"
     },
     "psr/simple-cache": {
         "version": "1.0.1"
+    },
+    "ralouphie/getallheaders": {
+        "version": "2.0.5"
+    },
+    "roave/doctrine-simplecache": {
+        "version": "2.2.0"
     },
     "sensiolabs/security-checker": {
         "version": "4.0",
@@ -259,9 +289,6 @@
     },
     "symfony/yaml": {
         "version": "v4.2.4"
-    },
-    "wimg/php-compatibility": {
-        "version": "8.2.0"
     },
     "zendframework/zend-code": {
         "version": "3.3.1"

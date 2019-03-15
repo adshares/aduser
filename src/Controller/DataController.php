@@ -3,8 +3,8 @@ declare(strict_types = 1);
 
 namespace Adshares\Aduser\Controller;
 
-use Adshares\Aduser\Data\DataProviderInterface;
-use Adshares\Aduser\Data\DataProviderManager;
+use Adshares\Aduser\DataProvider\DataProviderInterface;
+use Adshares\Aduser\DataProvider\DataProviderManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Psr\Log\LoggerInterface;
@@ -71,8 +71,8 @@ class DataController extends AbstractController
         $keywords = [];
 
         foreach ($this->providers as $provider) {
-            $keywords = array_merge($keywords, $provider->getKeywords($trackingId));
-            if (($score = $provider->getHumanScore($trackingId)) >= 0) {
+            $keywords = array_merge($keywords, $provider->getKeywords($trackingId, $request));
+            if (($score = $provider->getHumanScore($trackingId, $request)) >= 0) {
                 $humanScore = $humanScore < 0 ? $score : min($humanScore, $score);
             }
         }
@@ -80,14 +80,11 @@ class DataController extends AbstractController
         $this->logger->info(sprintf('Human score: %s -> %s', $trackingId, $humanScore));
         $this->logger->info(sprintf('Keywords: %s -> %s', $trackingId, json_encode($keywords)));
 
-        $data = [
-            'human_score' => $humanScore < 0 ? getenv('ADUSER_DEFAULT_HUMAN_SCORE') : $humanScore,
-            'keywords' => $keywords,
-        ];
+        $keywords['human_score'] = $humanScore < 0 ? getenv('ADUSER_DEFAULT_HUMAN_SCORE') : $humanScore;
 
-        $this->logRequest($trackingId, $request, $data);
+        $this->logRequest($trackingId, $request, $keywords);
 
-        return new JsonResponse($data);
+        return new JsonResponse($keywords);
     }
 
     private function getTrackingId(string $adserverId, string $userId): ?string
@@ -105,7 +102,7 @@ class DataController extends AbstractController
             $trackingId = null;
         }
 
-        return $trackingId;
+        return $trackingId === false ? null : $trackingId;
     }
 
     private function logRequest(string $trackingId, Request $request, array $data): void

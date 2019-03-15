@@ -23,11 +23,17 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    Adshares\Aduser\Data\DataProviderManager:
-        arguments:
-            $providers:
-                - '@Adshares\Aduser\Data\SimpleDataProvider'
-                - '@Adshares\Aduser\Data\ReCaptchaDataProvider'
-
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    Adshares\Aduser\External\Browscap:
+        arguments:
+            $iniFile: '%env(BROWSCAP_INI_FILE)%'
+            $cacheDir: '%kernel.project_dir%/var/cache/%kernel.environment%/'
+            $logger: '@Psr\Log\LoggerInterface'
+
+    Adshares\Aduser\DataProvider\DataProviderManager:
+        arguments:
+            $providers:
+                - '@Adshares\Aduser\DataProvider\SimpleDataProvider'
+                - '@Adshares\Aduser\DataProvider\ReCaptchaDataProvider'
