@@ -6,3 +6,4 @@ source ${1:-$(dirname $(readlink -f "$0"))/bin}/_functions.sh
 [[ -z ${3:-".env"} ]] || set -a && source .env && set +a
 
 composer install
+bin/console aduser:update
