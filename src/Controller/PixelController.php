@@ -22,6 +22,7 @@ use function json_encode;
 use function microtime;
 use function sprintf;
 use function substr;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use function time;
 
 class PixelController extends AbstractController
@@ -63,6 +64,22 @@ class PixelController extends AbstractController
         ));
 
         return $response;
+    }
+
+    public function provider(Request $request): Response
+    {
+        $trackingId = $request->get('tracking');
+        $name = $request->get('provider');
+
+        if (!self::validTrackingId($trackingId)) {
+            throw new BadRequestHttpException('Invalid tracking id');
+        }
+
+        $this->logRequest('provider', $trackingId, $request);
+
+        $provider = $this->providers->get($name);
+
+        return $provider->register($trackingId, $request);
     }
 
     private function loadTrackingId(Request $request)
@@ -171,6 +188,7 @@ class PixelController extends AbstractController
                     'uri' => $request->getRequestUri(),
                     'attributes' => json_encode($request->attributes->get('_route_params')),
                     'query' => json_encode($request->query->all()),
+                    'request' => json_encode($request->request->all()),
                     'headers' => json_encode($request->headers->all()),
                     'cookies' => json_encode($request->cookies->all()),
                     'ip' => $request->getClientIp(),
@@ -230,20 +248,5 @@ class PixelController extends AbstractController
         $content .= '</script></body></html>';
 
         return $content;
-    }
-
-    public function provider(Request $request): Response
-    {
-        if (($trackingId = $request->get('tracking')) === null) {
-            $trackingId = $this->generateTrackingId($request);
-        }
-
-        $this->logRequest('provider', $trackingId, $request);
-
-        $name = $request->get('provider');
-
-        $provider = $this->providers->get($name);
-
-        return $provider->register($trackingId, $request);
     }
 }

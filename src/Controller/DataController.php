@@ -13,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DataController extends AbstractController
 {
@@ -59,14 +58,6 @@ class DataController extends AbstractController
             $request->get('user')
         );
 
-        if ($trackingId === null) {
-            throw new NotFoundHttpException(sprintf(
-                'Cannot find user %s/%s',
-                $request->get('adserver'),
-                $request->get('user')
-            ));
-        }
-
         $humanScore = -1;
         $keywords = [];
 
@@ -87,7 +78,7 @@ class DataController extends AbstractController
         return new JsonResponse($keywords);
     }
 
-    private function getTrackingId(string $adserverId, string $userId): ?string
+    private function getTrackingId(string $adserverId, string $userId): string
     {
         try {
             $trackingId = $this->connection->fetchColumn(
@@ -99,10 +90,10 @@ class DataController extends AbstractController
             );
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
-            $trackingId = null;
+            $trackingId = false;
         }
 
-        return $trackingId === false ? null : $trackingId;
+        return (string)$trackingId;
     }
 
     private function logRequest(string $trackingId, Request $request, array $data): void
@@ -122,6 +113,8 @@ class DataController extends AbstractController
                     'data' => json_encode($data),
                     'uri' => $request->getRequestUri(),
                     'attributes' => json_encode($request->attributes->get('_route_params')),
+                    'query' => json_encode($request->query->all()),
+                    'request' => json_encode($request->request->all()),
                     'headers' => json_encode($request->headers->all()),
                     'ip' => $request->getClientIp(),
                     'ips' => json_encode($request->getClientIps()),
