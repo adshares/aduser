@@ -6,3 +6,4 @@ export APP_VERSION=$(versionFromGit)
 
 composer install
 bin/console aduser:update
+bin/console doctrine:migrations:migrate
