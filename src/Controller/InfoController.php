@@ -27,8 +27,8 @@ class InfoController extends AbstractController
     {
         $info = [
             'module' => 'aduser',
-            'name' => getenv('ADUSER_NAME'),
-            'version' => getenv('ADUSER_VERSION'),
+            'name' => getenv('APP_NAME'),
+            'version' => getenv('APP_VERSION'),
             'pixelUrl' => str_replace(
                 ['_:', ':_', '.html'],
                 ['{', '}', '.{format}'],
