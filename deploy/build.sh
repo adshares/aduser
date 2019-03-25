@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+env
 # Usage: build.sh [<location-of-functions-file-to-include> [<work-dir>]]
 [[ -z ${1:-""} ]] && set -eu || source ${1}/_functions.sh --vendor
 cd ${2:-"."}
