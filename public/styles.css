@@ -1,0 +1,36 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: -ms-flexbox;
+    display: -webkit-box;
+    display: flex;
+    -ms-flex-align: center;
+    -ms-flex-pack: center;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    position: relative;
+    box-sizing: border-box;
+    padding: 25px;
+    margin: 0;
+    font-family: Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif;
+    background: #FFFFFF;
+}
+
+body > footer {
+    border-top: 1px solid #dee2e6;
+    position: fixed;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+    bottom: 0;
+    text-align: center;
+    max-width: 800px;
+    margin: auto;
+    padding: 3px 0;
+    font-size: 13px;
+}

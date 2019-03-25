@@ -20,7 +20,10 @@ class InfoController extends AbstractController
 {
     public function index(): Response
     {
-        return new Response('<h1>' . getenv('ADUSER_NAME') . ' v' . getenv('ADUSER_VERSION') . '</h1>');
+        $logo = '<img src="/logo.svg" width="100" alt="'.getenv('APP_NAME').'" />';
+        $page = self::createHtmlPage($logo);
+
+        return new Response($page);
     }
 
     public function info(Request $request): Response
@@ -48,9 +51,7 @@ class InfoController extends AbstractController
         ];
 
         return new Response(
-            $request->getRequestFormat() === 'txt'
-                ? self::formatTxt($info)
-                : self::formatJson($info)
+            $request->getRequestFormat() === 'txt' ? self::formatTxt($info) : self::formatJson($info)
         );
     }
 
@@ -63,7 +64,7 @@ class InfoController extends AbstractController
                 $value = implode(',', $value);
             }
             if (strpos($value, ' ') !== false) {
-                $value = '"' . $value . '"';
+                $value = '"'.$value.'"';
             }
             $response .= sprintf("%s=%s\n", $key, $value);
         }
@@ -79,5 +80,26 @@ class InfoController extends AbstractController
     public function privacy(): Response
     {
         return new Response('<h1>Privacy</h1>');
+    }
+
+    private static function createHtmlPage($content)
+    {
+        $page = '<!DOCTYPE html>';
+        $page .= '<html lang="en">';
+        $page .= '<head>';
+        $page .= '<meta charset="utf-8">';
+        $page .= '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">';
+        $page .= '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
+        $page .= '<title>'.getenv('APP_NAME').'</title>';
+        $page .= '<link rel="stylesheet" href="/styles.css?ver=1">';
+        $page .= '<link rel="icon" type="image/png" href="/favicon.png" />';
+        $page .= '</head>';
+        $page .= '<body>';
+        $page .= '<div>'.$content.'</div>';
+        $page .= '<footer><small> v'.getenv('APP_VERSION').'</small></footer>';
+        $page .= '</body>';
+        $page .= '</html>';
+
+        return $page;
     }
 }
