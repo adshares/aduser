@@ -619,7 +619,7 @@ final class SimpleDataProvider extends AbstractDataProvider
             'firefox' => 'Firefox',
             'msie' => 'Internet Explorer',
             'opera' => 'Opera',
-            'safari	' => 'Safari',
+            'safari' => 'Safari',
             'other' => 'Other',
         ];
     }
