@@ -240,10 +240,10 @@ class PixelController extends AbstractController
     {
         $content = '<!DOCTYPE html><html lang="en"><body><script type="text/javascript">';
         foreach ($images as $image) {
-            $content .= 'parent.postMessage({"adsharesTrack":[{"type": "image", "url": "' . $image . '"}]});';
+            $content .= 'parent.postMessage({"adsharesTrack":[{"type": "image", "url": "' . $image . '"}]},"*");';
         }
         foreach ($pages as $page) {
-            $content .= 'parent.postMessage({"adsharesTrack":[{"type": "iframe", "url": "' . $page . '"}]});';
+            $content .= 'parent.postMessage({"adsharesTrack":[{"type": "iframe", "url": "' . $page . '"}]},"*");';
         }
         $content .= '</script></body></html>';
 
