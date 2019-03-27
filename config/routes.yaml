@@ -35,7 +35,7 @@ pixel_provider:
         provider:  '[a-z]+'
         tracking:  '[a-zA-Z0-9+/=]+'
         nonce: '[a-zA-Z0-9_:.-]+'
-        _format:  html|gif
+        _format:  html|htm|gif
 
 taxonomy:
     path: /api/v0/taxonomy

@@ -46,7 +46,7 @@ class InfoController extends AbstractController
                     UrlGeneratorInterface::ABSOLUTE_URL
                 )
             ),
-            'supportedFormats' => ['gif', 'html'],
+            'supportedFormats' => ['gif', 'html', 'htm'],
             'privacyUrl' => $this->generateUrl('privacy', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ];
 
