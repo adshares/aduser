@@ -60,7 +60,9 @@ class PixelController extends AbstractController
             getenv('ADUSER_COOKIE_NAME'),
             $trackingId,
             time() + getenv('ADUSER_COOKIE_EXPIRY_PERIOD'),
-            '/'
+            '/',
+            null,
+            null
         ));
 
         return $response;
