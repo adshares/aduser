@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use function base64_decode;
 use function base64_encode;
 use function getenv;
@@ -22,7 +23,6 @@ use function json_encode;
 use function microtime;
 use function sprintf;
 use function substr;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use function time;
 
 class PixelController extends AbstractController
@@ -153,7 +153,9 @@ class PixelController extends AbstractController
 
     private static function trackingIdChecksum(string $userId): string
     {
-        return substr(sha1($userId . getenv('ADUSER_TRACKING_SECRET')), 0, 6);
+        $secret = getenv('TRACKING_SECRET') ?: getenv('ADUSER_TRACKING_SECRET');
+
+        return substr(sha1($userId . $secret), 0, 6);
     }
 
     private function generateTrackingId(Request $request): string
@@ -243,7 +245,10 @@ class PixelController extends AbstractController
             $content .= "\n" . 'parent.postMessage({"adsharesTrack":[{"type": "img", "url": "' . $image . '"}]}, "*");';
         }
         foreach ($pages as $page) {
-            $content .= "\n" . 'parent.postMessage({"adsharesTrack":[{"type": "iframe", "url": "' . $page . '"}]}, "*");';
+            $content .= "\n"
+                . 'parent.postMessage({"adsharesTrack":[{"type": "iframe", "url": "'
+                . $page
+                . '"}]}, "*");';
         }
         $content .= "\n" . '</script></body></html>';
 
