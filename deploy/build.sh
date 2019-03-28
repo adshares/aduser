@@ -10,7 +10,7 @@ composer install
 
 bin/console doctrine:migrations:migrate --no-interaction
 
-if [[ ${_UPDATE_DATA:-0} -eq 1 ]]
+if [[ ${_UPDATE_DATA:-1} -eq 1 ]]
 then
     bin/console aduser:update
 fi
