@@ -15,11 +15,3 @@ monolog:
             type: console
             process_psr_3_messages: false
             channels: ["!event", "!doctrine"]
-        deprecation:
-            type: stream
-            path: '%env(LOG_FILE_PATH)%'
-        deprecation_filter:
-            type: filter
-            handler: deprecation
-            max_level: info
-            channels: ["php"]
