@@ -7,5 +7,10 @@ export APP_VERSION=$(versionFromGit 2>/dev/null || echo "")
 echo "=== Building v${APP_VERSION} of ${SERVICE_NAME} ==="
 
 composer install
-bin/console doctrine:migrations:migrate
-bin/console aduser:update
+
+bin/console doctrine:migrations:migrate --no-interaction
+
+if [[ ${_UPDATE_DATA:-0} -eq 1 ]]
+then
+    bin/console aduser:update
+fi
