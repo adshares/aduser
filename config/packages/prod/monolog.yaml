@@ -2,7 +2,7 @@ monolog:
     handlers:
         main:
             type: fingers_crossed
-            action_level: '%env(LOG_LEVEL)%'
+            action_level: 'error'
             handler: nested
             excluded_404s:
                 # regex: exclude all 404 errors from the logs
