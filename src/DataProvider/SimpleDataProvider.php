@@ -113,7 +113,7 @@ final class SimpleDataProvider extends AbstractDataProvider
 
     public function getHumanScore(string $trackingId, Request $request): float
     {
-        $info = $this->getInfo($request->get('device'));
+        $info = $this->getInfo($request->get('device') ?? []);
 
         if ($info === null) {
             return -1.0;
@@ -124,7 +124,7 @@ final class SimpleDataProvider extends AbstractDataProvider
 
     private function getBrowscapKeywords(Request $request): array
     {
-        $info = $this->getInfo($request->get('headers'));
+        $info = $this->getInfo($request->get('headers') ?? []);
 
         return $info === null
             ? []
