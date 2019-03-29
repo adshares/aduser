@@ -113,7 +113,7 @@ final class SimpleDataProvider extends AbstractDataProvider
 
     public function getHumanScore(string $trackingId, Request $request): float
     {
-        $info = $this->getInfo($request->get('device')['user-agent'] ?? '');
+        $info = $this->getInfo($request->get('device'));
 
         if ($info === null) {
             return -1.0;
@@ -124,7 +124,7 @@ final class SimpleDataProvider extends AbstractDataProvider
 
     private function getBrowscapKeywords(Request $request): array
     {
-        $info = $this->getInfo($request->get('headers')['user-agent'] ?? '');
+        $info = $this->getInfo($request->get('headers'));
 
         return $info === null
             ? []
@@ -137,8 +137,10 @@ final class SimpleDataProvider extends AbstractDataProvider
             ];
     }
 
-    private function getInfo($userAgent): ?\stdClass
+    private function getInfo(array $headers): ?\stdClass
     {
+        $userAgent = $headers['user-agent'] ?? '';
+
         if (empty($userAgent)) {
             return null;
         }
@@ -169,10 +171,7 @@ final class SimpleDataProvider extends AbstractDataProvider
             $keywords['site']['url'] = self::explodeUrl($url);
         }
         if (($tags = $request->get('tags')) !== null) {
-            $keywords['site']['tag'] = array_map(function ($item) {
-                return mb_strtolower($item);
-            },
-                $tags);
+            $keywords['site']['tag'] = array_map('mb_strtolower', $tags);
         }
 
         return $keywords;
