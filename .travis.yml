@@ -3,7 +3,7 @@ php:
   - '7.2'
 
 install: true
-scripts: true
+scripts: echo "no-tests"
 
 notifications:
   email: false
