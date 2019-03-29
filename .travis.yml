@@ -1,6 +1,7 @@
 language: php
 
-script: echo "no-tests"
+install: composer install
+script: true
 
 notifications:
   email: false
