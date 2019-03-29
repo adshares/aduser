@@ -113,12 +113,9 @@ final class SimpleDataProvider extends AbstractDataProvider
 
     public function getHumanScore(string $trackingId, Request $request): float
     {
-        $device = $request->get('device');
-        if (!isset($device['user-agent'])) {
-            return -1.0;
-        }
+        $info = $this->getInfo($request->get('device') ?? []);
 
-        if (($info = $this->browscap->getInfo($device['user-agent'])) === null) {
+        if ($info === null) {
             return -1.0;
         }
 
@@ -127,22 +124,28 @@ final class SimpleDataProvider extends AbstractDataProvider
 
     private function getBrowscapKeywords(Request $request): array
     {
-        $headers = $request->get('headers');
-        if (!isset($headers['User-Agent'])) {
-            return [];
+        $info = $this->getInfo($request->get('headers') ?? []);
+
+        return $info === null
+            ? []
+            : [
+                'device' => [
+                    'type' => self::mapDeviceType($info->device_type),
+                    'os' => self::mapOperatingSystem($info->platform),
+                    'browser' => self::mapBrowser($info->browser),
+                ],
+            ];
+    }
+
+    private function getInfo(array $headers): ?\stdClass
+    {
+        $userAgent = $headers['user-agent'] ?? '';
+
+        if (empty($userAgent)) {
+            return null;
         }
 
-        if (($info = $this->browscap->getInfo($headers['User-Agent'])) === null) {
-            return [];
-        }
-
-        return [
-            'device' => [
-                'type' => self::mapDeviceType($info->device_type),
-                'os' => self::mapOperatingSystem($info->platform),
-                'browser' => self::mapBrowser($info->browser),
-            ],
-        ];
+        return $this->browscap->getInfo($userAgent);
     }
 
     private function getCloudflareKeywords(array $log): array
@@ -168,9 +171,7 @@ final class SimpleDataProvider extends AbstractDataProvider
             $keywords['site']['url'] = self::explodeUrl($url);
         }
         if (($tags = $request->get('tags')) !== null) {
-            $keywords['site']['tag'] = array_map(function ($item) {
-                return mb_strtolower($item);
-            }, $tags);
+            $keywords['site']['tag'] = array_map('mb_strtolower', $tags);
         }
 
         return $keywords;
@@ -206,7 +207,7 @@ final class SimpleDataProvider extends AbstractDataProvider
                 if (empty($item)) {
                     continue;
                 }
-                $path .=  '/' . $item;
+                $path .= '/' . $item;
                 $urls[] = $cleanedUrl . $path;
             }
         }
