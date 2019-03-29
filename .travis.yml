@@ -1,7 +1,6 @@
 language: php
 
-install: true
-scripts: echo "no-tests"
+script: echo "no-tests"
 
 notifications:
   email: false
