@@ -244,11 +244,11 @@ class PixelController extends AbstractController
     {
         $content = '<!DOCTYPE html><html lang="en"><body><script type="text/javascript">';
         foreach ($images as $image) {
-            $content .= "\n" . 'parent.postMessage({"adsharesTrack":[{"type": "img", "url": "' . $image . '"}]}, "*");';
+            $content .= "\n" . 'parent.postMessage({"insertElem":[{"type": "img", "url": "' . $image . '"}]}, "*");';
         }
         foreach ($pages as $page) {
             $content .= "\n"
-                . 'parent.postMessage({"adsharesTrack":[{"type": "iframe", "url": "'
+                . 'parent.postMessage({"insertElem":[{"type": "iframe", "url": "'
                 . $page
                 . '"}]}, "*");';
         }
