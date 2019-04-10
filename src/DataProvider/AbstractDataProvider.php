@@ -35,7 +35,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
         $this->logger = $logger;
     }
 
-    protected static function createImageResponse(?string $data = null): Response
+    public static function createImageResponse(?string $data = null): Response
     {
         if ($data === null) {
             $data = 'R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
@@ -47,7 +47,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    protected static function createHtmlResponse(?string $body = null): Response
+    public static function createHtmlResponse(?string $body = null): Response
     {
         $content = '<!DOCTYPE html><html lang="en">';
         if ($body !== null) {
@@ -208,7 +208,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
         ));
     }
 
-    private static function generateNonce($length = 8): string
+    public static function generateNonce($length = 8): string
     {
         try {
             return substr(sha1(random_bytes(256)), 0, $length);

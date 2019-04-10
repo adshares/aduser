@@ -17,26 +17,6 @@ privacy:
     controller: Adshares\Aduser\Controller\InfoController::privacy
     methods: GET
 
-pixel_register:
-    path: /register/{adserver}/{user}/{nonce}.{_format}
-    controller: Adshares\Aduser\Controller\PixelController::register
-    methods: GET
-    requirements:
-        adserver:  '[a-zA-Z0-9_:.-]+'
-        user:  '[a-zA-Z0-9_:.-]+'
-        nonce: '[a-zA-Z0-9_:.-]+'
-        _format:  html|htm|gif
-
-pixel_provider:
-    path: /data/{provider}/{tracking}/{nonce}.{_format}
-    controller: Adshares\Aduser\Controller\PixelController::provider
-    methods: GET|POST
-    requirements:
-        provider:  '[a-z]+'
-        tracking:  '[a-zA-Z0-9+/=]+'
-        nonce: '[a-zA-Z0-9_:.-]+'
-        _format:  html|htm|gif
-
 taxonomy:
     path: /api/v0/taxonomy
     controller: Adshares\Aduser\Controller\DataController::taxonomy
@@ -49,3 +29,32 @@ data:
     requirements:
         adserver:  '[a-zA-Z0-9_:.-]+'
         user:  '[a-zA-Z0-9_:.-]+'
+
+pixel_register:
+    path: /{slug}/{adserver}/{user}/{nonce}.{_format}
+    controller: Adshares\Aduser\Controller\PixelController::register
+    methods: GET
+    requirements:
+        slug:  '[a-zA-Z0-9_:.-]{8}'
+        adserver:  '[a-zA-Z0-9_:.-]+'
+        user:  '[a-zA-Z0-9_:.-]+'
+        nonce: '[a-zA-Z0-9_:.-]+'
+        _format:  html|htm|gif
+
+pixel_provider:
+    path: /{provider}/{tracking}/{nonce}.{_format}
+    controller: Adshares\Aduser\Controller\PixelController::provider
+    methods: GET|POST
+    requirements:
+        provider:  '[a-z]+'
+        tracking:  '[a-zA-Z0-9+/=]+'
+        nonce: '[a-zA-Z0-9_:.-]+'
+        _format:  html|htm|gif
+
+pixel_sync:
+    path: /{tracking}/{nonce}.gif
+    controller: Adshares\Aduser\Controller\PixelController::sync
+    methods: GET|POST
+    requirements:
+        tracking:  '[a-zA-Z0-9+/=]+'
+        nonce: '[a-zA-Z0-9_:.-]+'

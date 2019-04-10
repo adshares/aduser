@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Adshares\Aduser\Controller;
 
+use Adshares\Aduser\DataProvider\AbstractDataProvider;
 use Adshares\Aduser\DataProvider\DataProviderInterface;
 use Adshares\Aduser\DataProvider\DataProviderManager;
 use Doctrine\DBAL\Connection;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use function base64_decode;
 use function base64_encode;
 use function getenv;
@@ -56,14 +58,16 @@ class PixelController extends AbstractController
             $response = $this->asyncRegister($trackingId, $request);
         }
 
-        $response->headers->setCookie(new Cookie(
-            getenv('ADUSER_COOKIE_NAME'),
-            $trackingId,
-            time() + getenv('ADUSER_COOKIE_EXPIRY_PERIOD'),
-            '/',
-            null,
-            null
-        ));
+        $response->headers->setCookie(
+            new Cookie(
+                getenv('ADUSER_COOKIE_NAME'),
+                $trackingId,
+                time() + getenv('ADUSER_COOKIE_EXPIRY_PERIOD'),
+                '/',
+                null,
+                null
+            )
+        );
 
         return $response;
     }
@@ -82,6 +86,38 @@ class PixelController extends AbstractController
         $provider = $this->providers->get($name);
 
         return $provider->register($trackingId, $request);
+    }
+
+    public function sync(Request $request): Response
+    {
+        $trackingId = $request->get('tracking');
+        $cookieTid = $request->cookies->get(getenv('ADUSER_COOKIE_NAME'));
+
+        if (!self::validTrackingId($trackingId)) {
+            throw new BadRequestHttpException('Invalid tracking id');
+        }
+
+        if (empty($cookieTid) || !self::validTrackingId($cookieTid)) {
+            $cookieTid = $trackingId;
+        }
+
+        if ($cookieTid !== $trackingId) {
+            //TODO add tracking id map
+        }
+
+        $response = AbstractDataProvider::createImageResponse();
+        $response->headers->setCookie(
+            new Cookie(
+                getenv('ADUSER_COOKIE_NAME'),
+                $cookieTid,
+                time() + getenv('ADUSER_COOKIE_EXPIRY_PERIOD'),
+                '/',
+                null,
+                null
+            )
+        );
+
+        return $response;
     }
 
     private function loadTrackingId(Request $request)
@@ -157,7 +193,7 @@ class PixelController extends AbstractController
     {
         $secret = getenv('TRACKING_SECRET') ?: getenv('ADUSER_TRACKING_SECRET');
 
-        return substr(sha1($userId . $secret), 0, 6);
+        return substr(sha1($userId.$secret), 0, 6);
     }
 
     private function generateTrackingId(Request $request): string
@@ -177,7 +213,7 @@ class PixelController extends AbstractController
 
         $userId = substr(sha1(implode(':', $elements)), 0, 16);
 
-        return base64_encode($userId . self::trackingIdChecksum($userId));
+        return base64_encode($userId.self::trackingIdChecksum($userId));
     }
 
     private function logRequest(string $type, string $trackingId, Request $request): void
@@ -227,6 +263,7 @@ class PixelController extends AbstractController
     {
         $images = [];
         $pages = [];
+        $sync = self::getSyncImages($trackingId, $request);
 
         foreach ($this->providers as $provider) {
             if ($image = (string)$provider->getImageUrl($trackingId, $request)) {
@@ -237,22 +274,48 @@ class PixelController extends AbstractController
             }
         }
 
-        return new Response($this->getHtmlPixel($images, $pages));
+        return new Response($this->getHtmlPixel($images, $pages, $sync));
     }
 
-    private function getHtmlPixel(array $images, array $pages): string
+    private function getSyncImages($trackingId, Request $request, $length = 3): array
     {
-        $content = '<!DOCTYPE html><html lang="en"><body><script type="text/javascript">';
+        $sync = [];
+        $available = array_filter(explode(',', getenv('ADUSER_DOMAINS')));
+        if (count($available) > 0) {
+            srand(crc32($request->getHost().date('-d-m-Y-h')));
+            foreach ((array)array_rand($available, min($length, count($available))) as $key) {
+                $sync[] = str_replace(
+                    $request->getHost(),
+                    $available[$key],
+                    $this->generateUrl(
+                        'pixel_sync',
+                        [
+                            'tracking' => $trackingId,
+                            'nonce' => AbstractDataProvider::generateNonce(),
+                        ],
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    )
+                );
+            }
+        }
+
+        return $sync;
+    }
+
+    private function getHtmlPixel(array $images, array $pages, array $sync = []): string
+    {
+        $content = '<!DOCTYPE html><html lang="en"><body>';
+        foreach ($sync as $image) {
+            $content .= "\n".'<img src="'.$image.'" width="1" height="1" alt="" />';
+        }
+        $content .= "\n".'<script type="text/javascript">';
         foreach ($images as $image) {
-            $content .= "\n" . 'parent.postMessage({"insertElem":[{"type": "img", "url": "' . $image . '"}]}, "*");';
+            $content .= "\n".'parent.postMessage({"insertElem":[{"type": "img", "url": "'.$image.'"}]}, "*");';
         }
         foreach ($pages as $page) {
-            $content .= "\n"
-                . 'parent.postMessage({"insertElem":[{"type": "iframe", "url": "'
-                . $page
-                . '"}]}, "*");';
+            $content .= "\n".'parent.postMessage({"insertElem":[{"type": "iframe", "url": "'.$page.'"}]}, "*");';
         }
-        $content .= "\n" . '</script></body></html>';
+        $content .= "\n".'</script></body></html>';
 
         return $content;
     }
