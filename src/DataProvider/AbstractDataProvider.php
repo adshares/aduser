@@ -117,33 +117,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return [];
     }
 
-    protected function logRequest(string $trackingId, Request $request): void
-    {
-        $type = $this->getName();
-
-        $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
-
-        try {
-            $this->connection->insert(
-                "{$type}_log",
-                [
-                    'tracking_id' => $trackingId,
-                    'uri' => $request->getRequestUri(),
-                    'attributes' => json_encode($request->attributes->get('_route_params')),
-                    'query' => json_encode($request->query->all()),
-                    'request' => json_encode($request->request->all()),
-                    'headers' => json_encode($request->headers->all()),
-                    'cookies' => json_encode($request->cookies->all()),
-                    'ip' => $request->getClientIp(),
-                    'ips' => json_encode($request->getClientIps()),
-                    'port' => (int)$request->getPort(),
-                ]
-            );
-        } catch (DBALException $e) {
-            $this->logger->error($e->getMessage());
-        }
-    }
-
     protected function getRequestLog($trackingId): array
     {
         $log = [

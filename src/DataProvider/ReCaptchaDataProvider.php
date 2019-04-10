@@ -43,8 +43,6 @@ final class ReCaptchaDataProvider extends AbstractDataProvider
 
     public function register(string $trackingId, Request $request): ?Response
     {
-        $this->logRequest($trackingId, $request);
-
         if ($request->getRequestFormat() === 'gif') {
             $this->saveScore($trackingId, $request);
             $response = self::createImageResponse();
