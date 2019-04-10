@@ -4,11 +4,9 @@ declare(strict_types = 1);
 namespace Adshares\Aduser\DataProvider;
 
 use Adshares\Aduser\External\Browscap;
-use Adshares\Share\Url;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 final class SimpleDataProvider extends AbstractDataProvider
@@ -33,18 +31,6 @@ final class SimpleDataProvider extends AbstractDataProvider
         return self::NAME;
     }
 
-    public function getImageUrl(string $trackingId, Request $request): Url
-    {
-        return $this->generatePixelUrl($trackingId);
-    }
-
-    public function register(string $trackingId, Request $request): ?Response
-    {
-        $this->logRequest($trackingId, $request);
-
-        return self::createImageResponse();
-    }
-
     public function updateData(): bool
     {
         $status = true;
@@ -63,6 +49,12 @@ final class SimpleDataProvider extends AbstractDataProvider
                     'key' => 'country',
                     'type' => 'dict',
                     'data' => self::sanitazeData(self::getCountries()),
+                ],
+                [
+                    'label' => 'Language',
+                    'key' => 'language',
+                    'type' => 'dict',
+                    'data' => self::sanitazeData(self::getLanguages()),
                 ],
             ],
             'site' => [
@@ -180,7 +172,7 @@ final class SimpleDataProvider extends AbstractDataProvider
     private static function explodeUrl(string $url): array
     {
         if (strpos($url, '//') === false) {
-            $url = '//' . $url;
+            $url = '//'.$url;
         }
 
         if (($parts = parse_url($url)) === false) {
@@ -192,10 +184,10 @@ final class SimpleDataProvider extends AbstractDataProvider
         $cleanedUrl = '';
         if (isset($parts['host'])) {
             $cleanedHost = preg_replace('/^www\./i', '', mb_strtolower($parts['host']));
-            $cleanedUrl = '//' . $cleanedHost;
+            $cleanedUrl = '//'.$cleanedHost;
         }
         if (isset($parts['port'])) {
-            $cleanedUrl .= ':' . $parts['port'];
+            $cleanedUrl .= ':'.$parts['port'];
         }
         if (!empty($cleanedUrl)) {
             $urls[] = $cleanedUrl;
@@ -207,13 +199,13 @@ final class SimpleDataProvider extends AbstractDataProvider
                 if (empty($item)) {
                     continue;
                 }
-                $path .= '/' . $item;
-                $urls[] = $cleanedUrl . $path;
+                $path .= '/'.$item;
+                $urls[] = $cleanedUrl.$path;
             }
         }
 
         if (isset($parts['query'])) {
-            $urls[] = $cleanedUrl . $path . '?' . $parts['query'];
+            $urls[] = $cleanedUrl.$path.'?'.$parts['query'];
         }
 
         if (!empty($cleanedHost)) {
@@ -225,7 +217,7 @@ final class SimpleDataProvider extends AbstractDataProvider
                 if (empty($host)) {
                     $host = $item;
                 } else {
-                    $host = $item . '.' . $host;
+                    $host = $item.'.'.$host;
                 }
                 $urls[] = $host;
             }
@@ -500,6 +492,13 @@ final class SimpleDataProvider extends AbstractDataProvider
             'zm' => 'Zambia',
             'zw' => 'Zimbabwe',
             'other' => 'Other',
+        ];
+    }
+
+    private static function getLanguages(): array
+    {
+        return [
+
         ];
     }
 

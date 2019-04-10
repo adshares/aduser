@@ -146,34 +146,33 @@ abstract class AbstractDataProvider implements DataProviderInterface
 
     protected function getRequestLog($trackingId): array
     {
+        $log = [
+            'attributes' => new ParameterBag(),
+            'query' => new ParameterBag(),
+            'request' => new ParameterBag(),
+            'headers' => new HeaderBag(),
+            'cookies' => new ParameterBag(),
+            'ips' => [],
+        ];
+
         try {
             $pixel = $this->connection->fetchAssoc(
-                'SELECT * FROM simple_log WHERE tracking_id = ? ORDER BY date DESC',
+                'SELECT * FROM pixel_log WHERE tracking_id = ? ORDER BY date DESC',
                 [$trackingId]
             );
-            if ($pixel === false) {
-                $pixel = [
-                    'attributes' => new ParameterBag(),
-                    'query' => new ParameterBag(),
-                    'request' => new ParameterBag(),
-                    'headers' => new HeaderBag(),
-                    'cookies' => new ParameterBag(),
-                    'ips' => [],
-                ];
-            } else {
-                $pixel['attributes'] = new ParameterBag(json_decode($pixel['attributes'], true));
-                $pixel['query'] = new ParameterBag(json_decode($pixel['query'], true));
-                $pixel['request'] = new ParameterBag(json_decode($pixel['request'], true));
-                $pixel['headers'] = new HeaderBag(json_decode($pixel['headers'], true));
-                $pixel['cookies'] = new ParameterBag(json_decode($pixel['cookies'], true));
-                $pixel['ips'] = json_decode($pixel['ips'], true);
+            if ($pixel !== false) {
+                $log['attributes'] = new ParameterBag(json_decode($pixel['attributes'], true));
+                $log['query'] = new ParameterBag(json_decode($pixel['query'], true));
+                $log['request'] = new ParameterBag(json_decode($pixel['request'], true));
+                $log['headers'] = new HeaderBag(json_decode($pixel['headers'], true));
+                $log['cookies'] = new ParameterBag(json_decode($pixel['cookies'], true));
+                $log['ips'] = json_decode($pixel['ips'], true);
             }
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
-            $pixel = [];
         }
 
-        return $pixel;
+        return $log;
     }
 
     protected function generatePixelUrl(
