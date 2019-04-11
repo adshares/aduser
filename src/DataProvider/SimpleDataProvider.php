@@ -131,7 +131,7 @@ final class SimpleDataProvider extends AbstractDataProvider
 
     private function getInfo(array $headers): ?\stdClass
     {
-        $userAgent = $headers['user-agent'] ?? '';
+        $userAgent = $headers['User-Agent'] ?? $headers['user-agent'] ?? '';
 
         if (empty($userAgent)) {
             return null;
