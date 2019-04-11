@@ -68,6 +68,11 @@ class PixelController extends AbstractController
                 null
             )
         );
+        $response->setCache([
+            'max_age' => 0,
+            's_maxage' => 0,
+            'private' => true
+        ]);
 
         return $response;
     }
@@ -85,7 +90,14 @@ class PixelController extends AbstractController
 
         $provider = $this->providers->get($name);
 
-        return $provider->register($trackingId, $request);
+        $response = $provider->register($trackingId, $request);
+        $response->setCache([
+            'max_age' => 0,
+            's_maxage' => 0,
+            'private' => true
+        ]);
+
+        return $response;
     }
 
     public function sync(Request $request): Response
