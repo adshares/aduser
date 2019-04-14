@@ -49,7 +49,7 @@ final class Version20190410131920 extends AbstractMigration
             screen_resolution VARCHAR(16) NULL,
             available_screen_resolution VARCHAR(16) NULL,
             timezone_offset INT(11) NULL,
-            timezone VARCHAR(16) NULL,
+            timezone VARCHAR(64) NULL,
             session_storage TINYINT(1) NULL,
             local_storage TINYINT(1) NULL,
             indexed_db TINYINT(1) NULL,

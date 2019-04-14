@@ -28,6 +28,7 @@ class InfoController extends AbstractController
 
     public function info(Request $request): Response
     {
+        srand(crc32($request->getClientIp() . date('-d-m-Y-h')));
         $info = [
             'module' => 'aduser',
             'name' => getenv('APP_NAME'),
@@ -91,8 +92,6 @@ class InfoController extends AbstractController
         if (empty($available)) {
             return $request->getHost();
         }
-
-        srand(crc32($request->getClientIp() . date('-d-m-Y-h')));
 
         return $available[rand(0, count($available) - 1)];
     }
