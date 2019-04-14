@@ -66,7 +66,7 @@ final class Version20190312114325 extends AbstractMigration
             date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             tracking_id VARCHAR(64) NOT NULL,
             score FLOAT NOT NULL,
-            success TINYINT(4) NOT NULL,
+            success TINYINT(1) NOT NULL,
             data TEXT NOT NULL,
             INDEX date (date),
 	        INDEX tracking_id (tracking_id)

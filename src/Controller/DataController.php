@@ -71,11 +71,14 @@ class DataController extends AbstractController
         $this->logger->info(sprintf('Human score: %s -> %s', $trackingId, $humanScore));
         $this->logger->info(sprintf('Keywords: %s -> %s', $trackingId, json_encode($keywords)));
 
-        $keywords['human_score'] = $humanScore < 0 ? getenv('ADUSER_DEFAULT_HUMAN_SCORE') : $humanScore;
+        $response = $keywords;
+        $response['keywords'] = $keywords;
+        $response['uuid'] = $this->getUserId($trackingId);
+        $response['human_score'] = $humanScore < 0 ? getenv('ADUSER_DEFAULT_HUMAN_SCORE') : $humanScore;
 
-        $this->logRequest($trackingId, $request, $keywords);
+        $this->logRequest($trackingId, $request, $response);
 
-        return new JsonResponse($keywords);
+        return new JsonResponse($response);
     }
 
     private function getTrackingId(string $adserverId, string $userId): string
@@ -96,14 +99,31 @@ class DataController extends AbstractController
         return (string)$trackingId;
     }
 
+    private function getUserId(string $trackingId): string
+    {
+        try {
+            $userId = $this->connection->fetchColumn(
+                'SELECT user_id FROM tracking WHERE tracking_id = ?',
+                [$trackingId]
+            );
+        } catch (DBALException $e) {
+            $this->logger->error($e->getMessage());
+            $userId = false;
+        }
+
+        return (string)$userId;
+    }
+
     private function logRequest(string $trackingId, Request $request, array $data): void
     {
-        $this->logger->debug(sprintf(
-            'Data log: %s -> %s: %s',
-            $trackingId,
-            $request,
-            json_encode($data)
-        ));
+        $this->logger->debug(
+            sprintf(
+                'Data log: %s -> %s: %s',
+                $trackingId,
+                $request,
+                json_encode($data)
+            )
+        );
 
         try {
             $this->connection->insert(

@@ -18,15 +18,18 @@ privacy:
     methods: GET
 
 taxonomy:
-    path: /api/v1/taxonomy
+    path: /api/{version}/taxonomy
     controller: Adshares\Aduser\Controller\DataController::taxonomy
     methods: GET
+    requirements:
+        version:  v0|v1
 
 data:
-    path: /api/v1/data/{adserver}/{user}
+    path: /api/{version}/data/{adserver}/{user}
     controller: Adshares\Aduser\Controller\DataController::data
     methods: GET|POST
     requirements:
+        version:  v0|v1
         adserver:  '[a-zA-Z0-9_:.-]+'
         user:  '[a-zA-Z0-9_:.-]+'
 
@@ -54,7 +57,15 @@ pixel_provider:
 pixel_sync:
     path: /{tracking}/{nonce}.gif
     controller: Adshares\Aduser\Controller\PixelController::sync
-    methods: GET|POST
+    methods: GET
+    requirements:
+        tracking:  '[a-zA-Z0-9+/=]+'
+        nonce: '[a-zA-Z0-9_:.-]+'
+
+pixel_fingerprint:
+    path: /{tracking}/{nonce}.html
+    controller: Adshares\Aduser\Controller\PixelController::fingerprint
+    methods: POST
     requirements:
         tracking:  '[a-zA-Z0-9+/=]+'
         nonce: '[a-zA-Z0-9_:.-]+'
