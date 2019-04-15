@@ -500,7 +500,6 @@ class PixelController extends AbstractController
                     'headers' => json_encode($request->headers->all()),
                     'cookies' => json_encode($request->cookies->all()),
                     'ip' => $request->getClientIp(),
-                    'ips' => json_encode($request->getClientIps()),
                     'port' => (int)$request->getPort(),
                 ]
             );

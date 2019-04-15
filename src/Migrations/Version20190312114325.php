@@ -38,7 +38,6 @@ final class Version20190312114325 extends AbstractMigration
             headers MEDIUMTEXT NOT NULL,
             cookies MEDIUMTEXT NOT NULL,
             ip VARCHAR(40) NOT NULL,
-            ips TEXT NOT NULL,
             port INT(11) NOT NULL,
             INDEX date (date),
 	        INDEX tracking_id (tracking_id)
@@ -55,7 +54,6 @@ final class Version20190312114325 extends AbstractMigration
             headers MEDIUMTEXT NOT NULL,
             cookies MEDIUMTEXT NOT NULL,
             ip VARCHAR(40) NOT NULL,
-            ips TEXT NOT NULL,
             port INT(11) NOT NULL,
             INDEX date (date),
 	        INDEX tracking_id (tracking_id)
@@ -83,7 +81,6 @@ final class Version20190312114325 extends AbstractMigration
             request TEXT NOT NULL,
             headers MEDIUMTEXT NOT NULL,
             ip VARCHAR(40) NOT NULL,
-            ips TEXT NOT NULL,
             port INT(11) NOT NULL,
             INDEX date (date),
 	        INDEX tracking_id (tracking_id)

@@ -137,7 +137,6 @@ class DataController extends AbstractController
                     'request' => json_encode($request->request->all()),
                     'headers' => json_encode($request->headers->all()),
                     'ip' => $request->getClientIp(),
-                    'ips' => json_encode($request->getClientIps()),
                     'port' => (int)$request->getPort(),
                 ]
             );

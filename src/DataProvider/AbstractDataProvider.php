@@ -125,7 +125,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
             'request' => new ParameterBag(),
             'headers' => new HeaderBag(),
             'cookies' => new ParameterBag(),
-            'ips' => [],
         ];
 
         try {
@@ -139,7 +138,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
                 $log['request'] = new ParameterBag(json_decode($pixel['request'], true));
                 $log['headers'] = new HeaderBag(json_decode($pixel['headers'], true));
                 $log['cookies'] = new ParameterBag(json_decode($pixel['cookies'], true));
-                $log['ips'] = json_decode($pixel['ips'], true);
             }
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
