@@ -60,16 +60,7 @@ class PixelController extends AbstractController
             $response = $this->asyncRegister($trackingId, $request);
         }
 
-        $response->headers->setCookie(
-            new Cookie(
-                getenv('ADUSER_COOKIE_NAME'),
-                $trackingId,
-                time() + getenv('ADUSER_COOKIE_EXPIRY_PERIOD'),
-                '/',
-                null,
-                null
-            )
-        );
+        $response->headers->setCookie(self::createCookie($trackingId));
         $response->setCache(
             [
                 'max_age' => 0,
@@ -120,20 +111,11 @@ class PixelController extends AbstractController
         }
 
         if ($cookieTid !== $trackingId) {
-            //TODO add tracking id map
+            $this->addTrackingMap($cookieTid, $trackingId);
         }
 
         $response = AbstractDataProvider::createImageResponse();
-        $response->headers->setCookie(
-            new Cookie(
-                getenv('ADUSER_COOKIE_NAME'),
-                $cookieTid,
-                time() + getenv('ADUSER_COOKIE_EXPIRY_PERIOD'),
-                '/',
-                null,
-                null
-            )
-        );
+        $response->headers->setCookie(self::createCookie($trackingId));
 
         return $response;
     }
@@ -237,6 +219,16 @@ class PixelController extends AbstractController
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
         }
+    }
+
+    private static function createCookie($trackingId): Cookie
+    {
+        return Cookie::create(
+            getenv('ADUSER_COOKIE_NAME'),
+            $trackingId,
+            time() + getenv('ADUSER_COOKIE_EXPIRY_PERIOD'),
+            '/'
+        );
     }
 
     private function loadUserId(string $trackingId, ?string $dbTid): string
