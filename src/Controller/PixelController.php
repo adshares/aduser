@@ -60,16 +60,7 @@ class PixelController extends AbstractController
             $response = $this->asyncRegister($trackingId, $request);
         }
 
-        $response->headers->setCookie(self::createCookie($trackingId));
-        $response->setCache(
-            [
-                'max_age' => 0,
-                's_maxage' => 0,
-                'private' => true,
-            ]
-        );
-
-        return $response;
+        return self::prepareResponse($trackingId, $response);
     }
 
     public function provider(Request $request): Response
@@ -84,23 +75,15 @@ class PixelController extends AbstractController
         $this->logRequest('provider', $trackingId, $request);
 
         $provider = $this->providers->get($name);
-
         $response = $provider->register($trackingId, $request);
-        $response->setCache(
-            [
-                'max_age' => 0,
-                's_maxage' => 0,
-                'private' => true,
-            ]
-        );
 
-        return $response;
+        return self::prepareResponse($trackingId, $response);
     }
 
     public function sync(Request $request): Response
     {
         $trackingId = $request->get('tracking');
-        $cookieTid = $request->cookies->get(getenv('ADUSER_COOKIE_NAME'));
+        $cookieTid = self::getCookie($request);
 
         if (!self::validTrackingId($trackingId)) {
             throw new BadRequestHttpException('Invalid tracking id');
@@ -114,10 +97,7 @@ class PixelController extends AbstractController
             $this->addTrackingMap($cookieTid, $trackingId);
         }
 
-        $response = AbstractDataProvider::createImageResponse();
-        $response->headers->setCookie(self::createCookie($trackingId));
-
-        return $response;
+        return self::prepareResponse($trackingId, AbstractDataProvider::createImageResponse());
     }
 
     public function fingerprint(Request $request): Response
@@ -129,7 +109,7 @@ class PixelController extends AbstractController
 
     private function loadTrackingId(Request $request): string
     {
-        $cookieTid = $request->cookies->get(getenv('ADUSER_COOKIE_NAME'));
+        $cookieTid = self::getCookie($request);
         if (!empty($cookieTid) && self::validTrackingId($cookieTid)) {
             $trackingId = $cookieTid;
         } else {
@@ -144,7 +124,7 @@ class PixelController extends AbstractController
 
     private static function validTrackingId(string $trackingId): bool
     {
-        $id = base64_decode($trackingId);
+        $id = base64_decode(str_replace(['-', '_'], ['+', '/'], $trackingId));
         $userId = substr($id, 0, 16);
         $checksum = substr($id, 16, 22);
 
@@ -175,7 +155,11 @@ class PixelController extends AbstractController
 
         $userId = substr(sha1(implode(':', $elements)), 0, 16);
 
-        return base64_encode($userId.self::trackingIdChecksum($userId));
+        return str_replace(
+            ['+', '/', '='],
+            ['-', '_', ''],
+            base64_encode($userId.self::trackingIdChecksum($userId))
+        );
     }
 
     private function updateTracking(string $trackingId, ?string $dbTid, Request $request): void
@@ -221,13 +205,34 @@ class PixelController extends AbstractController
         }
     }
 
-    private static function createCookie($trackingId): Cookie
+    private static function prepareResponse($trackingId, Response $response): Response
     {
-        return Cookie::create(
-            getenv('ADUSER_COOKIE_NAME'),
-            $trackingId,
-            time() + getenv('ADUSER_COOKIE_EXPIRY_PERIOD'),
-            '/'
+        $response->headers->setCookie(
+            Cookie::create(
+                getenv('ADUSER_COOKIE_NAME'),
+                $trackingId,
+                time() + getenv('ADUSER_COOKIE_EXPIRY_PERIOD'),
+                '/'
+            )
+        );
+
+        $response->setCache(
+            [
+                'max_age' => 0,
+                's_maxage' => 0,
+                'private' => true,
+            ]
+        );
+
+        return $response;
+    }
+
+    private static function getCookie(Request $request)
+    {
+        return str_replace(
+            ['+', '/', '='],
+            ['-', '_', ''],
+            $request->cookies->get(getenv('ADUSER_COOKIE_NAME'))
         );
     }
 

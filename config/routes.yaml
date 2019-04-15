@@ -50,7 +50,7 @@ pixel_provider:
     methods: GET|POST
     requirements:
         provider:  '[a-z]+'
-        tracking:  '[a-zA-Z0-9+/=]+'
+        tracking:  '[a-zA-Z0-9_-]+'
         nonce: '[a-zA-Z0-9_:.-]+'
         _format:  html|htm|gif
 
@@ -59,7 +59,7 @@ pixel_sync:
     controller: Adshares\Aduser\Controller\PixelController::sync
     methods: GET
     requirements:
-        tracking:  '[a-zA-Z0-9+/=]+'
+        tracking:  '[a-zA-Z0-9_-]+'
         nonce: '[a-zA-Z0-9_:.-]+'
 
 pixel_fingerprint:
@@ -67,5 +67,5 @@ pixel_fingerprint:
     controller: Adshares\Aduser\Controller\PixelController::fingerprint
     methods: POST
     requirements:
-        tracking:  '[a-zA-Z0-9+/=]+'
+        tracking:  '[a-zA-Z0-9_-]+'
         nonce: '[a-zA-Z0-9_:.-]+'
