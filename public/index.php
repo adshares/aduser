@@ -5,6 +5,7 @@ use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Request;
 
 if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+    $_SERVER['X-FORWARDED-FOR'] = join(', ', [$_SERVER['HTTP_CF_CONNECTING_IP'], $_SERVER['REMOTE_ADDR']]);
     $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
 }
 
