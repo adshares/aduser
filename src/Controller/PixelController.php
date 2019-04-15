@@ -596,7 +596,7 @@ class PixelController extends AbstractController
 
         return 'const fgp = function() { Fingerprint2.get(function (c) {
               const f = new FormData();
-              for(var k in c) { f.append(c[k].key, ["canvas", "webgl"].includes(c[k].key) ? Fingerprint2.x64hash128(c[k].value.join(""), 31) : c[k].value) }
+              for(var k in c) { f.append(c[k].key, ["canvas", "webgl"].includes(c[k].key) ? Fingerprint2.x64hash128(Array.isArray(c[k].value) ? c[k].value.join("") : c[k].value, 31) : c[k].value) }
               const r = new XMLHttpRequest(); r.open("POST", "'.$fgUrl.'"); r.send(f);
         })}
         if (window.requestIdleCallback) { requestIdleCallback(fgp); } else { setTimeout(fgp, 200); }';
