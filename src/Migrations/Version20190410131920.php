@@ -80,8 +80,6 @@ final class Version20190410131920 extends AbstractMigration
             'CREATE TABLE tracking_map (
             tracking_id_a VARCHAR(64) NOT NULL,
             tracking_id_b VARCHAR(64) NOT NULL,
-            FOREIGN KEY (tracking_id_a) REFERENCES tracking(tracking_id),
-            FOREIGN KEY (tracking_id_b) REFERENCES tracking(tracking_id),
             INDEX tracking_id_a (tracking_id_a),
             INDEX tracking_id_b (tracking_id_b)
         )'
