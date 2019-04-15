@@ -77,7 +77,7 @@
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
-            "security-checker security:check": "script"
+            "[ %COMPOSER_DEV_MODE% -eq 0 ] || security-checker security:check": "script"
         },
         "post-install-cmd": [
             "@auto-scripts"
