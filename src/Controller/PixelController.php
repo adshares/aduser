@@ -256,6 +256,7 @@ class PixelController extends AbstractController
         }
 
         if ($userId === false) {
+            $this->logger->debug('Generating user id');
             $userId = self::generateUserId();
             try {
                 $this->connection->insert(
@@ -266,6 +267,8 @@ class PixelController extends AbstractController
                 $this->logger->error($e->getMessage());
             }
         }
+
+        $this->logger->info(sprintf('User id: %s', $userId));
 
         return $userId;
     }
