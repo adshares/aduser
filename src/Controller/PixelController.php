@@ -367,29 +367,41 @@ class PixelController extends AbstractController
             $dbTid = false;
         }
 
-        if ($trackingId !== $dbTid) {
+        if ($dbTid === false) {
             try {
-                if (!empty($dbTid)) {
-                    $this->connection->update(
-                        'user_map',
-                        [
-                            'tracking_id' => $trackingId,
-                        ],
-                        [
-                            'adserver_id' => $adserverId,
-                            'adserver_user_id' => $userId,
-                        ]
+                $this->connection->insert(
+                    'user_map',
+                    [
+                        'tracking_id' => $trackingId,
+                        'adserver_id' => $adserverId,
+                        'adserver_user_id' => $userId,
+                    ]
+                );
+            } catch (DBALException $e) {
+                try {
+                    $dbTid = $this->connection->fetchColumn(
+                        'SELECT tracking_id FROM user_map WHERE adserver_id = ? AND adserver_user_id = ?',
+                        [$adserverId, $userId]
                     );
-                } else {
-                    $this->connection->insert(
-                        'user_map',
-                        [
-                            'tracking_id' => $trackingId,
-                            'adserver_id' => $adserverId,
-                            'adserver_user_id' => $userId,
-                        ]
-                    );
+                } catch (DBALException $e) {
+                    $this->logger->error($e->getMessage());
                 }
+
+            }
+        }
+
+        if ($dbTid !== false && $trackingId !== $dbTid) {
+            try {
+                $this->connection->update(
+                    'user_map',
+                    [
+                        'tracking_id' => $trackingId,
+                    ],
+                    [
+                        'adserver_id' => $adserverId,
+                        'adserver_user_id' => $userId,
+                    ]
+                );
             } catch (DBALException $e) {
                 $this->logger->error($e->getMessage());
             }
