@@ -18,18 +18,18 @@ privacy:
     methods: GET
 
 taxonomy:
-    path: /api/{version}/taxonomy
+    path: /api/v{version}/taxonomy
     controller: Adshares\Aduser\Controller\DataController::taxonomy
     methods: GET
     requirements:
-        version:  v0|v1
+        version:  0|1
 
 data:
-    path: /api/{version}/data/{adserver}/{user}
+    path: /api/v{version}/data/{adserver}/{user}
     controller: Adshares\Aduser\Controller\DataController::data
     methods: GET|POST
     requirements:
-        version:  v0|v1
+        version:  0|1
         adserver:  '[a-zA-Z0-9_:.-]+'
         user:  '[a-zA-Z0-9_:.-]+'
 

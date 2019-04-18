@@ -71,7 +71,7 @@ class DataController extends AbstractController
         $this->logger->info(sprintf('Human score: %s -> %s', $trackingId, $humanScore));
         $this->logger->info(sprintf('Keywords: %s -> %s', $trackingId, json_encode($keywords)));
 
-        $response = $keywords;
+        $response = $request->get('version') === '0' ? $keywords : [];
         $response['keywords'] = $keywords;
         $response['uuid'] = $this->getUserId($trackingId);
         $response['human_score'] = $humanScore < 0 ? getenv('ADUSER_DEFAULT_HUMAN_SCORE') : $humanScore;
