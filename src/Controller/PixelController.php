@@ -606,7 +606,7 @@ class PixelController extends AbstractController
     {
         $content = '<!DOCTYPE html><html lang="en"><head>';
         $content .= "\n"
-            .'<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/2.0.6/fingerprint2.min.js"></script>';
+            .'<script type="text/javascript" src="/js/fgp2.min.js"></script>';
         $content .= "\n".'</head><body>';
         foreach ($sync as $image) {
             $content .= "\n".'<img src="'.$image.'" width="1" height="1" alt="" />';
