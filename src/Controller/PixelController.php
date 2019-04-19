@@ -97,7 +97,6 @@ class PixelController extends AbstractController
             $this->connection->insert(
                 'url_site_map',
                 ['url' => UrlNormalizer::normalize($url), 'created_at' => new DateTime()],
-//                ['url' => $url, 'created_at' => (new DateTime())->setTimezone(new DateTimeZone('UTC'))],
                 [
                     'string',
                     'datetime',

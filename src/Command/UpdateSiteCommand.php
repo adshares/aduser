@@ -11,11 +11,10 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\FetchMode;
 use Embed\Exceptions\EmbedException;
-use Exception;
-use function sprintf;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use function sprintf;
 
 class UpdateSiteCommand extends Command
 {
