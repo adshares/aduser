@@ -1,0 +1,17 @@
+version: "2"
+
+volumes:
+  database:
+
+services:
+  database:
+    image: percona:5
+    environment:
+      - MYSQL_ROOT_PASSWORD=adshares
+      - MYSQL_DATABASE=aduser
+      - MYSQL_USER=aduser
+      - MYSQL_PASSWORD=aduser
+    volumes:
+      - database:/var/lib/mysql
+    ports:
+      - "3307:3306"
