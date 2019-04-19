@@ -90,6 +90,9 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "embed/embed": {
+        "version": "v3.3.9"
+    },
     "guzzlehttp/guzzle": {
         "version": "6.3.3"
     },

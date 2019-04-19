@@ -4,7 +4,13 @@ declare(strict_types = 1);
 namespace Adshares\Aduser\DataProvider;
 
 use Adshares\Aduser\External\Browscap;
+use Adshares\Aduser\Utils\UrlNormalizer;
+use function array_merge;
+use function array_unique;
+use function array_values;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
+use function explode;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
@@ -170,14 +176,62 @@ final class SimpleDataProvider extends AbstractDataProvider
     private function getSiteKeywords(Request $request): array
     {
         $keywords = [];
-        if (($url = $request->get('url')) !== null) {
+        $url = $request->get('url');
+        $tags = $request->get('tags');
+
+        if ($url !== null) {
+            $url = UrlNormalizer::normalize($url);
             $keywords['site']['url'] = self::explodeUrl($url);
         }
-        if (($tags = $request->get('tags')) !== null) {
+
+        if ($tags !== null) {
             $keywords['site']['tag'] = array_map('mb_strtolower', $tags);
         }
 
+        $siteKeywords = $this->fetchAdUserKeywordsForSite($url);
+
+        if ($siteKeywords) {
+            if (!isset($keywords['site']['tag'])) {
+                $keywords['site']['tag'] = [];
+            }
+
+            $keywords['site']['tag'] = array_values(array_unique(array_merge(
+                $keywords['site']['tag'],
+                $siteKeywords
+            )));
+        }
+
         return $keywords;
+    }
+
+    private function fetchAdUserKeywordsForSite(string $url): array
+    {
+        $query = '
+    SELECT keywords FROM site s 
+    INNER JOIN url_site_map usm ON usm.site_id = s.id 
+    WHERE usm.url = :url
+    ';
+
+        try {
+            $siteKeywords = $this->connection->fetchColumn(
+                $query,
+                [
+                    'url' => $url,
+                ],
+                0,
+                [
+                    'string',
+                ]
+            );
+
+            if ($siteKeywords === false) {
+                return [];
+            }
+
+            return explode(',', $siteKeywords);
+        } catch (DBALException $exception) {
+            $this->logger->error($exception->getMessage());
+        }
     }
 
     private static function explodeUrl(string $url): array

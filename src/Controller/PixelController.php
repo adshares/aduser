@@ -6,6 +6,10 @@ namespace Adshares\Aduser\Controller;
 use Adshares\Aduser\DataProvider\AbstractDataProvider;
 use Adshares\Aduser\DataProvider\DataProviderInterface;
 use Adshares\Aduser\DataProvider\DataProviderManager;
+use Adshares\Aduser\Utils\UrlNormalizer;
+use function array_merge;
+use DateTime;
+use DateTimeZone;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Exception;
@@ -53,6 +57,8 @@ class PixelController extends AbstractController
 
         $dbTid = $this->updateUserMap($trackingId, $request->get('adserver'), $request->get('user'));
         $this->updateTracking($trackingId, $dbTid, $request);
+        $this->addUrlSiteMap($request, $trackingId);
+
 
         if ($request->getRequestFormat() === 'gif') {
             $response = $this->syncRegister($trackingId, $request);
@@ -61,6 +67,45 @@ class PixelController extends AbstractController
         }
 
         return self::prepareResponse($trackingId, $response);
+    }
+
+    protected function addUrlSiteMap(Request $request, string $trackingId): void
+    {
+        $url = UrlNormalizer::normalize($request->headers->get('referer'));
+
+        if ($url === null) {
+            $this->logger->warning(sprintf(
+                'Empty referer for tracking_id - %s. Full request: %s',
+                $trackingId,
+                $request
+            ));
+
+            return;
+        }
+
+        try {
+            $urlInDb = $this->connection->fetchColumn(
+                'SELECT url FROM url_site_map WHERE url = ?',
+                [$url]
+            );
+
+            if ($urlInDb !== false) {
+                $this->logger->debug(sprintf('Url %s exists in `user_site_map`.', $url));
+                return;
+            }
+
+            $this->connection->insert(
+                'url_site_map',
+                ['url' => UrlNormalizer::normalize($url), 'created_at' => new DateTime()],
+//                ['url' => $url, 'created_at' => (new DateTime())->setTimezone(new DateTimeZone('UTC'))],
+                [
+                    'string',
+                    'datetime',
+                ]
+            );
+        } catch (DBALException $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 
     public function provider(Request $request): Response

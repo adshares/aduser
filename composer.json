@@ -30,6 +30,7 @@
         "ext-iconv": "*",
         "ext-json": "*",
         "browscap/browscap-php": "^4.2",
+        "embed/embed": "^3.3",
         "psr/log": "^1.0",
         "symfony/console": "^4.2",
         "symfony/dotenv": "^4.2",
