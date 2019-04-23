@@ -71,7 +71,7 @@ class PixelController extends AbstractController
 
     protected function addUrlSiteMap(Request $request, string $trackingId): void
     {
-        $url = UrlNormalizer::normalize($request->headers->get('referer'));
+        $url = UrlNormalizer::normalize($request->headers->get('referer', ''));
 
         if ($url === null) {
             $this->logger->warning(sprintf(
@@ -157,13 +157,33 @@ class PixelController extends AbstractController
         if (!empty($cookieTid) && self::validTrackingId($cookieTid)) {
             $trackingId = $cookieTid;
         } else {
-            $this->logger->debug('Generating tracking id');
-            $trackingId = self::generateTrackingId($request);
+            $dbTid = $this->getTrackingIdByUserMap($request->get('adserver'), $request->get('user'));
+            if (!empty($dbTid)) {
+                $trackingId = $dbTid;
+            } else {
+                $this->logger->debug('Generating tracking id');
+                $trackingId = self::generateTrackingId($request);
+            }
         }
 
         $this->logger->info(sprintf('Tracking id: %s', $trackingId));
 
         return $trackingId;
+    }
+
+    private function getTrackingIdByUserMap(string $adserverId, string $userId)
+    {
+        try {
+            $dbTid = $this->connection->fetchColumn(
+                'SELECT tracking_id FROM user_map WHERE adserver_id = ? AND adserver_user_id = ?',
+                [$adserverId, $userId]
+            );
+        } catch (DBALException $e) {
+            $this->logger->error($e->getMessage());
+            $dbTid = false;
+        }
+
+        return $dbTid !== false ? (string)$dbTid : null;
     }
 
     private static function validTrackingId(string $trackingId): bool
@@ -401,17 +421,9 @@ class PixelController extends AbstractController
 
     private function updateUserMap(string $trackingId, string $adserverId, string $userId): ?string
     {
-        try {
-            $dbTid = $this->connection->fetchColumn(
-                'SELECT tracking_id FROM user_map WHERE adserver_id = ? AND adserver_user_id = ?',
-                [$adserverId, $userId]
-            );
-        } catch (DBALException $e) {
-            $this->logger->error($e->getMessage());
-            $dbTid = false;
-        }
+        $dbTid = $this->getTrackingIdByUserMap($adserverId, $userId);
 
-        if ($dbTid === false) {
+        if ($dbTid === null) {
             try {
                 $this->connection->insert(
                     'user_map',
@@ -422,19 +434,11 @@ class PixelController extends AbstractController
                     ]
                 );
             } catch (DBALException $e) {
-                try {
-                    $dbTid = $this->connection->fetchColumn(
-                        'SELECT tracking_id FROM user_map WHERE adserver_id = ? AND adserver_user_id = ?',
-                        [$adserverId, $userId]
-                    );
-                } catch (DBALException $e) {
-                    $this->logger->error($e->getMessage());
-                }
-
+                $dbTid = $this->getTrackingIdByUserMap($adserverId, $userId);
             }
         }
 
-        if ($dbTid !== false && $trackingId !== $dbTid) {
+        if ($dbTid !== null && $trackingId !== $dbTid) {
             try {
                 $this->connection->update(
                     'user_map',
@@ -451,7 +455,7 @@ class PixelController extends AbstractController
             }
         }
 
-        return $dbTid !== false ? (string)$dbTid : null;
+        return $dbTid;
     }
 
     private static function getRequestField(Request $request, string $key, string $type = 'string')
