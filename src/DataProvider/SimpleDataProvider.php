@@ -181,7 +181,7 @@ final class SimpleDataProvider extends AbstractDataProvider
 
         if ($url !== null) {
             $url = UrlNormalizer::normalize($url);
-            $keywords['site']['url'] = self::explodeUrl($url);
+            $keywords['site']['domain'] = self::explodeUrl($url);
         }
 
         if ($tags !== null) {
