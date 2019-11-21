@@ -35,7 +35,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
         $this->logger = $logger;
     }
 
-    protected static function createImageResponse(?string $data = null): Response
+    public static function createImageResponse(?string $data = null): Response
     {
         if ($data === null) {
             $data = 'R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
@@ -47,7 +47,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return $response;
     }
 
-    protected static function createHtmlResponse(?string $body = null): Response
+    public static function createHtmlResponse(?string $body = null): Response
     {
         $content = '<!DOCTYPE html><html lang="en">';
         if ($body !== null) {
@@ -117,63 +117,33 @@ abstract class AbstractDataProvider implements DataProviderInterface
         return [];
     }
 
-    protected function logRequest(string $trackingId, Request $request): void
-    {
-        $type = $this->getName();
-
-        $this->logger->debug(sprintf('%s log: %s -> %s', $type, $trackingId, $request));
-
-        try {
-            $this->connection->insert(
-                "{$type}_log",
-                [
-                    'tracking_id' => $trackingId,
-                    'uri' => $request->getRequestUri(),
-                    'attributes' => json_encode($request->attributes->get('_route_params')),
-                    'query' => json_encode($request->query->all()),
-                    'request' => json_encode($request->request->all()),
-                    'headers' => json_encode($request->headers->all()),
-                    'cookies' => json_encode($request->cookies->all()),
-                    'ip' => $request->getClientIp(),
-                    'ips' => json_encode($request->getClientIps()),
-                    'port' => (int)$request->getPort(),
-                ]
-            );
-        } catch (DBALException $e) {
-            $this->logger->error($e->getMessage());
-        }
-    }
-
     protected function getRequestLog($trackingId): array
     {
+        $log = [
+            'attributes' => new ParameterBag(),
+            'query' => new ParameterBag(),
+            'request' => new ParameterBag(),
+            'headers' => new HeaderBag(),
+            'cookies' => new ParameterBag(),
+        ];
+
         try {
             $pixel = $this->connection->fetchAssoc(
-                'SELECT * FROM simple_log WHERE tracking_id = ? ORDER BY date DESC',
+                'SELECT * FROM pixel_log WHERE tracking_id = ? ORDER BY date DESC',
                 [$trackingId]
             );
-            if ($pixel === false) {
-                $pixel = [
-                    'attributes' => new ParameterBag(),
-                    'query' => new ParameterBag(),
-                    'request' => new ParameterBag(),
-                    'headers' => new HeaderBag(),
-                    'cookies' => new ParameterBag(),
-                    'ips' => [],
-                ];
-            } else {
-                $pixel['attributes'] = new ParameterBag(json_decode($pixel['attributes'], true));
-                $pixel['query'] = new ParameterBag(json_decode($pixel['query'], true));
-                $pixel['request'] = new ParameterBag(json_decode($pixel['request'], true));
-                $pixel['headers'] = new HeaderBag(json_decode($pixel['headers'], true));
-                $pixel['cookies'] = new ParameterBag(json_decode($pixel['cookies'], true));
-                $pixel['ips'] = json_decode($pixel['ips'], true);
+            if ($pixel !== false) {
+                $log['attributes'] = new ParameterBag(json_decode($pixel['attributes'], true));
+                $log['query'] = new ParameterBag(json_decode($pixel['query'], true));
+                $log['request'] = new ParameterBag(json_decode($pixel['request'], true));
+                $log['headers'] = new HeaderBag(json_decode($pixel['headers'], true));
+                $log['cookies'] = new ParameterBag(json_decode($pixel['cookies'], true));
             }
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
-            $pixel = [];
         }
 
-        return $pixel;
+        return $log;
     }
 
     protected function generatePixelUrl(
@@ -208,7 +178,7 @@ abstract class AbstractDataProvider implements DataProviderInterface
         ));
     }
 
-    private static function generateNonce($length = 8): string
+    public static function generateNonce($length = 8): string
     {
         try {
             return substr(sha1(random_bytes(256)), 0, $length);

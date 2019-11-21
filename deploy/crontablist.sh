@@ -11,4 +11,4 @@ else
     _REDIRECTION="&>> ${LOG_DIR}/aduser-crontab.log"
 fi
 
-echo "0 0 * * * php ${SERVICE_DIR}/bin/console aduser:update ${_REDIRECTION}"
+echo "0 0 * * * php ${SERVICE_DIR}/bin/console aduser:update"

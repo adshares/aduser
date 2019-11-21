@@ -28,16 +28,18 @@ class InfoController extends AbstractController
 
     public function info(Request $request): Response
     {
+        srand(crc32($request->getClientIp() . date('-d-m-Y-h')));
         $info = [
             'module' => 'aduser',
             'name' => getenv('APP_NAME'),
             'version' => getenv('APP_VERSION'),
             'pixelUrl' => str_replace(
-                ['_:', ':_', '.html'],
-                ['{', '}', '.{format}'],
+                ['_:', ':_', '.html', $request->getHost()],
+                ['{', '}', '.{format}', self::getRandomDomain($request)],
                 $this->generateUrl(
                     'pixel_register',
                     [
+                        'slug' => self::generateRandomString(),
                         'adserver' => '_:adserver:_',
                         'user' => '_:user:_',
                         'nonce' => '_:nonce:_',
@@ -70,6 +72,28 @@ class InfoController extends AbstractController
         }
 
         return $response;
+    }
+
+    private static function generateRandomString($length = 8)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_:.-';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
+    }
+
+    private static function getRandomDomain(Request $request)
+    {
+        $available = array_filter(explode(',', getenv('ADUSER_DOMAINS')));
+        if (empty($available)) {
+            return $request->getHost();
+        }
+
+        return $available[rand(0, count($available) - 1)];
     }
 
     private static function formatJson(array $data): string
