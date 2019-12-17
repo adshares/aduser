@@ -1,0 +1,43 @@
+{% apply spaceless %}
+    {% set nearbyPagesLimit = 3 %}
+    {% set totalPages = max(1, totalPages) %}
+    {% set url = url|default(app.request.get('_route')) %}
+    {% set params = app.request.query.all %}
+    <nav>
+        <ul class="pagination justify-content-end">
+            <li class="page-item{% if currentPage == 1 %} disabled{% endif %}">
+                <a class="page-link" href="{{ path(url, params|merge({ 'page': 1 })) }}" title="First page">
+                    <span>&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item{% if currentPage == 1 %} disabled{% endif %}">
+                <a class="page-link" href="{{ path(url, params|merge({ 'page': currentPage - 1 })) }}" title="Previous page">
+                    <span>&lsaquo;</span>
+                </a>
+            </li>
+            {% if currentPage - nearbyPagesLimit > 1 %}
+                <li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>
+            {% endif %}
+            {% for i in 1..totalPages %}
+                {% if i >= currentPage - nearbyPagesLimit and i <= currentPage + nearbyPagesLimit %}
+                    <li class="page-item{% if currentPage == i %} active{% endif %}">
+                        <a class="page-link" href="{{ path(url,  params|merge({ 'page': i })) }}">{{ i }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% if currentPage + nearbyPagesLimit < totalPages %}
+                <li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>
+            {% endif %}
+            <li class="page-item{% if currentPage == totalPages %} disabled{% endif %}">
+                <a class="page-link" href="{{ path(url, params|merge({ 'page': currentPage + 1 })) }}" title="Next page">
+                    <span>&rsaquo;</span>
+                </a>
+            </li>
+            <li class="page-item{% if currentPage == totalPages %} disabled{% endif %}">
+                <a class="page-link" href="{{ path(url, params|merge({ 'page': totalPages })) }}" title="Last page">
+                    <span>&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endapply %}

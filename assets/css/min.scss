@@ -1,0 +1,35 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: -ms-flexbox;
+    display: -webkit-box;
+    display: flex;
+    -ms-flex-align: center;
+    -ms-flex-pack: center;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+#min-page-rich-content > section > div {
+
+    display: flex;
+    flex-direction: row;
+
+    > header {
+        margin-right: 2rem;
+        padding-top: 0.6rem;
+    }
+
+    > .content {
+        margin-left: 2rem;
+        text-align: left;
+        max-width: 850px;
+    }
+}

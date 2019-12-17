@@ -1,21 +1,23 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Adshares\Aduser\External;
 
 use BrowscapPHP\Browscap as BrowscapPHP;
 use BrowscapPHP\BrowscapUpdater;
+use BrowscapPHP\Exception;
 use BrowscapPHP\Exception\ErrorCachedVersionException;
 use BrowscapPHP\Exception\FetcherException;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 
 final class Browscap
 {
-    /** @var string  */
+    /** @var string */
     private $iniFile;
 
-    /** @var CacheInterface  */
+    /** @var CacheInterface */
     private $cache;
 
     /** @var LoggerInterface */
@@ -24,7 +26,7 @@ final class Browscap
     public function __construct(string $iniFile, $cacheDir, LoggerInterface $logger)
     {
         $this->iniFile = $iniFile;
-        $this->cache = new FilesystemCache('browscap', 0, $cacheDir);
+        $this->cache = new Psr16Cache(new FilesystemAdapter('browscap', 0, $cacheDir));
         $this->logger = $logger;
     }
 
@@ -39,16 +41,20 @@ final class Browscap
             $browscap->update($this->iniFile);
         } catch (ErrorCachedVersionException $e) {
             $this->logger->error($e->getMessage());
+
             return false;
         } catch (FetcherException $e) {
             $this->logger->error($e->getMessage());
+
             return false;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
+
             return false;
         }
 
         $this->logger->info('Updating Browscap cache finished');
+
         return true;
     }
 
@@ -58,7 +64,7 @@ final class Browscap
 
         try {
             $info = $bc->getBrowser($userAgent);
-        } catch (\BrowscapPHP\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
 

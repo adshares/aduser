@@ -1,44 +1,61 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Adshares\Aduser\Command;
 
-use Adshares\Aduser\DataProvider\DataProviderInterface;
-use Adshares\Aduser\DataProvider\DataProviderManager;
+use Adshares\Aduser\External\Browscap;
+use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class UpdateDataCommand extends Command
 {
-    protected static $defaultName = 'aduser:update';
+    use LockableTrait;
 
-    /** @var DataProviderManager|DataProviderInterface[] */
-    private $providers;
+    protected static $defaultName = 'ops:update';
 
-    public function __construct(DataProviderManager $providers, string $name = null)
+    /** @var Browscap */
+    private $browscap;
+
+    /** @var Connection */
+    private $connection;
+
+    public function __construct(Browscap $browscap, Connection $connection)
     {
-        parent::__construct($name);
-        $this->providers = $providers;
+        parent::__construct();
+
+        $this->browscap = $browscap;
+        $this->connection = $connection;
     }
 
     protected function configure()
     {
-        $this->setDescription('Update Aduser external data')->setHelp(
-            'This command allows you to update external data used by Aduser'
+        $this->setDescription('Update Aduser data')->setHelp(
+            'This command allows you to update data used by Aduser'
         );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $success = true;
-        foreach ($this->providers as $provider) {
-            $output->writeln(sprintf('Updating %s provider', $provider->getName()));
-            $success = $provider->updateData() && $success;
+        $io = new SymfonyStyle($input, $output);
+
+        if (!$this->lock()) {
+            $io->warning('The command is already running in another process.');
+
+            return 1;
         }
-        if ($success) {
-            $output->writeln('External data successfully updated!');
+
+        $io->comment('Updating Browscap...');
+
+        if ($this->browscap->update()) {
+            $io->success('Browscap successfully updated!');
         } else {
-            $output->writeln('External data updated with errors');
+            $io->error('Browscap updated with errors');
         }
+        $this->release();
+
+        return 0;
     }
 }

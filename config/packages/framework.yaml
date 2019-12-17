@@ -8,7 +8,7 @@ framework:
     # Remove or comment this section to explicitly disable session support.
     session:
         handler_id: ~
-        cookie_secure: true
+        cookie_secure: auto
         cookie_samesite: ~
 
     #esi: true

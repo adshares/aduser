@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('css/app') }}
+    {{ encore_entry_link_tags('css/regular') }}
+{% endblock %}
+
+{% block body_id %}regular-page{% endblock %}
+{% block body %}
+    {% block navbar %}
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="{{ path('index') }}">{{ app_name }}</a>
+                <small>{{ app_version }}</small>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown">
+                                {{ app.user.fullName }} ({{ app.user.email }})
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{{ path('security_logout') }}">Logout</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    {% endblock %}
+    {% block content %}{% endblock %}
+{% endblock %}

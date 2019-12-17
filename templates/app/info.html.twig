@@ -1,0 +1,14 @@
+{% extends 'min_page.html.twig' %}
+
+{% block body_id %}min-page-rich-content{% endblock %}
+{% block content %}
+    <h1>Adshares module info</h1>
+    <table class="table table-bordered">
+        {% for key,value in items %}
+            <tr>
+                <th scope="row">{{ key }}</th>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

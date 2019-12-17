@@ -10,6 +10,8 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            Psr\Cache\CacheItemPoolInterface: "@cache.apc"
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -31,11 +33,3 @@ services:
             $iniFile: '%env(BROWSCAP_INI_FILE)%'
             $cacheDir: '%kernel.project_dir%/var/cache/%kernel.environment%/'
             $logger: '@Psr\Log\LoggerInterface'
-
-    Adshares\Aduser\DataProvider\DataProviderManager:
-        arguments:
-            $providers:
-                - '@Adshares\Aduser\DataProvider\SimpleDataProvider'
-                - '@Adshares\Aduser\DataProvider\ReCaptchaDataProvider'
-
-    Adshares\Aduser\DataSiteProvider\SiteProvider: ~

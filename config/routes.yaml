@@ -1,71 +1,94 @@
 index:
     path: /
-    controller: Adshares\Aduser\Controller\InfoController::index
+    controller: Adshares\Aduser\Controller\AppController::index
     methods: GET
 
 info:
     path: /info.{_format}
-    controller: Adshares\Aduser\Controller\InfoController::info
+    controller: Adshares\Aduser\Controller\AppController::info
     methods: GET
     defaults:
-        _format: json
+        _format: 'json'
     requirements:
-        _format:  json|txt
+        _format:  'json|txt|html'
 
 privacy:
-    path: /privacy.html
-    controller: Adshares\Aduser\Controller\InfoController::privacy
+    path: /info/privacy.html
+    controller: Adshares\Aduser\Controller\AppController::privacy
     methods: GET
 
-taxonomy:
-    path: /api/v{version}/taxonomy
-    controller: Adshares\Aduser\Controller\DataController::taxonomy
-    methods: GET
-    requirements:
-        version:  0|1
+# security
+security_login:
+    path: /login
+    controller: Adshares\Aduser\Controller\SecurityController::login
 
-data:
-    path: /api/v{version}/data/{adserver}/{user}
-    controller: Adshares\Aduser\Controller\DataController::data
+security_logout:
+    path: /logout
+
+# panel
+panel:
+    path: /panel.html
+    controller: Adshares\Aduser\Controller\PanelController::index
     methods: GET|POST
-    requirements:
-        version:  0|1
-        adserver:  '[a-zA-Z0-9_:.-]+'
-        user:  '[a-zA-Z0-9_:.-]+'
 
+panel_patch:
+    path: /panel/{id}
+    controller: Adshares\Aduser\Controller\PanelController::patch
+    methods: PATCH|OPTIONS
+    requirements:
+        id:  '[0-9]+'
+
+# pixel
 pixel_register:
-    path: /{slug}/{adserver}/{user}/{nonce}.{_format}
+    path: /{slug}/{adserver}/{tracking}/{nonce}.{_format}
     controller: Adshares\Aduser\Controller\PixelController::register
     methods: GET
+    defaults:
+        _format: 'html'
     requirements:
         slug:  '[a-zA-Z0-9_:.-]{8}'
         adserver:  '[a-zA-Z0-9_:.-]+'
         user:  '[a-zA-Z0-9_:.-]+'
         nonce: '[a-zA-Z0-9_:.-]+'
-        _format:  html|htm|gif
+        _format:  'html|htm'
 
-pixel_provider:
-    path: /{provider}/{tracking}/{nonce}.{_format}
-    controller: Adshares\Aduser\Controller\PixelController::provider
+pixel_recaptcha:
+    path: /re/{tracking}/{nonce}.html
+    controller: Adshares\Aduser\Controller\PixelController::recaptchaRegister
     methods: GET|POST
     requirements:
-        provider:  '[a-z]+'
-        tracking:  '[a-zA-Z0-9_-]+'
-        nonce: '[a-zA-Z0-9_:.-]+'
-        _format:  html|htm|gif
+        tracking:  '[0-9a-f]+'
+        nonce: '[0-9a-f]+'
 
-pixel_sync:
-    path: /{tracking}/{nonce}.gif
-    controller: Adshares\Aduser\Controller\PixelController::sync
+# API
+taxonomy:
+    path: /api/v{version}/taxonomy
+    controller: Adshares\Aduser\Controller\DataController::taxonomy
     methods: GET
     requirements:
-        tracking:  '[a-zA-Z0-9_-]+'
-        nonce: '[a-zA-Z0-9_:.-]+'
+        version:  '1'
 
-pixel_fingerprint:
-    path: /{tracking}/{nonce}.html
-    controller: Adshares\Aduser\Controller\PixelController::fingerprint
+data:
+    path: /api/v{version}/data/{adserver}/{tracking}
+    controller: Adshares\Aduser\Controller\DataController::data
+    methods: GET|POST|OPTIONS
+    requirements:
+        version:  '1'
+        adserver:  '[a-zA-Z0-9_:.-]+'
+        tracking:  '[a-zA-Z0-9_:.-]+'
+
+data_batch:
+    path: /api/v{version}/data/{adserver}
+    controller: Adshares\Aduser\Controller\DataController::batch
     methods: POST
     requirements:
-        tracking:  '[a-zA-Z0-9_-]+'
-        nonce: '[a-zA-Z0-9_:.-]+'
+        version:  '1'
+        adserver:  '[a-zA-Z0-9_:.-]+'
+
+
+domain:
+    path: /api/v{version}/domain/{domain}
+    controller: Adshares\Aduser\Controller\DataController::domain
+    methods: GET|OPTIONS
+    requirements:
+        version:  '1'

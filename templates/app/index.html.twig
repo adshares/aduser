@@ -1,0 +1,8 @@
+{% extends 'min_page.html.twig' %}
+
+{% block content %}
+    <div class="mt-2 mb-2 py-1 text-muted small">
+        {{ app.user.fullName }} ({{ app.user.email }}) |
+        <a href="{{ path('security_logout') }}">Logout</a>
+    </div>
+{% endblock %}

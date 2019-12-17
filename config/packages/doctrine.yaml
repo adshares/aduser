@@ -3,7 +3,11 @@ parameters:
     # This allows you to run cache:warmup even if your
     # environment variables are not available yet.
     # You should not need to change this value.
-    env(DATABASE_URL): ''
+    env(DATABASE_PERSISTENT): 'false'
+    env(DATABASE_SOCKET): ''
+    env(DATABASE_USER): ''
+    env(DATABASE_PASSWORD): ''
+    env(DATABASE_NAME): ''
 
 doctrine:
     dbal:
@@ -11,19 +15,13 @@ doctrine:
         driver: 'pdo_mysql'
         server_version: '5.7'
         charset: utf8mb4
+        persistent: '%env(bool:DATABASE_PERSISTENT)%'
+        unix_socket: '%env(resolve:DATABASE_SOCKET)%'
+        user: '%env(resolve:DATABASE_USER)%'
+        password: '%env(resolve:DATABASE_PASSWORD)%'
+        dbname: '%env(resolve:DATABASE_NAME)%'
         default_table_options:
             charset: utf8mb4
             collate: utf8mb4_unicode_ci
-
-        url: '%env(resolve:DATABASE_URL)%'
-    orm:
-        auto_generate_proxy_classes: true
-        naming_strategy: doctrine.orm.naming_strategy.underscore
-        auto_mapping: true
-        mappings:
-            App:
-                is_bundle: false
-                type: annotation
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
-                alias: App
+        options:
+            !php/const:PDO::ATTR_PERSISTENT: '%env(bool:DATABASE_PERSISTENT)%'
