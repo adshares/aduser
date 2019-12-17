@@ -11,49 +11,64 @@
     ·
     <a href="https://github.com/adshares/aduser/wiki">Wiki</a>
 </p>
-<p align="center">
-    <a href="https://travis-ci.org/adshares/aduser" title="Build Status" target="_blank">
-        <img src="https://travis-ci.org/adshares/aduser.svg?branch=master" alt="Build Status">
-    </a>
-    <a href="https://sonarcloud.io/dashboard?id=adshares-aduser" title="Code Quality" target="_blank">
-        <img src="https://sonarcloud.io/api/project_badges/measure?project=adshares-aduser&metric=alert_status" alt="Code Quality">
-    </a>
-    <a href="http://adshares-aduser.readthedocs.io/en/latest" title="Docs Status" target="_blank">
-        <img src="https://readthedocs.org/projects/adshares-aduser/badge/?version=latest" alt="Docs Status">
-    </a>
-</p>
 
 AdUser is a back-end service for determining impression context.
-It accepts requests from [AdServer](https://github.com/adshares/adserver).
+It accepts requests from [AdServer](https://github.com/adshares/adserver) internally.
 
-## Quick Start (on Ubuntu 18.04)
+[![Quality Status](https://sonarcloud.io/api/project_badges/measure?project=adshares-aduser&metric=alert_status)](https://sonarcloud.io/dashboard?id=adshares-aduser)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=adshares-aduser&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=adshares-aduser)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=adshares-aduser&metric=security_rating)](https://sonarcloud.io/dashboard?id=adshares-aduser)
+[![Build Status](https://travis-ci.org/adshares/aduser.svg?branch=master)](https://travis-ci.org/adshares/aduser)
 
-Install dependencies
-```bash
-sudo apt-get update
-sudo apt-get -y install --no-install-recommends python python-pip python-dev gcc
-pip install pipenv
+
+## Quick Start
+
+### Development
+
 ```
-
-Clone and run
-```bash
 git clone https://github.com/adshares/aduser.git
 cd aduser
-pipenv install
-pipenv run python daemon.py
+composer install
+composer dump-env dev
+vi .env.local.php
+php bin/console doctrine:database:create
+php bin/console doctrine:migration:migrate
+php bin/console server:run
 ```
 
-## More Info
+### Production
 
-- [Documentation](https://adshares-aduser.readthedocs.io/en/latest)
-- [Authors](https://github.com/adshares/aduser/contributors)
-- Available [Versions](https://github.com/adshares/aduser/tags) (we use [Semantic Versioning](http://semver.org/))
+```
+git clone https://github.com/adshares/aduser.git
+cd aduser
+cp .env .env.local
+vi .env.local
+composer install --no-dev --optimize-autoloader
+php bin/console doctrine:database:create
+php bin/console doctrine:migration:migrate
+```
 
-### Related projects
+Nginx configuration:
+<https://symfony.com/doc/current/setup/web_server_configuration.html#web-server-nginx>
 
-- [AdServer](https://github.com/adshares/adserver) - the core logic behind it all
+## Contributing
 
-### License
+Please follow our [Contributing Guidelines](docs/CONTRIBUTING.md)
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning.
+For the versions available, see the [tags on this repository](https://github.com/adshares/aduser/tags).
+
+## Authors
+
+* **[Adam Włodarkiewicz](https://github.com/awlodarkiewicz)** - _Python programmer_
+* **[Maciej Pilarczyk](https://github.com/m-pilarczyk)** - _PHP programmer_
+
+See also the list of [contributors](https://github.com/adshares/aduser/contributors) who participated in this project.
+
+
+## License
 
 This work is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
