@@ -63,6 +63,13 @@ final class RequestInfo
         return $keywords;
     }
 
+    public function isCrawler(ParameterBag $params): bool
+    {
+        $info = $this->getInfo($params);
+
+        return (bool)($info->crawler ?? false);
+    }
+
     private function getInfo(ParameterBag $params): ?\stdClass
     {
         $userAgent = self::getHeader('User-Agent', $params);

@@ -174,6 +174,10 @@ final class DataController extends AbstractController
             $humanScore = $user['human_score'];
         }
 
+        if ($this->requestInfo->isCrawler($params)) {
+            $humanScore = 0;
+        }
+
         return (float)($humanScore ?? $_ENV['ADUSER_DEFAULT_HUMAN_SCORE']);
     }
 
