@@ -6,8 +6,7 @@ cd ${2:-"."}
 export APP_VERSION=$(versionFromGit 2>/dev/null || echo "")
 echo "=== Building v${APP_VERSION} of ${SERVICE_NAME} ==="
 
-composer install
-
+composer install --no-dev --optimize-autoloader
 bin/console doctrine:migrations:migrate --no-interaction
 
 if [[ ${_UPDATE_DATA:-1} -eq 1 ]]
