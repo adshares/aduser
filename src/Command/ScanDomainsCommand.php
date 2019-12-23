@@ -153,8 +153,8 @@ class ScanDomainsCommand extends Command
 
     private function fetchGoogleInfo(string $host, SymfonyStyle $io): ?array
     {
-        $googleCx = (string)$_ENV['GOOGLE_SEARCH_CX'];
-        $googleKey = (string)$_ENV['GOOGLE_SEARCH_KEY'];
+        $googleCx = (string)($_ENV['GOOGLE_SEARCH_CX'] ?? '');
+        $googleKey = (string)($_ENV['GOOGLE_SEARCH_KEY'] ?? '');
 
         if (empty($googleCx) || empty($googleKey)) {
             return [];
