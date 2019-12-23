@@ -10,5 +10,5 @@ bin/console doctrine:migrations:migrate --no-interaction
 
 if [[ ${_UPDATE_DATA:-1} -eq 1 ]]
 then
-    bin/console aduser:update
+    bin/console ops:update
 fi
