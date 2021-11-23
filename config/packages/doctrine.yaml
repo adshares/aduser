@@ -1,0 +1,23 @@
+parameters:
+    env(DB_PERSISTENT): 'false'
+    env(DB_SOCKET): ~
+    env(DB_USERNAME): ''
+    env(DB_PASSWORD): ''
+    env(DB_DATABASE): ''
+
+doctrine:
+    dbal:
+        # configure these for your database server
+        driver: 'pdo_mysql'
+        server_version: '5.7'
+        charset: utf8mb4
+        persistent: '%env(bool:DB_PERSISTENT)%'
+        unix_socket: '%env(resolve:DB_SOCKET)%'
+        user: '%env(resolve:DB_USERNAME)%'
+        password: '%env(resolve:DB_PASSWORD)%'
+        dbname: '%env(resolve:DB_DATABASE)%'
+        default_table_options:
+            charset: utf8mb4
+            collate: utf8mb4_unicode_ci
+        options:
+          !php/const:PDO::ATTR_PERSISTENT: '%env(bool:DB_PERSISTENT)%'
