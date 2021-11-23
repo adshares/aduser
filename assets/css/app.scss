@@ -1,5 +1,6 @@
 // customize some Bootstrap variables
 $font-family-sans-serif: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+$dropdown-link-hover-bg: #dee2e6;
 
 @import "~bootstrap/scss/bootstrap";
 
@@ -7,12 +8,4 @@ $font-family-sans-serif: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
   position: relative;
   display: block;
   color: $body-color;
-}
-
-.form-control.bg-success {
-  background-color: lighten($success, 50%) !important;
-}
-
-.form-control.bg-danger {
-  background-color: lighten($danger, 30%) !important;
 }

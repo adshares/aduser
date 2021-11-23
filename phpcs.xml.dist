@@ -9,6 +9,15 @@
     <arg name="extensions" value="php"/>
 
     <rule ref="PHPCompatibility"/>
-    <rule ref="PSR2"/>
-    <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes" />
+    <rule ref="PSR12"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes" spacesCountAroundEqualsSign="0">
+        <properties>
+            <property name="spacesCountAroundEqualsSign" value="0"/>
+        </properties>
+    </rule>
+
+    <file>bin/</file>
+    <file>config/</file>
+    <file>public/</file>
+    <file>src/</file>
 </ruleset>
