@@ -1,9 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\Aduser\Service;
+namespace App\Service;
 
-use Adshares\Aduser\External\Browscap;
-use Adshares\Aduser\Utils\UrlNormalizer;
+use App\Utils\UrlNormalizer;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;

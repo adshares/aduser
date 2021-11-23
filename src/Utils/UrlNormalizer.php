@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\Aduser\Utils;
+namespace App\Utils;
 
 final class UrlNormalizer
 {

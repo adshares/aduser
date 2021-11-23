@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\Aduser\Service;
+namespace App\Service;
 
-use Adshares\Aduser\Utils\IdGenerator;
+use App\Utils\IdGenerator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;

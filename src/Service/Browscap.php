@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\Aduser\External;
+namespace App\Service;
 
 use BrowscapPHP\Browscap as BrowscapPHP;
 use BrowscapPHP\BrowscapUpdater;

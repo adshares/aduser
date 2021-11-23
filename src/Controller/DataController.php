@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\Aduser\Controller;
+namespace App\Controller;
 
-use Adshares\Aduser\Service\PageInfo;
-use Adshares\Aduser\Service\RequestInfo;
-use Adshares\Aduser\Service\Taxonomy;
+use App\Service\PageInfo;
+use App\Service\RequestInfo;
+use App\Service\Taxonomy;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

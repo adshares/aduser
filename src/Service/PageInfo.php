@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\Aduser\Service;
+namespace App\Service;
 
-use Adshares\Aduser\Utils\UrlNormalizer;
+use App\Utils\UrlNormalizer;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\FetchMode;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\InvalidArgumentException;

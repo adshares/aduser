@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\Aduser\Service;
+namespace App\Service;
 
 final class Taxonomy
 {

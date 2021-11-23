@@ -1,38 +1,17 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
-namespace Adshares\Aduser\Controller;
+namespace App\Controller;
 
-use Adshares\Aduser\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use function implode;
-use function is_array;
-use function json_encode;
-use function preg_replace;
-use function str_replace;
-use function strpos;
-use function strtoupper;
 
-final class AppController extends AbstractController
+final class InfoController extends AbstractController
 {
-    public function index(): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        if ($user->isReviewer() || $user->isAdmin()) {
-            return new RedirectResponse($this->generateUrl('panel'));
-        }
-
-        return $this->render('app/index.html.twig');
-    }
-
     public function info(Request $request): Response
     {
-        srand(crc32($request->getClientIp().date('-d-m-Y-h')));
+        srand(crc32($request->getClientIp() . date('-d-m-Y-h')));
         $info = [
             'module' => 'aduser',
             'name' => $_ENV['APP_NAME'],
@@ -104,7 +83,7 @@ final class AppController extends AbstractController
                 $value = implode(',', $value);
             }
             if (strpos($value, ' ') !== false) {
-                $value = '"'.$value.'"';
+                $value = '"' . $value . '"';
             }
             $response .= sprintf("%s=%s\n", $key, $value);
         }
@@ -139,13 +118,13 @@ final class AppController extends AbstractController
         $page .= '<meta charset="utf-8">';
         $page .= '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">';
         $page .= '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
-        $page .= '<title>'.$_ENV['APP_NAME'].'</title>';
+        $page .= '<title>' . $_ENV['APP_NAME'] . '</title>';
         $page .= '<link rel="stylesheet" href="/styles.css?ver=1">';
         $page .= '<link rel="icon" type="image/png" href="/favicon.png" />';
         $page .= '</head>';
         $page .= '<body>';
-        $page .= '<div>'.$content.'</div>';
-        $page .= '<footer><small> v'.$_ENV['APP_VERSION'].'</small></footer>';
+        $page .= '<div>' . $content . '</div>';
+        $page .= '<footer><small> v' . $_ENV['APP_VERSION'] . '</small></footer>';
         $page .= '</body>';
         $page .= '</html>';
 

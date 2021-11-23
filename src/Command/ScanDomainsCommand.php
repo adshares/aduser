@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\Aduser\Command;
+namespace App\Command;
 
-use Adshares\Aduser\Service\PageInfo;
-use Adshares\Aduser\Utils\UrlNormalizer;
+use App\Service\PageInfo;
+use App\Utils\UrlNormalizer;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Types\Types;
 use Iodev\Whois\Loaders\SocketLoader;
 use Iodev\Whois\Whois;

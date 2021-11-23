@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\Aduser\Command;
+namespace App\Command;
 
-use Adshares\Aduser\External\Browscap;
+use App\Service\Browscap;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;

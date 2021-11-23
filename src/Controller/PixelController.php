@@ -1,13 +1,13 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\Aduser\Controller;
+namespace App\Controller;
 
-use Adshares\Aduser\Service\ReCaptcha;
-use Adshares\Aduser\Service\Taxonomy;
-use Adshares\Aduser\Utils\IdGenerator;
+use App\Service\ReCaptcha;
+use App\Service\Taxonomy;
+use App\Utils\IdGenerator;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
