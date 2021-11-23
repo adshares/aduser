@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Utils;
 
@@ -7,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 final class IdGenerator
 {
-    public static function generateNonce($length = 8): string
+    public static function generateNonce(int $length = 8): string
     {
         try {
             return substr(sha1(random_bytes(256)), 0, $length);
@@ -32,7 +34,6 @@ final class IdGenerator
         }
 
         $trackingId = substr(sha1(implode(':', $elements), true), 0, 14);
-
         return $trackingId . self::trackingIdChecksum($trackingId);
     }
 
@@ -40,12 +41,12 @@ final class IdGenerator
     {
         $userId = substr($trackingId, 0, 14);
         $checksum = substr($trackingId, 14, 16);
-
         return self::trackingIdChecksum($userId) === $checksum;
     }
 
     private static function trackingIdChecksum(string $trackingId): string
     {
+        //FIXME $_ENV
         return substr(sha1($trackingId . $_ENV['ADUSER_TRACKING_SECRET'], true), 0, 2);
     }
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -18,17 +20,13 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 final class DataController extends AbstractController
 {
-    /** @var PageInfo */
-    private $pageInfo;
+    private PageInfo $pageInfo;
 
-    /** @var RequestInfo */
-    private $requestInfo;
+    private RequestInfo $requestInfo;
 
-    /** @var Connection */
-    private $connection;
+    private Connection $connection;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         PageInfo $pageInfo,
@@ -213,8 +211,9 @@ final class DataController extends AbstractController
     {
         $users = [];
         try {
-            foreach ($this->connection->fetchAll(
-                'SELECT
+            foreach (
+                $this->connection->fetchAll(
+                    'SELECT
                         u.id,
                         r.tracking_id as adserver_tracking_id,
                         u.tracking_id,
@@ -225,15 +224,16 @@ final class DataController extends AbstractController
                       FROM adserver_register r
                       JOIN users u ON u.id = r.user_id
                       WHERE r.adserver_id = ? AND r.tracking_id IN (?)',
-                [
+                    [
                     $adserverId,
                     $trackingIds,
-                ],
-                [
+                    ],
+                    [
                     Types::STRING,
                     Connection::PARAM_STR_ARRAY,
-                ]
-            ) as $row) {
+                    ]
+                ) as $row
+            ) {
                 $users[$row['adserver_tracking_id']] = [
                     'id' => (int)$row['id'],
                     'tracking_id' => bin2hex($row['tracking_id']),

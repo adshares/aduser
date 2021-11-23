@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Service;
 
@@ -6,18 +8,16 @@ use App\Utils\UrlNormalizer;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use stdClass;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 final class RequestInfo
 {
-    /** @var Browscap */
-    protected $browscap;
+    protected Browscap $browscap;
 
-    /** @var CacheItemPoolInterface */
-    protected $cache;
+    protected CacheItemPoolInterface $cache;
 
-    /** @var LoggerInterface */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     public function __construct(
         Browscap $browscap,
@@ -69,7 +69,7 @@ final class RequestInfo
         return (bool)($info->crawler ?? false);
     }
 
-    private function getInfo(ParameterBag $params): ?\stdClass
+    private function getInfo(ParameterBag $params): ?stdClass
     {
         $userAgent = self::getHeader('User-Agent', $params);
 
@@ -79,7 +79,7 @@ final class RequestInfo
             return null;
         }
         try {
-            $item = $this->cache->getItem('browscap_info_'.sha1($userAgent));
+            $item = $this->cache->getItem('browscap_info_' . sha1($userAgent));
             if (!$item->isHit()) {
                 $info = $this->browscap->getInfo($userAgent);
                 $this->cache->save($item->set($info));

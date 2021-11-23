@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Service;
 
@@ -36,7 +38,7 @@ final class ReCaptcha
 
     public function getPageUrl(string $trackingId): ?string
     {
-        if (empty($this->siteKey) ) {
+        if (empty($this->siteKey)) {
             return null;
         }
 
@@ -52,7 +54,7 @@ final class ReCaptcha
 
     public function getRegisterCode(): ?string
     {
-        if (empty($this->siteKey) ) {
+        if (empty($this->siteKey)) {
             return null;
         }
 

@@ -1,29 +1,28 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Service;
 
 use BrowscapPHP\Browscap as BrowscapPHP;
 use BrowscapPHP\BrowscapUpdater;
-use BrowscapPHP\Exception;
-use BrowscapPHP\Exception\ErrorCachedVersionException;
-use BrowscapPHP\Exception\FetcherException;
+use BrowscapPHP\Exception as BrowscapException;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
+use stdClass;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 
 final class Browscap
 {
-    /** @var string */
-    private $iniFile;
+    private string $iniFile;
 
-    /** @var CacheInterface */
-    private $cache;
+    private CacheInterface $cache;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
-    public function __construct(string $iniFile, $cacheDir, LoggerInterface $logger)
+    public function __construct(string $iniFile, string $cacheDir, LoggerInterface $logger)
     {
         $this->iniFile = $iniFile;
         $this->cache = new Psr16Cache(new FilesystemAdapter('browscap', 0, $cacheDir));
@@ -36,38 +35,24 @@ final class Browscap
         $this->cache->clear();
         $this->logger->info(sprintf('Updating Browscap cache with remote file %s', $this->iniFile));
         $browscap = new BrowscapUpdater($this->cache, $this->logger);
-
         try {
             $browscap->update($this->iniFile);
-        } catch (ErrorCachedVersionException $e) {
+        } catch (Exception $e) {
             $this->logger->error($e->getMessage());
-
-            return false;
-        } catch (FetcherException $e) {
-            $this->logger->error($e->getMessage());
-
-            return false;
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-
             return false;
         }
-
         $this->logger->info('Updating Browscap cache finished');
-
         return true;
     }
 
-    public function getInfo(string $userAgent): ?\stdClass
+    public function getInfo(string $userAgent): ?stdClass
     {
         $bc = new BrowscapPHP($this->cache, $this->logger);
-
         try {
             $info = $bc->getBrowser($userAgent);
-        } catch (Exception $e) {
+        } catch (BrowscapException $e) {
             return null;
         }
-
         return $info;
     }
 }

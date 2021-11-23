@@ -90,9 +90,12 @@
         "qa-check": [
             "php bin/console lint:yaml config",
             "parallel-lint --no-colors --blame --exclude vendor --exclude bin  .",
-            "phpcs"
+            "phpcs -s"
         ],
-        "dev": "/bin/bash -c '(source .env && if [ -f \".env.local\" ]; then source .env.local; fi && php -S ${APP_HOST}:${APP_PORT} -t public dev-router.php)'"
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "/bin/bash -c '(source .env && if [ -f \".env.local\" ]; then source .env.local; fi && php -S ${APP_HOST:-localhost}:${APP_PORT:-8002} -t public dev-router.php)'"
+        ]
     },
     "conflict": {
         "symfony/symfony": "*"

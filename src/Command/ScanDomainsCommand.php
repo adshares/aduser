@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Command;
 
@@ -19,13 +21,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
-use function sprintf;
 
 class ScanDomainsCommand extends Command
 {
     use LockableTrait;
 
-    const GOOGLE_SEARCH_URL = 'https://www.googleapis.com/customsearch/v1';
+    protected const GOOGLE_SEARCH_URL = 'https://www.googleapis.com/customsearch/v1';
 
     protected static $defaultName = 'ops:domains:scan';
 
@@ -140,7 +141,7 @@ class ScanDomainsCommand extends Command
             $createdAt = null;
             $info = Whois::create(new SocketLoader(2))->loadDomainInfo($host);
             if ($info !== null && $info->getCreationDate() > 0) {
-                $createdAt = new DateTimeImmutable('@'.$info->getCreationDate());
+                $createdAt = new DateTimeImmutable('@' . $info->getCreationDate());
             }
 
             return ['created_at' => $createdAt];

@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Service;
 
@@ -12,36 +14,33 @@ use Psr\Log\LoggerInterface;
 
 final class PageInfo
 {
-    const INFO_OK = 'ok';
+    public const INFO_OK = 'ok';
 
-    const INFO_UNKNOWN = 'unknown';
+    public const INFO_UNKNOWN = 'unknown';
 
-    const INFO_HIGH_IVR = 'high-ivr';
+    public const INFO_HIGH_IVR = 'high-ivr';
 
-    const INFO_HIGH_CTR = 'high-ctr';
+    public const INFO_HIGH_CTR = 'high-ctr';
 
-    const INFO_LOW_CTR = 'low-ctr';
+    public const INFO_LOW_CTR = 'low-ctr';
 
-    const INFO_POOR_TRAFFIC = 'poor-traffic';
+    public const INFO_POOR_TRAFFIC = 'poor-traffic';
 
-    const INFO_POOR_CONTENT = 'poor-content';
+    public const INFO_POOR_CONTENT = 'poor-content';
 
-    const INFO_SUSPICIOUS_DOMAIN = 'suspicious-domain';
+    public const INFO_SUSPICIOUS_DOMAIN = 'suspicious-domain';
 
-    const STATUS_VERIFIED = 0;
+    public const STATUS_VERIFIED = 0;
 
-    const STATUS_NEW = 1;
+    public const STATUS_NEW = 1;
 
-    const STATUS_SCANNED = 2;
+    public const STATUS_SCANNED = 2;
 
-    /** @var Connection */
-    protected $connection;
+    protected Connection $connection;
 
-    /** @var CacheItemPoolInterface */
-    protected $cache;
+    protected CacheItemPoolInterface $cache;
 
-    /** @var LoggerInterface */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     public function __construct(
         Connection $connection,
@@ -71,7 +70,7 @@ final class PageInfo
     public function noteDomain(string $url): void
     {
         try {
-            $item = $this->cache->getItem('page_info_domain_'.md5($url));
+            $item = $this->cache->getItem('page_info_domain_' . md5($url));
             if (!$item->isHit()) {
                 $domain = UrlNormalizer::normalizeHost($url);
                 if (empty($domain)) {
@@ -106,7 +105,7 @@ final class PageInfo
             }
 
             return $item->get();
-        } catch (InvalidArgumentException|DBALException $exception) {
+        } catch (InvalidArgumentException | DBALException $exception) {
             $this->logger->error($exception->getMessage());
 
             return [];

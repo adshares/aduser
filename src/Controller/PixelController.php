@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -14,18 +16,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use function time;
 
 final class PixelController extends AbstractController
 {
-    /** @var ReCaptcha */
-    private $reCaptcha;
+    private ReCaptcha $reCaptcha;
 
-    /** @var Connection */
-    private $connection;
+    private Connection $connection;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         ReCaptcha $reCaptcha,
@@ -116,10 +114,10 @@ final class PixelController extends AbstractController
                     human_score_time
                 FROM users';
             if ($trackingId !== null) {
-                $user = $this->connection->fetchAssoc($query.' WHERE tracking_id = ? LIMIT 1', [$trackingId]);
+                $user = $this->connection->fetchAssoc($query . ' WHERE tracking_id = ? LIMIT 1', [$trackingId]);
             }
             if ($user === false && $userId !== null) {
-                $user = $this->connection->fetchAssoc($query.' WHERE id = ? LIMIT 1', [$userId]);
+                $user = $this->connection->fetchAssoc($query . ' WHERE id = ? LIMIT 1', [$userId]);
             }
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
@@ -232,8 +230,10 @@ final class PixelController extends AbstractController
         $images = [];
         $pages = [];
 
-        if ($user['human_score'] === null
-            || $user['human_score_time'] < time() - $_ENV['ADUSER_HUMAN_SCORE_EXPIRY_PERIOD']) {
+        if (
+            $user['human_score'] === null
+            || $user['human_score_time'] < time() - $_ENV['ADUSER_HUMAN_SCORE_EXPIRY_PERIOD']
+        ) {
             $pages[] = $this->reCaptcha->getPageUrl($trackingId);
         }
 
@@ -243,18 +243,18 @@ final class PixelController extends AbstractController
     private function getHtmlPixel(array $images, array $pages, array $sync = []): string
     {
         $content = '<!DOCTYPE html><html lang="en"><head>';
-        $content .= "\n".'</head><body>';
+        $content .= "\n" . '</head><body>';
         foreach ($sync as $image) {
-            $content .= "\n".'<img src="'.$image.'" width="1" height="1" alt="" />';
+            $content .= "\n" . '<img src="' . $image . '" width="1" height="1" alt="" />';
         }
-        $content .= "\n".'<script type="text/javascript">';
+        $content .= "\n" . '<script type="text/javascript">';
         foreach ($images as $image) {
-            $content .= "\n".'parent.postMessage({"insertElem":[{"type": "img", "url": "'.$image.'"}]}, "*");';
+            $content .= "\n" . 'parent.postMessage({"insertElem":[{"type": "img", "url": "' . $image . '"}]}, "*");';
         }
         foreach ($pages as $page) {
-            $content .= "\n".'parent.postMessage({"insertElem":[{"type": "iframe", "url": "'.$page.'"}]}, "*");';
+            $content .= "\n" . 'parent.postMessage({"insertElem":[{"type": "iframe", "url": "' . $page . '"}]}, "*");';
         }
-        $content .= "\n".'</script></body></html>';
+        $content .= "\n" . '</script></body></html>';
 
         return $content;
     }
