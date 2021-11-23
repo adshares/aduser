@@ -16,22 +16,19 @@ final class ReCaptcha
 {
     private const VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
-    /** @var string */
-    private $siteKey;
+    private string $siteKey;
+    private string $secretKey;
+    private RouterInterface $router;
+    private LoggerInterface $logger;
 
-    /** @var string */
-    private $secretKey;
-
-    /** @var RouterInterface */
-    private $router;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    public function __construct(RouterInterface $router, LoggerInterface $logger)
-    {
-        $this->siteKey = (string)$_ENV['RECAPTCHA_SITE_KEY'];
-        $this->secretKey = (string)$_ENV['RECAPTCHA_SECRET_KEY'];
+    public function __construct(
+        string $siteKey,
+        string $secretKey,
+        RouterInterface $router,
+        LoggerInterface $logger
+    ) {
+        $this->siteKey = $siteKey;
+        $this->secretKey = $secretKey;
         $this->router = $router;
         $this->logger = $logger;
     }
@@ -64,7 +61,7 @@ final class ReCaptcha
   grecaptcha.ready(function() {
       grecaptcha.execute('{$this->siteKey}', {action: 'pixel'}).then(function(token) {
           const f = new FormData(); f.append('token', token);
-          const r = new XMLHttpRequest(); r.open("POST", window.location); r.send(f);
+          const r = new XMLHttpRequest(); r.open('POST', window.location); r.send(f);
       });
   });
 </script>

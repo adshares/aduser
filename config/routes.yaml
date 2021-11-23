@@ -1,8 +1,3 @@
-info:
-  path: /info.{_format}
-  controller: App\Controller\InfoController::info
-  methods: GET
-  defaults:
-    _format: 'json'
-  requirements:
-    _format:  'json|txt|html'
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index

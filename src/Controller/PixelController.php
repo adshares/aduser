@@ -16,25 +16,41 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 final class PixelController extends AbstractController
 {
     private ReCaptcha $reCaptcha;
-
+    private IdGenerator $idGenerator;
     private Connection $connection;
-
     private LoggerInterface $logger;
 
     public function __construct(
         ReCaptcha $reCaptcha,
+        IdGenerator $idGenerator,
         Connection $connection,
         LoggerInterface $logger
     ) {
         $this->reCaptcha = $reCaptcha;
+        $this->idGenerator = $idGenerator;
         $this->connection = $connection;
         $this->logger = $logger;
     }
 
+    /**
+     * @Route("/{slug}/{adserver}/{tracking}/{nonce}.{_format}",
+     *     name="pixel_register",
+     *     methods={"GET"},
+     *     defaults={"_format": "html"},
+     *     requirements={
+     *         "slug":  "[a-zA-Z0-9_:.-]{8}",
+     *         "adserver":  "[a-zA-Z0-9_:.-]+",
+     *         "tracking":  "[a-zA-Z0-9_:.-]+",
+     *         "nonce": "[a-zA-Z0-9_:.-]+",
+     *         "_format":  "html|htm"
+     *     }
+     * )
+     */
     public function register(string $adserver, string $tracking, Request $request): Response
     {
         $cookieTrackingId = self::getTrackingCookie($request);
@@ -100,7 +116,7 @@ final class PixelController extends AbstractController
 
     private function loadUser(?string $trackingId, ?int $userId): ?array
     {
-        if ($trackingId !== null && !IdGenerator::validTrackingId($trackingId)) {
+        if ($trackingId !== null && !$this->idGenerator->validTrackingId($trackingId)) {
             $trackingId = null;
         }
 
@@ -138,7 +154,7 @@ final class PixelController extends AbstractController
 
     private function createUser(Request $request): array
     {
-        $trackingId = IdGenerator::generateTrackingId($request);
+        $trackingId = $this->idGenerator->generateTrackingId($request);
         $country = $this->getCountry($request);
         $languages = $this->getLanguages($request);
 
@@ -204,7 +220,7 @@ final class PixelController extends AbstractController
             return;
         }
 
-        if (!IdGenerator::validTrackingId($trackingId)) {
+        if (!$this->idGenerator->validTrackingId($trackingId)) {
             return;
         }
 

@@ -30,13 +30,12 @@ class ScanDomainsCommand extends Command
 
     protected static $defaultName = 'ops:domains:scan';
 
-    /** @var Connection */
-    private $connection;
+    private string $googleCx;
+    private string $googleKey;
+    private Connection $connection;
+    private LoggerInterface $logger;
 
-    /** @var LoggerInterface */
-    private $logger;
-
-    public function __construct(Connection $connection, LoggerInterface $logger)
+    public function __construct(string $googleCx, string $googleKey, Connection $connection, LoggerInterface $logger)
     {
         $this->connection = $connection;
         $this->logger = $logger;
@@ -154,10 +153,7 @@ class ScanDomainsCommand extends Command
 
     private function fetchGoogleInfo(string $host, SymfonyStyle $io): ?array
     {
-        $googleCx = (string)($_ENV['GOOGLE_SEARCH_CX'] ?? '');
-        $googleKey = (string)($_ENV['GOOGLE_SEARCH_KEY'] ?? '');
-
-        if (empty($googleCx) || empty($googleKey)) {
+        if (empty($this->googleCx) || empty($this->googleKey)) {
             return [];
         }
 
@@ -168,8 +164,8 @@ class ScanDomainsCommand extends Command
                 http_build_query(
                     [
                         'num' => 1,
-                        'cx' => $googleCx,
-                        'key' => $googleKey,
+                        'cx' => $this->googleCx,
+                        'key' => $this->googleKey,
                         'q' => sprintf('site:%s', $host),
                     ]
                 )
