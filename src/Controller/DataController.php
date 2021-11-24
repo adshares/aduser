@@ -7,6 +7,11 @@ namespace App\Controller;
 use App\Service\PageInfo;
 use App\Service\RequestInfo;
 use App\Service\Taxonomy;
+use App\Utils\SiteCategory;
+use App\Utils\UrlNormalizer;
+use App\Utils\UrlValidator;
+use DateTimeImmutable;
+use DateTimeZone;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Types\Types;
@@ -62,7 +67,7 @@ final class DataController extends AbstractController
             'Access-Control-Max-Age' => 24 * 3600,
         ];
         if ($request->isMethod('OPTIONS')) {
-            return new Response('', 200, $headers);
+            return new Response('', Response::HTTP_NO_CONTENT, $headers);
         }
 
         $users = $this->getUsers($adserver, [$tracking]);
@@ -74,7 +79,7 @@ final class DataController extends AbstractController
 
         $data = $this->getData($user, $params);
 
-        return new JsonResponse($data, 200, $headers);
+        return new JsonResponse($data, Response::HTTP_OK, $headers);
     }
 
     public function batch(string $adserver, Request $request): Response
@@ -112,7 +117,7 @@ final class DataController extends AbstractController
         return new JsonResponse($response);
     }
 
-    public function domain(string $domain, Request $request): Response
+    public function pageRank(string $url, Request $request): Response
     {
         $headers = [
             'Access-Control-Allow-Origin' => '*',
@@ -121,28 +126,172 @@ final class DataController extends AbstractController
             'Access-Control-Max-Age' => 24 * 3600,
         ];
         if ($request->isMethod('OPTIONS')) {
-            return new Response('', 200, $headers);
+            return new Response('', Response::HTTP_NO_CONTENT, $headers);
         }
 
-        $pageRank = $this->getPageRankWithNote($domain);
+        if (!UrlValidator::isValid($url)) {
+            return new Response('Invalid URL', Response::HTTP_UNPROCESSABLE_ENTITY, $headers);
+        }
+
+        $categories = $this->extractCategories(
+            $request->get('categories'),
+            SiteCategory::getCategoryValueToIncludedCategoriesValuesMap(SiteCategory::getTaxonomySiteCategories())
+        );
+        $pageRank = $this->getPageRankWithNote($url, $categories);
 
         $response = [
             'rank' => $pageRank['rank'],
             'info' => $pageRank['info'],
+            'categories' => $pageRank['categories'],
+            'quality' => $pageRank['quality'],
         ];
 
-        return new JsonResponse($response, 200, $headers);
+        return new JsonResponse($response, Response::HTTP_OK, $headers);
     }
 
-    private function getData(array $user, ParameterBag $params)
+    public function pageRankBatch(Request $request): Response
     {
+        $data = json_decode($request->getContent(), true);
+        if ($data === null) {
+            return new Response(json_last_error_msg(), Response::HTTP_BAD_REQUEST);
+        }
+        if (!isset($data['urls'])) {
+            return new Response('Field `urls` is required', Response::HTTP_BAD_REQUEST);
+        }
+        $urls = $data['urls'];
+        if (!is_array($urls)) {
+            return new Response('Field `urls` must be an array', Response::HTTP_BAD_REQUEST);
+        }
+
+        $categoriesMap = SiteCategory::getCategoryValueToIncludedCategoriesValuesMap(
+            SiteCategory::getTaxonomySiteCategories()
+        );
+        $result = [];
+        foreach ($urls as $id => $urlData) {
+            $url = $urlData['url'] ?? null;
+            if (UrlValidator::isValid($url)) {
+                $categories = $this->extractCategories($urlData['categories'] ?? null, $categoriesMap);
+                $pageRank = $this->getPageRankWithNote($url, $categories);
+                $result[$id] = [
+                    'rank' => $pageRank['rank'],
+                    'info' => $pageRank['info'],
+                    'categories' => $pageRank['categories'],
+                    'quality' => $pageRank['quality'],
+                ];
+            } else {
+                $result[$id] = ['error' => 'Invalid URL'];
+            }
+        }
+
+        return new JsonResponse($result);
+    }
+
+    public function reassessmentBatch(Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        if ($data === null) {
+            return new Response(json_last_error_msg(), Response::HTTP_BAD_REQUEST);
+        }
+        if (!isset($data['urls'])) {
+            return new Response('Field `urls` is required', Response::HTTP_BAD_REQUEST);
+        }
+        $urls = $data['urls'];
+        if (!is_array($urls)) {
+            return new Response('Field `urls` must be an array', Response::HTTP_BAD_REQUEST);
+        }
+
+        $result = [];
+        $idToDomain = [];
+        $domainToReassessmentReason = [];
+        foreach ($urls as $id => $urlData) {
+            if (!isset($urlData['url'])) {
+                return new Response('Field `urls[][url]` is required', Response::HTTP_BAD_REQUEST);
+            }
+            if (!isset($urlData['extra'])) {
+                return new Response('Field `urls[][extra]` is required', Response::HTTP_BAD_REQUEST);
+            }
+            $extra = $urlData['extra'];
+            if (!is_array($extra)) {
+                return new Response('Field `urls[][extra]` must be an array', Response::HTTP_BAD_REQUEST);
+            }
+            if (!$extra) {
+                return new Response('Field `urls[][extra]` must not be empty', Response::HTTP_BAD_REQUEST);
+            }
+            foreach ($extra as $extraEntry) {
+                if (
+                    !isset($extraEntry['reason']) || !isset($extraEntry['message'])
+                    || !is_string($extraEntry['reason']) || !is_string($extraEntry['message'])
+                ) {
+                    return new Response('Field `urls[][extra]` is invalid', Response::HTTP_BAD_REQUEST);
+                }
+            }
+            $extra = json_encode($extra);
+            if (!$extra) {
+                return new Response('Field `urls[][extra]` is invalid', Response::HTTP_BAD_REQUEST);
+            }
+
+            $url = $urlData['url'];
+            if (!UrlValidator::isValid($url)) {
+                $result[$id] = ['status' => PageInfo::REASSESSMENT_STATE_INVALID_URL];
+                continue;
+            }
+
+            $domain = UrlNormalizer::normalizeHost($url);
+            if (empty($domain)) {
+                $result[$id] = ['status' => PageInfo::REASSESSMENT_STATE_INVALID_URL];
+                continue;
+            }
+
+            $idToDomain[$id] = $domain;
+            $domainToReassessmentReason[$domain] = $extra;
+        }
+        $rows = $this->pageInfo->fetchReassessmentData(array_values($idToDomain));
+        $domainToRow = [];
+        $now = new DateTimeImmutable();
+        $dbTimezone = new DateTimeZone('+0000');
+        foreach ($rows as $row) {
+            if (null !== $row['reassess_reason']) {
+                $domainToRow[$row['domain']] = ['status' => PageInfo::REASSESSMENT_STATE_PROCESSING];
+                continue;
+            }
+
+            $reassessAvailableAt = new DateTimeImmutable($row['reassess_available_at'], $dbTimezone);
+
+            if ($reassessAvailableAt > $now) {
+                $domainToRow[$row['domain']] = [
+                    'status' => PageInfo::REASSESSMENT_STATE_LOCKED,
+                    'reassess_available_at' => $reassessAvailableAt->format(DateTimeImmutable::ATOM),
+                ];
+                continue;
+            }
+
+            $domain = $row['domain'];
+            $updatedCount = $this->pageInfo->updateReassessment((int)$row['id'], $domainToReassessmentReason[$domain]);
+            $domainToRow[$domain] = [
+                'status' =>
+                    $updatedCount > 0 ? PageInfo::REASSESSMENT_STATE_ACCEPTED : PageInfo::REASSESSMENT_STATE_ERROR,
+            ];
+        }
+        foreach ($idToDomain as $id => $domain) {
+            $result[$id] = $domainToRow[$domain] ?? ['status' => PageInfo::REASSESSMENT_STATE_NOT_REGISTERED];
+        }
+
+        return new JsonResponse($result);
+    }
+
+    private function getData(array $user, ParameterBag $params): array
+    {
+        $pageRank = $this->getPageRank($params);
+
         $keywords = [
             'user' => array_filter(['language' => $user['languages'] ?? null, 'country' => $user['country'] ?? null]),
             'device' => $this->requestInfo->getDeviceKeywords($params),
             'site' => $this->requestInfo->getSiteKeywords($params),
         ];
-
-        $pageRank = $this->getPageRank($params);
+        $keywords['site'] = array_merge($keywords['site'], [
+            'category' => $pageRank['categories'],
+            'quality' => $pageRank['quality'],
+        ]);
 
         $response = [
             'uuid' => $user['tracking_id'] ?? null,
@@ -181,7 +330,6 @@ final class DataController extends AbstractController
 
     private function getPageRank(ParameterBag $params): array
     {
-        $rank = null;
         if (($requestUrl = $params->get('url')) !== null) {
             $pageRank = $this->pageInfo->getPageRank($requestUrl);
         } else {
@@ -191,19 +339,28 @@ final class DataController extends AbstractController
         return [
             'rank' => (float)($pageRank[0] ?? $_ENV['ADUSER_DEFAULT_PAGE_RANK']),
             'info' => $pageRank[1] ?? PageInfo::INFO_UNKNOWN,
+            'categories' => $pageRank[2] ?? [Taxonomy::SITE_UNKNOWN],
+            'quality' => $pageRank[3] ?? Taxonomy::SITE_UNKNOWN,
         ];
     }
 
-    private function getPageRankWithNote($domain): array
+    private function getPageRankWithNote(string $url, array $categories): array
     {
-        $pageRank = $this->pageInfo->getPageRank($domain);
+        $pageRank = $this->pageInfo->getPageRank($url, true);
         if ($pageRank === null) {
-            $this->pageInfo->noteDomain($domain);
+            $this->pageInfo->noteDomain($url, $categories);
+            $pageRank = [
+                0,
+                PageInfo::INFO_UNKNOWN,
+                $categories,
+            ];
         }
 
         return [
             'rank' => (float)($pageRank[0] ?? 0),
             'info' => $pageRank[1] ?? PageInfo::INFO_UNKNOWN,
+            'categories' => $pageRank[2] ?? [Taxonomy::SITE_UNKNOWN],
+            'quality' => $pageRank[3] ?? Taxonomy::SITE_UNKNOWN,
         ];
     }
 
@@ -212,7 +369,7 @@ final class DataController extends AbstractController
         $users = [];
         try {
             foreach (
-                $this->connection->fetchAll(
+                $this->connection->fetchAllAssociative(
                     'SELECT
                         u.id,
                         r.tracking_id as adserver_tracking_id,
@@ -249,5 +406,29 @@ final class DataController extends AbstractController
         }
 
         return $users;
+    }
+
+    private function extractCategories($categories, array $categoriesMap): array
+    {
+        if (!is_array($categories)) {
+            return [Taxonomy::SITE_UNKNOWN];
+        }
+
+        $extractedCategories = [];
+        foreach ($categories as $category) {
+            if (Taxonomy::SITE_UNKNOWN === $category) {
+                return [Taxonomy::SITE_UNKNOWN];
+            }
+
+            if (isset($categoriesMap[$category])) {
+                array_push($extractedCategories, ...$categoriesMap[$category]);
+            }
+        }
+
+        if (empty($extractedCategories)) {
+            return [Taxonomy::SITE_UNKNOWN];
+        }
+
+        return array_values(array_unique($extractedCategories));
     }
 }

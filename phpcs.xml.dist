@@ -22,5 +22,6 @@
     </rule>
 
     <file>src/</file>
+    <file>migrations/</file>
     <!--<file>tests/</file>-->
 </ruleset>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Service\Fingerprint;
 use App\Service\ReCaptcha;
 use App\Service\Taxonomy;
 use App\Utils\IdGenerator;
@@ -20,21 +21,47 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class PixelController extends AbstractController
 {
-    private ReCaptcha $reCaptcha;
     private IdGenerator $idGenerator;
+    private ReCaptcha $reCaptcha;
+    private Fingerprint $fingerprint;
     private Connection $connection;
     private LoggerInterface $logger;
+    private ?string $cookieName = '__au';
+    private int $cookieExpiryPeriod = 31536000;
+    private int $humanScoreExpiryPeriod = 3600;
+    private int $fingerprintExpiryPeriod = 3600;
 
     public function __construct(
-        ReCaptcha $reCaptcha,
         IdGenerator $idGenerator,
+        ReCaptcha $reCaptcha,
+        Fingerprint $fingerprint,
         Connection $connection,
         LoggerInterface $logger
     ) {
-        $this->reCaptcha = $reCaptcha;
         $this->idGenerator = $idGenerator;
+        $this->reCaptcha = $reCaptcha;
+        $this->fingerprint = $fingerprint;
         $this->connection = $connection;
         $this->logger = $logger;
+    }
+
+    public function setCookieSettings(?string $cookieName, int $cookieExpiryPeriod): self
+    {
+        $this->cookieName = $cookieName;
+        $this->cookieExpiryPeriod = $cookieExpiryPeriod;
+        return $this;
+    }
+
+    public function setHumanScoreSettings(int $humanScoreExpiryPeriod): self
+    {
+        $this->humanScoreExpiryPeriod = $humanScoreExpiryPeriod;
+        return $this;
+    }
+
+    public function setFingerprintSettings(int $fingerprintExpiryPeriod): self
+    {
+        $this->fingerprintExpiryPeriod = $fingerprintExpiryPeriod;
+        return $this;
     }
 
     /**
@@ -43,17 +70,17 @@ final class PixelController extends AbstractController
      *     methods={"GET"},
      *     defaults={"_format": "html"},
      *     requirements={
-     *         "slug":  "[a-zA-Z0-9_:.-]{8}",
-     *         "adserver":  "[a-zA-Z0-9_:.-]+",
-     *         "tracking":  "[a-zA-Z0-9_:.-]+",
+     *         "slug": "[a-zA-Z0-9_:.-]{8}",
+     *         "adserver": "[a-zA-Z0-9_:.-]+",
+     *         "tracking": "[a-zA-Z0-9_:.-]+",
      *         "nonce": "[a-zA-Z0-9_:.-]+",
-     *         "_format":  "html|htm"
+     *         "_format": "html|htm"
      *     }
      * )
      */
     public function register(string $adserver, string $tracking, Request $request): Response
     {
-        $cookieTrackingId = self::getTrackingCookie($request);
+        $cookieTrackingId = $this->getTrackingCookie($request);
         $adserverUserId = $this->loadAdserverUserId($adserver, $tracking);
         if (($user = $this->loadUser($cookieTrackingId, $adserverUserId)) === null) {
             $user = $this->createUser($request);
@@ -64,9 +91,23 @@ final class PixelController extends AbstractController
         }
         $response = $this->getRegisterResponse($user, $request);
 
-        return self::prepareResponse($user['tracking_id'], $response);
+        if ($request->headers->has('Origin')) {
+            $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+        }
+
+        return $this->prepareResponse($user['tracking_id'], $response);
     }
 
+    /**
+     * @Route("/re/{tracking}/{nonce}.html",
+     *     name="pixel_recaptcha",
+     *     methods={"GET","POST"},
+     *     requirements={
+     *         "tracking": "[0-9a-f]+",
+     *         "nonce": "[0-9a-f]+"
+     *     }
+     * )
+     */
     public function recaptchaRegister(string $tracking, Request $request): ?Response
     {
         $trackingId = hex2bin($tracking);
@@ -76,14 +117,35 @@ final class PixelController extends AbstractController
         } else {
             $response = new Response($this->reCaptcha->getRegisterCode());
         }
+        return $response;
+    }
 
+    /**
+     * @Route("/fg/{tracking}/{nonce}.html",
+     *     name="pixel_fingerprint",
+     *     methods={"GET","POST"},
+     *     requirements={
+     *         "tracking": "[0-9a-f]+",
+     *         "nonce": "[0-9a-f]+"
+     *     }
+     * )
+     */
+    public function fingerprintRegister($tracking, Request $request): Response
+    {
+        $trackingId = hex2bin($tracking);
+        if ($request->isMethod('POST')) {
+            $this->updateUser($trackingId, null, $this->fingerprint->getHash($trackingId, $request));
+            $response = new Response('', 204);
+        } else {
+            $response = new Response($this->fingerprint->getRegisterCode());
+        }
         return $response;
     }
 
     private function loadAdserverUserId(string $adserverId, string $trackingId): ?int
     {
         try {
-            $userId = $this->connection->fetchColumn(
+            $userId = $this->connection->fetchOne(
                 'SELECT user_id FROM adserver_register WHERE adserver_id = ? AND tracking_id = ?',
                 [$adserverId, $trackingId]
             );
@@ -127,13 +189,26 @@ final class PixelController extends AbstractController
                     tracking_id,
                     country,
                     human_score,
-                    human_score_time
+                    human_score_time,
+                    fingerprint,
+                    fingerprint_time,
+                    mapped_user_id
                 FROM users';
             if ($trackingId !== null) {
-                $user = $this->connection->fetchAssoc($query . ' WHERE tracking_id = ? LIMIT 1', [$trackingId]);
+                $user = $this->connection->fetchAssociative($query . ' WHERE tracking_id = ? LIMIT 1', [$trackingId]);
             }
             if ($user === false && $userId !== null) {
-                $user = $this->connection->fetchAssoc($query . ' WHERE id = ? LIMIT 1', [$userId]);
+                $user = $this->connection->fetchAssociative($query . ' WHERE id = ? LIMIT 1', [$userId]);
+            }
+
+            if ($user !== false && $user['mapped_user_id'] !== null) {
+                $mappedUser = $this->connection->fetchAssociative(
+                    $query . ' WHERE id = ? LIMIT 1',
+                    [$user['mapped_user_id']]
+                );
+                if ($mappedUser !== false) {
+                    $user = $mappedUser;
+                }
             }
         } catch (DBALException $e) {
             $this->logger->error($e->getMessage());
@@ -145,6 +220,9 @@ final class PixelController extends AbstractController
             $user['human_score'] = $user['human_score'] !== null ? (float)$user['human_score'] : null;
             $user['human_score_time'] =
                 $user['human_score_time'] !== null ? strtotime($user['human_score_time']) : null;
+            $user['fingerprint_time'] =
+                $user['fingerprint_time'] !== null ? strtotime($user['fingerprint_time']) : null;
+            $user['mapped_user_id'] = $user['mapped_user_id'] !== null ? (int)$user['mapped_user_id'] : null;
 
             return $user;
         }
@@ -185,6 +263,9 @@ final class PixelController extends AbstractController
             'languages' => $languages,
             'human_score' => null,
             'human_score_time' => null,
+            'fingerprint' => null,
+            'fingerprint_time' => null,
+            'mapped_user_id' => null,
         ];
     }
 
@@ -214,9 +295,9 @@ final class PixelController extends AbstractController
         return array_values(array_unique($languages));
     }
 
-    private function updateUser(string $trackingId, ?float $humanScore = null): void
+    private function updateUser(string $trackingId, ?float $humanScore = null, ?string $fingerprint = null): void
     {
-        if ($humanScore === null) {
+        if ($humanScore === null && $fingerprint === null) {
             return;
         }
 
@@ -230,6 +311,12 @@ final class PixelController extends AbstractController
             $data['human_score_time'] = new DateTimeImmutable();
             $types['human_score'] = Types::FLOAT;
             $types['human_score_time'] = Types::DATETIME_IMMUTABLE;
+        }
+        if ($fingerprint !== null) {
+            $data['fingerprint'] = $fingerprint;
+            $data['fingerprint_time'] = new DateTimeImmutable();
+            $types['fingerprint'] = Types::STRING;
+            $types['fingerprint_time'] = Types::DATETIME_IMMUTABLE;
         }
 
         try {
@@ -248,9 +335,16 @@ final class PixelController extends AbstractController
 
         if (
             $user['human_score'] === null
-            || $user['human_score_time'] < time() - $_ENV['ADUSER_HUMAN_SCORE_EXPIRY_PERIOD']
+            || $user['human_score_time'] < time() - $this->humanScoreExpiryPeriod
         ) {
             $pages[] = $this->reCaptcha->getPageUrl($trackingId);
+        }
+
+        if (
+            $user['fingerprint'] === null
+            || $user['fingerprint_time'] < time() - $this->fingerprintExpiryPeriod
+        ) {
+            $pages[] = $this->fingerprint->getPageUrl($trackingId);
         }
 
         return new Response($this->getHtmlPixel($images, array_filter($pages)));
@@ -275,21 +369,23 @@ final class PixelController extends AbstractController
         return $content;
     }
 
-    private static function prepareResponse(string $trackingId, Response $response): Response
+    private function prepareResponse(string $trackingId, Response $response): Response
     {
-        $response->headers->setCookie(
-            Cookie::create(
-                $_ENV['ADUSER_COOKIE_NAME'],
-                base64_encode($trackingId),
-                time() + $_ENV['ADUSER_COOKIE_EXPIRY_PERIOD'],
-                '/',
-                null,
-                null,
-                true,
-                false,
-                null
-            )
-        );
+        if (!empty($this->cookieName)) {
+            $response->headers->setCookie(
+                Cookie::create(
+                    $this->cookieName,
+                    base64_encode($trackingId),
+                    time() + $this->cookieExpiryPeriod,
+                    '/',
+                    null,
+                    true,
+                    true,
+                    false,
+                    'none'
+                )
+            );
+        }
 
         $response->setCache(
             [
@@ -302,10 +398,9 @@ final class PixelController extends AbstractController
         return $response;
     }
 
-    private static function getTrackingCookie(Request $request): ?string
+    private function getTrackingCookie(Request $request): ?string
     {
-        $value = $request->cookies->get($_ENV['ADUSER_COOKIE_NAME']);
-
+        $value = !empty($this->cookieName) ? $request->cookies->get($this->cookieName) : null;
         return $value !== null ? base64_decode($value) : null;
     }
 }

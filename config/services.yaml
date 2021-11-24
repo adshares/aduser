@@ -33,9 +33,23 @@ services:
             $googleCx: '%env(GOOGLE_SEARCH_CX)%'
             $googleKey: '%env(GOOGLE_SEARCH_KEY)%'
 
+
+    #App\Controller\DataController:
+    #TAXONOMY_NAME
+    #TAXONOMY_VERSION
+    #ADUSER_HUMAN_SCORE_EXPIRY_PERIOD
+    #ADUSER_DEFAULT_HUMAN_SCORE
+    #ADUSER_DEFAULT_PAGE_RANK
+
     App\Controller\InfoController:
         calls:
             - setAduserDomains: ['%env(ADUSER_DOMAINS)%']
+
+    App\Controller\PixelController:
+        calls:
+            - setCookieSettings: ['%env(ADUSER_COOKIE_NAME)%', '%env(ADUSER_COOKIE_EXPIRY_PERIOD)%']
+            - setHumanScoreSettings: ['%env(ADUSER_HUMAN_SCORE_EXPIRY_PERIOD)%']
+            - setFingerprintSettings: ['%env(ADUSER_FINGERPRINT_EXPIRY_PERIOD)%']
 
     App\Service\Browscap:
         arguments:
