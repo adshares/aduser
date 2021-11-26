@@ -14,7 +14,7 @@ final class Version20211124160348 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Remove panel & stats';
     }
 
     public function up(Schema $schema): void
@@ -25,6 +25,14 @@ final class Version20211124160348 extends AbstractMigration
         $this->addSql('DROP TABLE statistics');
         $this->addSql('DROP TABLE statistics_servers');
         $this->addSql('DROP TABLE statistics_updates');
+        $this->addSql('DROP TABLE page_ranks_categories');
+        $this->addSql('ALTER TABLE page_ranks
+                DROP COLUMN url_full,
+                DROP COLUMN status,
+                DROP COLUMN dns_created_at,
+                DROP COLUMN google_results,
+                DROP COLUMN reassess_reason,
+                DROP COLUMN reassess_available_at');
         $this->addSql('DROP TRIGGER page_ranks_before_insert');
         $this->addSql('DROP TRIGGER page_ranks_before_update');
     }
