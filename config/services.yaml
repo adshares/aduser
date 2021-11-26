@@ -34,7 +34,7 @@ services:
             $googleKey: '%env(GOOGLE_SEARCH_KEY)%'
 
 
-    #App\Controller\DataController:
+    #App\Controller\ApiController:
     #TAXONOMY_NAME
     #TAXONOMY_VERSION
     #ADUSER_HUMAN_SCORE_EXPIRY_PERIOD

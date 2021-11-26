@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Service\PageInfo;
+use App\Service\PageInfoProviderInterface;
 use App\Service\RequestInfo;
 use App\Service\Taxonomy;
 use App\Utils\SiteCategory;
-use App\Utils\UrlNormalizer;
 use App\Utils\UrlValidator;
-use DateTimeImmutable;
-use DateTimeZone;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Types\Types;
@@ -22,42 +20,54 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
-final class DataController extends AbstractController
+/**
+ * @Route("/api/v{version}", name="api_", requirements={"version": "1"})
+ */
+final class ApiController extends AbstractController
 {
+    private PageInfoProviderInterface $pageInfoProvider;
     private PageInfo $pageInfo;
-
     private RequestInfo $requestInfo;
-
     private Connection $connection;
-
     private LoggerInterface $logger;
 
     public function __construct(
+        PageInfoProviderInterface $pageInfoProvider,
         PageInfo $pageInfo,
         RequestInfo $requestInfo,
         Connection $connection,
         LoggerInterface $logger
     ) {
+        $this->pageInfoProvider = $pageInfoProvider;
         $this->pageInfo = $pageInfo;
         $this->requestInfo = $requestInfo;
         $this->connection = $connection;
         $this->logger = $logger;
     }
 
+    /**
+     * @Route("/taxonomy",
+     *     name="taxonomy",
+     *     methods={"GET"}
+     * )
+     */
     public function taxonomy(): Response
     {
-        $taxonomy = [
-            'meta' => [
-                'name' => $_ENV['TAXONOMY_NAME'],
-                'version' => $_ENV['TAXONOMY_VERSION'],
-            ],
-            'data' => Taxonomy::getTaxonomy(),
-        ];
-
-        return new JsonResponse($taxonomy);
+        return new JsonResponse($this->pageInfoProvider->getTaxonomy());
     }
 
+    /**
+     * @Route("/data/{adserver}/{tracking}",
+     *     name="data",
+     *     methods={"GET", "POST", "OPTIONS"},
+     *     requirements={
+     *         "adserver": "[a-zA-Z0-9_:.-]+",
+     *         "tracking": "[a-zA-Z0-9_:.-]+"
+     *     }
+     * )
+     */
     public function data(string $adserver, string $tracking, Request $request): Response
     {
         $headers = [
@@ -82,6 +92,15 @@ final class DataController extends AbstractController
         return new JsonResponse($data, Response::HTTP_OK, $headers);
     }
 
+    /**
+     * @Route("/data/{adserver}",
+     *     name="data_batch",
+     *     methods={"POST"},
+     *     requirements={
+     *         "adserver": "[a-zA-Z0-9_:.-]+"
+     *     }
+     * )
+     */
     public function batch(string $adserver, Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
@@ -117,6 +136,15 @@ final class DataController extends AbstractController
         return new JsonResponse($response);
     }
 
+    /**
+     * @Route("/page-rank/{url}",
+     *     name="page_rank",
+     *     methods={"GET", "OPTIONS"},
+     *     requirements={
+     *         "url": ".+"
+     *     }
+     * )
+     */
     public function pageRank(string $url, Request $request): Response
     {
         $headers = [
@@ -149,6 +177,12 @@ final class DataController extends AbstractController
         return new JsonResponse($response, Response::HTTP_OK, $headers);
     }
 
+    /**
+     * @Route("/page-rank/{url}",
+     *     name="page_rank_batch",
+     *     methods={"POST"}
+     * )
+     */
     public function pageRankBatch(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
@@ -186,97 +220,16 @@ final class DataController extends AbstractController
         return new JsonResponse($result);
     }
 
+    /**
+     * @Route("/reassessment",
+     *     name="reassessment_batch",
+     *     methods={"POST"}
+     * )
+     */
     public function reassessmentBatch(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
-        if ($data === null) {
-            return new Response(json_last_error_msg(), Response::HTTP_BAD_REQUEST);
-        }
-        if (!isset($data['urls'])) {
-            return new Response('Field `urls` is required', Response::HTTP_BAD_REQUEST);
-        }
-        $urls = $data['urls'];
-        if (!is_array($urls)) {
-            return new Response('Field `urls` must be an array', Response::HTTP_BAD_REQUEST);
-        }
-
-        $result = [];
-        $idToDomain = [];
-        $domainToReassessmentReason = [];
-        foreach ($urls as $id => $urlData) {
-            if (!isset($urlData['url'])) {
-                return new Response('Field `urls[][url]` is required', Response::HTTP_BAD_REQUEST);
-            }
-            if (!isset($urlData['extra'])) {
-                return new Response('Field `urls[][extra]` is required', Response::HTTP_BAD_REQUEST);
-            }
-            $extra = $urlData['extra'];
-            if (!is_array($extra)) {
-                return new Response('Field `urls[][extra]` must be an array', Response::HTTP_BAD_REQUEST);
-            }
-            if (!$extra) {
-                return new Response('Field `urls[][extra]` must not be empty', Response::HTTP_BAD_REQUEST);
-            }
-            foreach ($extra as $extraEntry) {
-                if (
-                    !isset($extraEntry['reason']) || !isset($extraEntry['message'])
-                    || !is_string($extraEntry['reason']) || !is_string($extraEntry['message'])
-                ) {
-                    return new Response('Field `urls[][extra]` is invalid', Response::HTTP_BAD_REQUEST);
-                }
-            }
-            $extra = json_encode($extra);
-            if (!$extra) {
-                return new Response('Field `urls[][extra]` is invalid', Response::HTTP_BAD_REQUEST);
-            }
-
-            $url = $urlData['url'];
-            if (!UrlValidator::isValid($url)) {
-                $result[$id] = ['status' => PageInfo::REASSESSMENT_STATE_INVALID_URL];
-                continue;
-            }
-
-            $domain = UrlNormalizer::normalizeHost($url);
-            if (empty($domain)) {
-                $result[$id] = ['status' => PageInfo::REASSESSMENT_STATE_INVALID_URL];
-                continue;
-            }
-
-            $idToDomain[$id] = $domain;
-            $domainToReassessmentReason[$domain] = $extra;
-        }
-        $rows = $this->pageInfo->fetchReassessmentData(array_values($idToDomain));
-        $domainToRow = [];
-        $now = new DateTimeImmutable();
-        $dbTimezone = new DateTimeZone('+0000');
-        foreach ($rows as $row) {
-            if (null !== $row['reassess_reason']) {
-                $domainToRow[$row['domain']] = ['status' => PageInfo::REASSESSMENT_STATE_PROCESSING];
-                continue;
-            }
-
-            $reassessAvailableAt = new DateTimeImmutable($row['reassess_available_at'], $dbTimezone);
-
-            if ($reassessAvailableAt > $now) {
-                $domainToRow[$row['domain']] = [
-                    'status' => PageInfo::REASSESSMENT_STATE_LOCKED,
-                    'reassess_available_at' => $reassessAvailableAt->format(DateTimeImmutable::ATOM),
-                ];
-                continue;
-            }
-
-            $domain = $row['domain'];
-            $updatedCount = $this->pageInfo->updateReassessment((int)$row['id'], $domainToReassessmentReason[$domain]);
-            $domainToRow[$domain] = [
-                'status' =>
-                    $updatedCount > 0 ? PageInfo::REASSESSMENT_STATE_ACCEPTED : PageInfo::REASSESSMENT_STATE_ERROR,
-            ];
-        }
-        foreach ($idToDomain as $id => $domain) {
-            $result[$id] = $domainToRow[$domain] ?? ['status' => PageInfo::REASSESSMENT_STATE_NOT_REGISTERED];
-        }
-
-        return new JsonResponse($result);
+        return new JsonResponse($this->pageInfoProvider->reassessment($data));
     }
 
     private function getData(array $user, ParameterBag $params): array
@@ -382,12 +335,12 @@ final class DataController extends AbstractController
                       JOIN users u ON u.id = r.user_id
                       WHERE r.adserver_id = ? AND r.tracking_id IN (?)',
                     [
-                    $adserverId,
-                    $trackingIds,
+                        $adserverId,
+                        $trackingIds,
                     ],
                     [
-                    Types::STRING,
-                    Connection::PARAM_STR_ARRAY,
+                        Types::STRING,
+                        Connection::PARAM_STR_ARRAY,
                     ]
                 ) as $row
             ) {
