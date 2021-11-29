@@ -29,11 +29,10 @@ It accepts requests from [AdServer](https://github.com/adshares/adserver) intern
 git clone https://github.com/adshares/aduser.git
 cd aduser
 composer install
-composer dump-env dev
-vi .env.local.php
+vi .env.local
 php bin/console doctrine:database:create
 php bin/console doctrine:migration:migrate
-php bin/console server:run
+composer dev
 ```
 
 ### Production
@@ -41,9 +40,8 @@ php bin/console server:run
 ```
 git clone https://github.com/adshares/aduser.git
 cd aduser
-cp .env .env.local
 vi .env.local
-composer install --no-dev --optimize-autoloader
+composer install --no-dev
 php bin/console doctrine:database:create
 php bin/console doctrine:migration:migrate
 ```
@@ -62,8 +60,8 @@ For the versions available, see the [tags on this repository](https://github.com
 
 ## Authors
 
-* **[Adam Włodarkiewicz](https://github.com/awlodarkiewicz)** - _Python programmer_
 * **[Maciej Pilarczyk](https://github.com/m-pilarczyk)** - _PHP programmer_
+* **[Adam Włodarkiewicz](https://github.com/awlodarkiewicz)** - _Python programmer_
 
 See also the list of [contributors](https://github.com/adshares/aduser/contributors) who participated in this project.
 

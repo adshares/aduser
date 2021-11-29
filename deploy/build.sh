@@ -4,6 +4,3 @@
 cd ${1:-"."}
 
 composer install --no-dev
-
-yarn install
-yarn run build
