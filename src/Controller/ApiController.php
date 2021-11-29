@@ -1,0 +1,348 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use App\Service\PageInfo;
+use App\Service\RequestInfo;
+use App\Utils\UrlValidator;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception as DBALException;
+use Doctrine\DBAL\Types\Types;
+use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * @Route("/api/v{version}", name="api_", requirements={"version": "1"})
+ */
+final class ApiController extends AbstractController
+{
+    private PageInfo $pageInfo;
+    private RequestInfo $requestInfo;
+    private Connection $connection;
+    private LoggerInterface $logger;
+    private float $humanScoreDefault = 0.48;
+    private int $humanScoreExpiryPeriod = 3600;
+    private float $pageRankDefault = 0.0;
+
+    public function __construct(
+        PageInfo $pageInfo,
+        RequestInfo $requestInfo,
+        Connection $connection,
+        LoggerInterface $logger
+    ) {
+        $this->pageInfo = $pageInfo;
+        $this->requestInfo = $requestInfo;
+        $this->connection = $connection;
+        $this->logger = $logger;
+    }
+
+    public function setHumanScoreSettings(float $humanScoreDefault, int $humanScoreExpiryPeriod): self
+    {
+        $this->humanScoreDefault = $humanScoreDefault;
+        $this->humanScoreExpiryPeriod = $humanScoreExpiryPeriod;
+        return $this;
+    }
+
+    public function setPageRankSettings(float $pageRankDefault): self
+    {
+        $this->pageRankDefault = $pageRankDefault;
+        return $this;
+    }
+
+    /**
+     * @Route("/taxonomy",
+     *     name="taxonomy",
+     *     methods={"GET"}
+     * )
+     */
+    public function taxonomy(): Response
+    {
+        return new JsonResponse($this->pageInfo->getTaxonomy());
+    }
+
+    /**
+     * @Route("/data/{adserver}/{tracking}",
+     *     name="data",
+     *     methods={"GET", "POST", "OPTIONS"},
+     *     requirements={
+     *         "adserver": "[a-zA-Z0-9_:.-]+",
+     *         "tracking": "[a-zA-Z0-9_:.-]+"
+     *     }
+     * )
+     */
+    public function data(string $adserver, string $tracking, Request $request): Response
+    {
+        $headers = [
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Headers' => '*',
+            'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS',
+            'Access-Control-Max-Age' => 24 * 3600,
+        ];
+        if ($request->isMethod('OPTIONS')) {
+            return new Response('', Response::HTTP_NO_CONTENT, $headers);
+        }
+
+        $users = $this->getUsers($adserver, [$tracking]);
+        $user = array_pop($users) ?? [];
+        $params = $request->isMethod('GET') ? $request->query : $request->request;
+
+        $this->logger->info(sprintf('Fetching data for %s:%s', $adserver, $tracking), $params->all());
+        $this->logger->debug(sprintf('User: %s', $user['id'] ?? 'unknown'), $user);
+
+        $data = $this->getData($user, $params);
+
+        return new JsonResponse($data, Response::HTTP_OK, $headers);
+    }
+
+    /**
+     * @Route("/data/{adserver}",
+     *     name="data_batch",
+     *     methods={"POST"},
+     *     requirements={
+     *         "adserver": "[a-zA-Z0-9_:.-]+"
+     *     }
+     * )
+     */
+    public function batch(string $adserver, Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if ($data === null) {
+            throw new BadRequestHttpException(json_last_error_msg());
+        }
+
+        $userIds = [];
+        foreach ($data as $row) {
+            if (isset($row['user'])) {
+                $userIds[] = $row['user'];
+            }
+        }
+        $users = $this->getUsers($adserver, $userIds);
+
+        $response = [];
+        foreach ($data as $key => $row) {
+            if (!is_array($row) || !isset($row['user'])) {
+                continue;
+            }
+            $user = [];
+            if (isset($users[$row['user']])) {
+                $user = $users[$row['user']];
+            }
+
+            $this->logger->info(sprintf('Fetching data for %s:%s', $adserver, $row['user']), $row);
+            $this->logger->debug(sprintf('User: %s', $user['id'] ?? 'unknown'), $user);
+
+            $response[$key] = $this->getData($user, new ParameterBag($row));
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * @Route("/page-rank/{url}",
+     *     name="page_rank",
+     *     methods={"GET", "OPTIONS"},
+     *     requirements={
+     *         "url": ".+"
+     *     }
+     * )
+     */
+    public function pageRank(string $url, Request $request): Response
+    {
+        $headers = [
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Headers' => '*',
+            'Access-Control-Allow-Methods' => 'GET, OPTIONS',
+            'Access-Control-Max-Age' => 24 * 3600,
+        ];
+        if ($request->isMethod('OPTIONS')) {
+            return new Response('', Response::HTTP_NO_CONTENT, $headers);
+        }
+
+        if (!UrlValidator::isValid($url)) {
+            return new Response('Invalid URL', Response::HTTP_UNPROCESSABLE_ENTITY, $headers);
+        }
+        $pageRank = $this->pageInfo->getPageRank($url, $request->get('categories', []));
+
+        $response = [
+            'rank' => $pageRank['rank'],
+            'info' => $pageRank['info'],
+            'categories' => $pageRank['categories'],
+            'quality' => $pageRank['quality'],
+        ];
+
+        return new JsonResponse($response, Response::HTTP_OK, $headers);
+    }
+
+    /**
+     * @Route("/page-rank",
+     *     name="page_rank_batch",
+     *     methods={"POST"}
+     * )
+     */
+    public function pageRankBatch(Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        if ($data === null) {
+            return new Response(json_last_error_msg(), Response::HTTP_BAD_REQUEST);
+        }
+        if (!isset($data['urls'])) {
+            return new Response('Field `urls` is required', Response::HTTP_BAD_REQUEST);
+        }
+        $urls = $data['urls'];
+        if (!is_array($urls)) {
+            return new Response('Field `urls` must be an array', Response::HTTP_BAD_REQUEST);
+        }
+
+        $result = [];
+        foreach ($urls as $id => $urlData) {
+            $url = $urlData['url'] ?? null;
+            if (UrlValidator::isValid($url)) {
+                $pageRank = $this->pageInfo->getPageRank($url, $urlData['categories'] ?? []);
+                $result[$id] = [
+                    'rank' => $pageRank['rank'],
+                    'info' => $pageRank['info'],
+                    'categories' => $pageRank['categories'],
+                    'quality' => $pageRank['quality'],
+                ];
+            } else {
+                $result[$id] = ['error' => 'Invalid URL'];
+            }
+        }
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * @Route("/reassessment",
+     *     name="reassessment_batch",
+     *     methods={"POST"}
+     * )
+     */
+    public function reassessmentBatch(Request $request): Response
+    {
+        if (null === ($data = json_decode($request->getContent(), true))) {
+            return new Response(json_last_error_msg(), Response::HTTP_BAD_REQUEST);
+        }
+        return new JsonResponse($this->pageInfo->reassessment($data));
+    }
+
+    private function getData(array $user, ParameterBag $params): array
+    {
+        $pageRank = $this->getPageRank($params);
+
+        $keywords = [
+            'user' => array_filter(['language' => $user['languages'] ?? null, 'country' => $user['country'] ?? null]),
+            'device' => $this->requestInfo->getDeviceKeywords($params),
+            'site' => $this->requestInfo->getSiteKeywords($params),
+        ];
+        $keywords['site'] = array_merge($keywords['site'], [
+            'category' => $pageRank['categories'],
+            'quality' => $pageRank['quality'],
+        ]);
+
+        $response = [
+            'uuid' => $user['tracking_id'] ?? null,
+            'human_score' => $this->getHumanScore($user, $params),
+            'page_rank' => $pageRank['rank'],
+            'page_rank_info' => $pageRank['info'],
+            'keywords' => array_filter($keywords),
+        ];
+
+        $this->logger->info(sprintf('UUID: %s', $response['uuid']));
+        $this->logger->info(sprintf('Human score: %f', $response['human_score']));
+        $this->logger->info(sprintf('Page rank: %f', $response['page_rank']));
+        $this->logger->info(sprintf('Keywords: %s', json_encode($response['keywords'])));
+
+        return $response;
+    }
+
+    private function getHumanScore(array $user, ParameterBag $params): float
+    {
+        $humanScore = null;
+
+        $scoreTime = $user['human_score_time'] ?? 0;
+        $eventTime = $params->get('event_time', time());
+        $expiryPeriod = $this->humanScoreExpiryPeriod * 2;
+
+        if ($eventTime - $scoreTime <= $expiryPeriod) {
+            $humanScore = (float)$user['human_score'];
+        }
+
+        if ($this->requestInfo->isCrawler($params)) {
+            $humanScore = 0.0;
+        }
+
+        return $humanScore ?? $this->humanScoreDefault;
+    }
+
+    private function getPageRank(ParameterBag $params): array
+    {
+        if (($requestUrl = $params->get('url')) !== null) {
+            $pageRank = $this->pageInfo->fetchPageRank($requestUrl);
+        } else {
+            $this->logger->debug('Cannot find URL', $params->all());
+        }
+
+        return [
+            'rank' => (float)($pageRank['rank'] ?? $this->pageRankDefault),
+            'info' => $pageRank['info'] ?? PageInfo::INFO_UNKNOWN,
+            'categories' => $pageRank['categories'] ?? [PageInfo::INFO_UNKNOWN],
+            'quality' => $pageRank['quality'] ?? PageInfo::INFO_UNKNOWN,
+        ];
+    }
+
+
+    private function getUsers(string $adserverId, array $trackingIds): array
+    {
+        $users = [];
+        try {
+            foreach (
+                $this->connection->fetchAllAssociative(
+                    'SELECT
+                        u.id,
+                        r.tracking_id as adserver_tracking_id,
+                        u.tracking_id,
+                        u.country,
+                        u.languages,
+                        u.human_score,
+                        u.human_score_time
+                      FROM adserver_register r
+                      JOIN users u ON u.id = r.user_id
+                      WHERE r.adserver_id = ? AND r.tracking_id IN (?)',
+                    [
+                        $adserverId,
+                        $trackingIds,
+                    ],
+                    [
+                        Types::STRING,
+                        Connection::PARAM_STR_ARRAY,
+                    ]
+                ) as $row
+            ) {
+                $users[$row['adserver_tracking_id']] = [
+                    'id' => (int)$row['id'],
+                    'tracking_id' => bin2hex($row['tracking_id']),
+                    'country' => (string)$row['country'],
+                    'languages' => json_decode($row['languages'], true),
+                    'human_score' => $row['human_score'] !== null ? (float)$row['human_score'] : null,
+                    'human_score_time' => $row['human_score_time'] !== null
+                        ? strtotime($row['human_score_time'])
+                        : null,
+                ];
+            }
+        } catch (DBALException $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        return $users;
+    }
+}

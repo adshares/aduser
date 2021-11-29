@@ -1,13 +1,22 @@
-<?php declare(strict_types = 1);
+<?php
 
-namespace Adshares\Aduser\Utils;
+declare(strict_types=1);
+
+namespace App\Utils;
 
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 
 final class IdGenerator
 {
-    public static function generateNonce($length = 8): string
+    private string $trackingSecret;
+
+    public function __construct(string $trackingSecret)
+    {
+        $this->trackingSecret = $trackingSecret;
+    }
+
+    public static function generateNonce(int $length = 8): string
     {
         try {
             return substr(sha1(random_bytes(256)), 0, $length);
@@ -16,7 +25,7 @@ final class IdGenerator
         }
     }
 
-    public static function generateTrackingId(Request $request): string
+    public function generateTrackingId(Request $request): string
     {
         $elements = [
             microtime(true),
@@ -32,20 +41,18 @@ final class IdGenerator
         }
 
         $trackingId = substr(sha1(implode(':', $elements), true), 0, 14);
-
-        return $trackingId . self::trackingIdChecksum($trackingId);
+        return $trackingId . $this->trackingIdChecksum($trackingId);
     }
 
-    public static function validTrackingId(string $trackingId): bool
+    public function validTrackingId(string $trackingId): bool
     {
         $userId = substr($trackingId, 0, 14);
         $checksum = substr($trackingId, 14, 16);
-
-        return self::trackingIdChecksum($userId) === $checksum;
+        return $this->trackingIdChecksum($userId) === $checksum;
     }
 
-    private static function trackingIdChecksum(string $trackingId): string
+    private function trackingIdChecksum(string $trackingId): string
     {
-        return substr(sha1($trackingId . $_ENV['ADUSER_TRACKING_SECRET'], true), 0, 2);
+        return substr(sha1($trackingId . $this->trackingSecret, true), 0, 2);
     }
 }
