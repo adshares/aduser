@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Utils\UrlNormalizer;
+use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Exception;
@@ -48,9 +49,9 @@ final class PageInfo
         return $this->pageInfoProvider->reassessment($data);
     }
 
-    public function getPageRankWithNote(string $url, array $categories): array
+    public function getPageRank(string $url, array $categories): array
     {
-        $pageRank = $this->getPageRank($url, true);
+        $pageRank = $this->fetchPageRank($url, true);
         if (null === $pageRank) {
             $key = 'page_info_domain_' . md5($url);
             $pageRank = $this->cache->get($key, function (ItemInterface $item) use ($url, $categories) {
@@ -63,7 +64,7 @@ final class PageInfo
         return $pageRank;
     }
 
-    public function getPageRank(string $requestUrl, bool $hostExactMatch = false): ?array
+    public function fetchPageRank(string $requestUrl, bool $hostExactMatch = false): ?array
     {
         $url = UrlNormalizer::normalize($requestUrl);
         $ranks = $this->fetchPageRanks();
@@ -87,6 +88,24 @@ final class PageInfo
         return null;
     }
 
+    public function update(DateTimeInterface $changedAfter = null): bool
+    {
+        $this->logger->info('Updating pages info from the provider');
+        $limit = 1000;
+        $offset = 0;
+
+        do {
+            $list = $this->pageInfoProvider->getBatchInfo($limit, $offset, $changedAfter)['page_ranks'];
+            foreach ($list as $info) {
+                $this->savePageRank($info['url'], $info);
+            }
+            $offset += $limit;
+        } while (count($list) === $limit);
+
+        $this->logger->info('Updating pages info finished');
+        return true;
+    }
+
     private function savePageRank(string $url, array $info): void
     {
         try {
@@ -100,14 +119,20 @@ final class PageInfo
             if (0 === $info['rank'] && self::INFO_UNKNOWN === $info['info']) {
                 return;
             }
+            $categories = json_encode($info['categories'] ?? []);
             $this->connection->executeStatement(
-                'INSERT INTO page_ranks(url, rank, info, categories, quality) VALUES(?, ?, ?, ?, ?)',
+                'INSERT INTO page_ranks(url, rank, info, categories, quality) VALUES(?, ?, ?, ?, ?)
+                     ON DUPLICATE KEY UPDATE rank = ?, info = ?, categories = ?, quality = ?',
                 [
                     $domain,
                     $info['rank'],
                     $info['info'],
-                    json_encode($info['categories'] ?? []),
-                    $info['quality'] ?? self::INFO_UNKNOWN
+                    $categories,
+                    $info['quality'] ?? self::INFO_UNKNOWN,
+                    $info['rank'],
+                    $info['info'],
+                    $categories,
+                    $info['quality'] ?? self::INFO_UNKNOWN,
                 ]
             );
             $this->cache->delete('page_info_page_ranks');

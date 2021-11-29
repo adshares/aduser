@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2021-11-29
+### Added
+- Fingerprint support
+- Page info provider integration
+### Removed
+- Web panel
+
 ## [2.0.0] - 2019-12-03
 ### Added 
 - Recaptcha support
@@ -17,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-01
 
 
-[Unreleased]: https://github.com/adshares/aduser/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/adshares/aduser/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/adshares/aduser/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/adshares/aduser/compare/v0.1.0...v2.0.0
 [0.1.0]: https://github.com/adshares/aduser/releases/tag/v0.1.0

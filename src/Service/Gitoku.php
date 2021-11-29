@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use DateTimeInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -34,6 +35,18 @@ final class Gitoku implements PageInfoProviderInterface
     public function getInfo(string $url, array $categories = []): array
     {
         return $this->request('/page-rank/' . urlencode($url) . '?' . http_build_query(['categories' => $categories]));
+    }
+
+    public function getBatchInfo(int $limit = 1000, int $offset = 0, DateTimeInterface $changedAfter = null): array
+    {
+        $params = [
+            'limit' => $limit,
+            'offset' => $offset
+        ];
+        if (null !== $changedAfter) {
+            $params['changedAfter'] = $changedAfter->format(DateTimeInterface::W3C);
+        }
+        return $this->request('/page-rank?' . http_build_query($params));
     }
 
     public function reassessment(array $data): array

@@ -170,7 +170,7 @@ final class ApiController extends AbstractController
         if (!UrlValidator::isValid($url)) {
             return new Response('Invalid URL', Response::HTTP_UNPROCESSABLE_ENTITY, $headers);
         }
-        $pageRank = $this->pageInfo->getPageRankWithNote($url, $request->get('categories', []));
+        $pageRank = $this->pageInfo->getPageRank($url, $request->get('categories', []));
 
         $response = [
             'rank' => $pageRank['rank'],
@@ -206,7 +206,7 @@ final class ApiController extends AbstractController
         foreach ($urls as $id => $urlData) {
             $url = $urlData['url'] ?? null;
             if (UrlValidator::isValid($url)) {
-                $pageRank = $this->pageInfo->getPageRankWithNote($url, $urlData['categories'] ?? []);
+                $pageRank = $this->pageInfo->getPageRank($url, $urlData['categories'] ?? []);
                 $result[$id] = [
                     'rank' => $pageRank['rank'],
                     'info' => $pageRank['info'],
@@ -287,7 +287,7 @@ final class ApiController extends AbstractController
     private function getPageRank(ParameterBag $params): array
     {
         if (($requestUrl = $params->get('url')) !== null) {
-            $pageRank = $this->pageInfo->getPageRank($requestUrl);
+            $pageRank = $this->pageInfo->fetchPageRank($requestUrl);
         } else {
             $this->logger->debug('Cannot find URL', $params->all());
         }
