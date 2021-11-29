@@ -1,61 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
 
-namespace Adshares\Aduser\Service;
+declare(strict_types=1);
+
+namespace App\Service;
 
 final class Taxonomy
 {
-    public static function getTaxonomy(): array
-    {
-        return [
-            'user' => [
-                [
-                    'label' => 'Country',
-                    'key' => 'country',
-                    'type' => 'dict',
-                    'data' => self::sanitazeData(self::getCountries()),
-                ],
-                [
-                    'label' => 'Language',
-                    'key' => 'language',
-                    'type' => 'dict',
-                    'data' => self::sanitazeData(self::getLanguages()),
-                ],
-            ],
-            'site' => [
-                [
-                    'label' => 'Domain',
-                    'key' => 'domain',
-                    'type' => 'input',
-                ],
-//                [
-//                    'label' => 'Tag',
-//                    'key' => 'tag',
-//                    'type' => 'input',
-//                ],
-            ],
-            'device' => [
-                [
-                    'label' => 'Device type',
-                    'key' => 'type',
-                    'type' => 'dict',
-                    'data' => self::sanitazeData(self::getDeviceTypes()),
-                ],
-                [
-                    'label' => 'Operating System',
-                    'key' => 'os',
-                    'type' => 'dict',
-                    'data' => self::sanitazeData(self::getOperatingSystems()),
-                ],
-                [
-                    'label' => 'Browser',
-                    'key' => 'browser',
-                    'type' => 'dict',
-                    'data' => self::sanitazeData(self::getBrowsers()),
-                ],
-            ],
-        ];
-    }
-
     public static function getCountries(): array
     {
         return [
@@ -657,16 +607,26 @@ final class Taxonomy
         }
     }
 
-    private static function sanitazeData(array $data): array
+    public static function getExtensions(): array
     {
-        $result = [];
-        foreach ($data as $key => $label) {
-            $result[] = [
-                'key' => $key,
-                'label' => $label,
-            ];
-        }
+        return [
+            'metamask' => 'MetaMask',
+        ];
+    }
 
-        return $result;
+    public static function mapExtensions(array $data): array
+    {
+        $available = self::getExtensions();
+        $extensions = [];
+        foreach ($data as $name => $enabled) {
+            $name = trim(strtolower($name));
+            if (!array_key_exists($name, $available)) {
+                continue;
+            }
+            if (in_array($enabled, ['true', 'yes', 'on']) || (int)$enabled) {
+                $extensions[] = $name;
+            }
+        }
+        return $extensions;
     }
 }

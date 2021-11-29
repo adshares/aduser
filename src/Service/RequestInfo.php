@@ -1,28 +1,28 @@
-<?php declare(strict_types = 1);
+<?php
 
-namespace Adshares\Aduser\Service;
+declare(strict_types=1);
 
-use Adshares\Aduser\External\Browscap;
-use Adshares\Aduser\Utils\UrlNormalizer;
-use Psr\Cache\CacheItemPoolInterface;
+namespace App\Service;
+
+use App\Utils\UrlNormalizer;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use stdClass;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 final class RequestInfo
 {
-    /** @var Browscap */
-    protected $browscap;
+    protected Browscap $browscap;
 
-    /** @var CacheItemPoolInterface */
-    protected $cache;
+    protected CacheInterface $cache;
 
-    /** @var LoggerInterface */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     public function __construct(
         Browscap $browscap,
-        CacheItemPoolInterface $cache,
+        CacheInterface $cache,
         LoggerInterface $logger
     ) {
         $this->browscap = $browscap;
@@ -32,15 +32,23 @@ final class RequestInfo
 
     public function getDeviceKeywords(ParameterBag $params): array
     {
-        $info = $this->getInfo($params);
-
-        return $info === null
-            ? []
-            : [
-                'type' => Taxonomy::mapDeviceType($info->device_type),
-                'os' => Taxonomy::mapOperatingSystem($info->platform),
-                'browser' => Taxonomy::mapBrowser($info->browser),
-            ];
+        $keywords = [];
+        $extensions = Taxonomy::mapExtensions($params->get('extensions', []));
+        if (!empty($extensions)) {
+            $keywords['extensions'] = $extensions;
+        }
+        if (null !== ($info = $this->getInfo($params))) {
+            $keywords = array_merge(
+                $keywords,
+                [
+                    'type' => Taxonomy::mapDeviceType($info->device_type),
+                    'os' => Taxonomy::mapOperatingSystem($info->platform),
+                    'browser' => Taxonomy::mapBrowser($info->browser),
+                    'crawler' => $info->crawler ?? false,
+                ]
+            );
+        }
+        return $keywords;
     }
 
     public function getSiteKeywords(ParameterBag $params): array
@@ -70,32 +78,31 @@ final class RequestInfo
         return (bool)($info->crawler ?? false);
     }
 
-    private function getInfo(ParameterBag $params): ?\stdClass
+    private function getInfo(ParameterBag $params): ?stdClass
     {
         $userAgent = self::getHeader('User-Agent', $params);
 
         if ($userAgent === null) {
             $this->logger->debug('Cannot find User-Agent', $params->all());
-
             return null;
         }
         try {
-            $item = $this->cache->getItem('browscap_info_'.sha1($userAgent));
-            if (!$item->isHit()) {
-                $info = $this->browscap->getInfo($userAgent);
-                $this->cache->save($item->set($info));
-                $this->logger->debug(sprintf('Info cache MISS for %s', $userAgent));
-            }
-
-            return $item->get();
+            $key = 'browscap_info_' . sha1($userAgent);
+            return $this->cache->get(
+                $key,
+                function (ItemInterface $item) use ($userAgent) {
+                    $item->expiresAfter(300);
+                    $this->logger->debug(sprintf('Info cache MISS for %s', $userAgent));
+                    return $this->browscap->getInfo($userAgent);
+                }
+            );
         } catch (InvalidArgumentException $exception) {
             $this->logger->error($exception->getMessage());
-
             return null;
         }
     }
 
-    private static function getHeader($name, ParameterBag $params): ?string
+    private static function getHeader(string $name, ParameterBag $params): ?string
     {
         $value = null;
         if (null !== $headers = $params->get('headers')) {

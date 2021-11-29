@@ -1,10 +1,12 @@
-<?php declare(strict_types = 1);
+<?php
 
-namespace Adshares\Aduser\Utils;
+declare(strict_types=1);
+
+namespace App\Utils;
 
 final class UrlNormalizer
 {
-    private static $urlCache = [];
+    private static array $urlCache = [];
 
     public static function normalize(string $url): string
     {
@@ -14,13 +16,11 @@ final class UrlNormalizer
     public static function normalizeHost(string $url): string
     {
         if (strpos($url, '//') === false) {
-            $url = '//'.$url;
+            $url = '//' . $url;
         }
-
         if (($parts = parse_url($url)) === false || !isset($parts['host'])) {
             return '';
         }
-
         return preg_replace('/^www\./i', '', mb_strtolower($parts['host']));
     }
 
@@ -28,7 +28,7 @@ final class UrlNormalizer
     {
         if (!array_key_exists($url, self::$urlCache)) {
             if (strpos($url, '//') === false) {
-                $url = '//'.$url;
+                $url = '//' . $url;
             }
 
             if (($parts = parse_url($url)) === false) {
@@ -40,10 +40,10 @@ final class UrlNormalizer
             $cleanedUrl = '';
             if (isset($parts['host'])) {
                 $cleanedHost = preg_replace('/^www\./i', '', mb_strtolower($parts['host']));
-                $cleanedUrl = '//'.$cleanedHost;
+                $cleanedUrl = '//' . $cleanedHost;
             }
             if (isset($parts['port'])) {
-                $cleanedUrl .= ':'.$parts['port'];
+                $cleanedUrl .= ':' . $parts['port'];
             }
             if (!empty($cleanedUrl)) {
                 $urls[] = $cleanedUrl;
@@ -55,13 +55,13 @@ final class UrlNormalizer
                     if (empty($item)) {
                         continue;
                     }
-                    $path .= '/'.$item;
-                    $urls[] = $cleanedUrl.$path;
+                    $path .= '/' . $item;
+                    $urls[] = $cleanedUrl . $path;
                 }
             }
 
             if (isset($parts['query'])) {
-                $urls[] = $cleanedUrl.$path.'?'.$parts['query'];
+                $urls[] = $cleanedUrl . $path . '?' . $parts['query'];
             }
 
             $urls = array_reverse($urls);
@@ -76,7 +76,7 @@ final class UrlNormalizer
                     if (empty($host)) {
                         $host = $item;
                     } else {
-                        $host = $item.'.'.$host;
+                        $host = $item . '.' . $host;
                     }
                     $hosts[] = $host;
                 }
