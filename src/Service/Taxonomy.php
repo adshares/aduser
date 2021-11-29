@@ -6,6 +6,8 @@ namespace App\Service;
 
 final class Taxonomy
 {
+    public const SITE_UNKNOWN = 'unknown';
+
     public static function getTaxonomy(): array
     {
         return [
@@ -14,45 +16,136 @@ final class Taxonomy
                     'label' => 'Country',
                     'key' => 'country',
                     'type' => 'dict',
-                    'data' => self::sanitazeData(self::getCountries()),
+                    'data' => self::sanitizeData(self::getCountries()),
                 ],
                 [
                     'label' => 'Language',
                     'key' => 'language',
                     'type' => 'dict',
-                    'data' => self::sanitazeData(self::getLanguages()),
+                    'data' => self::sanitizeData(self::getLanguages()),
                 ],
             ],
             'site' => [
+                [
+                    'label' => 'Quality',
+                    'key' => 'quality',
+                    'type' => 'dict',
+                    'data' => [
+                        [
+                            'label' => 'Premium',
+                            'value' => 'high',
+                        ],
+                        [
+                            'label' => 'Regular',
+                            'value' => 'medium',
+                        ],
+                        [
+                            'label' => 'Low quality',
+                            'value' => 'low',
+                        ],
+                    ],
+                ],
+                [
+                    'label' => 'Category',
+                    'key' => 'category',
+                    'type' => 'dict',
+                    'data' => [
+                        [
+                            'label' => 'Adult',
+                            'value' => 'adult',
+                        ],
+                        [
+                            'label' => 'Crypto',
+                            'value' => 'crypto',
+                            'values' => [
+                                [
+                                    'label' => 'Faucets',
+                                    'value' => 'faucets',
+                                ],
+                                [
+                                    'label' => 'Others',
+                                    'value' => 'others',
+                                ],
+                            ]
+                        ],
+                        [
+                            'label' => 'Games',
+                            'value' => 'games',
+                        ],
+                        [
+                            'label' => 'Health',
+                            'value' => 'health',
+                            'values' => [
+                                [
+                                    'label' => 'Supplements',
+                                    'value' => 'supplements',
+                                ],
+                                [
+                                    'label' => 'Diets',
+                                    'value' => 'diets',
+                                ]
+                            ]
+                        ],
+                        [
+                            'label' => 'Lifestyle',
+                            'value' => 'lifestyle',
+                        ],
+                        [
+                            'label' => 'Movies',
+                            'value' => 'movies',
+                        ],
+                        [
+                            'label' => 'Music',
+                            'value' => 'music',
+                        ],
+                        [
+                            'label' => 'News',
+                            'value' => 'news',
+                        ],
+                        [
+                            'label' => 'Pay to Click',
+                            'value' => 'paytoclick',
+                        ],
+                        [
+                            'label' => 'Technology',
+                            'value' => 'technology',
+                        ],
+                        [
+                            'label' => 'Unknown',
+                            'value' => self::SITE_UNKNOWN,
+                        ],
+                    ],
+                ],
                 [
                     'label' => 'Domain',
                     'key' => 'domain',
                     'type' => 'input',
                 ],
-//                [
-//                    'label' => 'Tag',
-//                    'key' => 'tag',
-//                    'type' => 'input',
-//                ],
             ],
             'device' => [
                 [
                     'label' => 'Device type',
                     'key' => 'type',
                     'type' => 'dict',
-                    'data' => self::sanitazeData(self::getDeviceTypes()),
+                    'data' => self::sanitizeData(self::getDeviceTypes()),
                 ],
                 [
                     'label' => 'Operating System',
                     'key' => 'os',
                     'type' => 'dict',
-                    'data' => self::sanitazeData(self::getOperatingSystems()),
+                    'data' => self::sanitizeData(self::getOperatingSystems()),
                 ],
                 [
                     'label' => 'Browser',
                     'key' => 'browser',
                     'type' => 'dict',
-                    'data' => self::sanitazeData(self::getBrowsers()),
+                    'data' => self::sanitizeData(self::getBrowsers()),
+                ],
+                [
+                    'label' => 'Extensions',
+                    'key' => 'extensions',
+                    'type' => 'dict',
+                    'data' => self::sanitizeData(self::getExtensions()),
                 ],
             ],
         ];
@@ -659,12 +752,35 @@ final class Taxonomy
         }
     }
 
-    private static function sanitazeData(array $data): array
+    public static function getExtensions(): array
+    {
+        return [
+            'metamask' => 'MetaMask',
+        ];
+    }
+
+    public static function mapExtensions(array $data): array
+    {
+        $available = self::getExtensions();
+        $extensions = [];
+        foreach ($data as $name => $enabled) {
+            $name = trim(strtolower($name));
+            if (!array_key_exists($name, $available)) {
+                continue;
+            }
+            if (in_array($enabled, ['true', 'yes', 'on']) || (int)$enabled) {
+                $extensions[] = $name;
+            }
+        }
+        return $extensions;
+    }
+
+    private static function sanitizeData(array $data): array
     {
         $result = [];
         foreach ($data as $key => $label) {
             $result[] = [
-                'key' => $key,
+                'value' => $key,
                 'label' => $label,
             ];
         }

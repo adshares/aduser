@@ -7,55 +7,75 @@ namespace App\Service;
 use App\Utils\UrlNormalizer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
-use Doctrine\DBAL\FetchMode;
-use Psr\Cache\CacheItemPoolInterface;
+use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 final class PageInfo
 {
-    public const INFO_OK = 'ok';
-
     public const INFO_UNKNOWN = 'unknown';
 
-    public const INFO_HIGH_IVR = 'high-ivr';
-
-    public const INFO_HIGH_CTR = 'high-ctr';
-
-    public const INFO_LOW_CTR = 'low-ctr';
-
-    public const INFO_POOR_TRAFFIC = 'poor-traffic';
-
-    public const INFO_POOR_CONTENT = 'poor-content';
-
-    public const INFO_SUSPICIOUS_DOMAIN = 'suspicious-domain';
-
-    public const STATUS_VERIFIED = 0;
-
-    public const STATUS_NEW = 1;
-
-    public const STATUS_SCANNED = 2;
+    private PageInfoProviderInterface $pageInfoProvider;
 
     protected Connection $connection;
 
-    protected CacheItemPoolInterface $cache;
+    protected CacheInterface $cache;
 
     protected LoggerInterface $logger;
 
     public function __construct(
+        PageInfoProviderInterface $pageInfoProvider,
         Connection $connection,
-        CacheItemPoolInterface $cache,
+        CacheInterface $cache,
         LoggerInterface $logger
     ) {
+        $this->pageInfoProvider = $pageInfoProvider;
         $this->connection = $connection;
         $this->cache = $cache;
         $this->logger = $logger;
     }
 
-    public function getPageRank(string $requestUrl): ?array
+    public function getTaxonomy(): array
+    {
+        return $this->pageInfoProvider->getTaxonomy();
+    }
+
+
+    public function reassessment(array $data): array
+    {
+        return $this->pageInfoProvider->reassessment($data);
+    }
+
+    public function getPageRankWithNote(string $url, array $categories): array
+    {
+        $pageRank = $this->getPageRank($url, true);
+        if (null === $pageRank) {
+            $key = 'page_info_domain_' . md5($url);
+            $pageRank = $this->cache->get($key, function (ItemInterface $item) use ($url, $categories) {
+                $item->expiresAfter(300);
+                $info = $this->pageInfoProvider->getInfo($url, $categories);
+                $this->savePageRank($url, $info);
+                return $info;
+            });
+        }
+        return $pageRank;
+    }
+
+    public function getPageRank(string $requestUrl, bool $hostExactMatch = false): ?array
     {
         $url = UrlNormalizer::normalize($requestUrl);
         $ranks = $this->fetchPageRanks();
+
+        if ($hostExactMatch) {
+            $host = UrlNormalizer::normalizeHost($url);
+            if (array_key_exists($host, $ranks)) {
+                return $ranks[$host];
+            }
+
+            return null;
+        }
 
         foreach (UrlNormalizer::explodeUrl($url) as $part) {
             $key = ltrim($part, '//');
@@ -67,26 +87,31 @@ final class PageInfo
         return null;
     }
 
-    public function noteDomain(string $url): void
+    private function savePageRank(string $url, array $info): void
     {
         try {
-            $item = $this->cache->getItem('page_info_domain_' . md5($url));
-            if (!$item->isHit()) {
-                $domain = UrlNormalizer::normalizeHost($url);
-                if (empty($domain)) {
-                    return;
-                }
-                try {
-                    $this->connection->executeUpdate(
-                        'INSERT INTO page_ranks(url, status) VALUES(?, ?)',
-                        [$domain, self::STATUS_NEW]
-                    );
-                } catch (DBALException $exception) {
-                    $this->logger->warning($exception->getMessage());
-                }
-                $this->cache->save($item->set(true));
+            $domain = UrlNormalizer::normalizeHost($url);
+            if (empty($domain)) {
+                return;
             }
-        } catch (InvalidArgumentException $exception) {
+            if (!array_key_exists('rank', $info) || !array_key_exists('info', $info)) {
+                return;
+            }
+            if (0 === $info['rank'] && self::INFO_UNKNOWN === $info['info']) {
+                return;
+            }
+            $this->connection->executeStatement(
+                'INSERT INTO page_ranks(url, rank, info, categories, quality) VALUES(?, ?, ?, ?, ?)',
+                [
+                    $domain,
+                    $info['rank'],
+                    $info['info'],
+                    json_encode($info['categories'] ?? []),
+                    $info['quality'] ?? self::INFO_UNKNOWN
+                ]
+            );
+            $this->cache->delete('page_info_page_ranks');
+        } catch (Exception $exception) {
             $this->logger->error($exception->getMessage());
         }
     }
@@ -94,20 +119,28 @@ final class PageInfo
     private function fetchPageRanks(): array
     {
         try {
-            $item = $this->cache->getItem('page_info_page_ranks');
-            if (!$item->isHit()) {
+            return $this->cache->get('page_info_page_ranks', function (ItemInterface $item) {
+                $item->expiresAfter(300);
                 $ranks = [];
-                $st = $this->connection->executeQuery('SELECT url, rank, info FROM page_ranks WHERE rank IS NOT NULL');
-                while ($row = $st->fetch(FetchMode::ASSOCIATIVE)) {
-                    $ranks[$row['url']] = [max(0.0, min(1.0, (float)$row['rank'])), $row['info']];
+                $query = '
+                    SELECT url, rank, info, categories, quality
+                    FROM page_ranks
+                    WHERE rank IS NOT NULL
+                    ORDER BY updated_at DESC
+                ';
+                foreach ($this->connection->fetchAllAssociative($query) as $row) {
+                    $ranks[$row['url']] = [
+                        'url' => $row['url'],
+                        'rank' => max(-1.0, min(1.0, (float)$row['rank'])),
+                        'info' => $row['info'],
+                        'categories' => json_decode($row['categories'] ?? '[]'),
+                        'quality' => $row['quality']
+                    ];
                 }
-                $this->cache->save($item->set($ranks));
-            }
-
-            return $item->get();
+                return $ranks;
+            });
         } catch (InvalidArgumentException | DBALException $exception) {
             $this->logger->error($exception->getMessage());
-
             return [];
         }
     }

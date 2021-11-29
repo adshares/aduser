@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Service\PageInfo;
-use App\Service\PageInfoProviderInterface;
 use App\Service\RequestInfo;
-use App\Service\Taxonomy;
-use App\Utils\SiteCategory;
 use App\Utils\UrlValidator;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
@@ -27,24 +24,37 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 final class ApiController extends AbstractController
 {
-    private PageInfoProviderInterface $pageInfoProvider;
     private PageInfo $pageInfo;
     private RequestInfo $requestInfo;
     private Connection $connection;
     private LoggerInterface $logger;
+    private float $humanScoreDefault = 0.48;
+    private int $humanScoreExpiryPeriod = 3600;
+    private float $pageRankDefault = 0.0;
 
     public function __construct(
-        PageInfoProviderInterface $pageInfoProvider,
         PageInfo $pageInfo,
         RequestInfo $requestInfo,
         Connection $connection,
         LoggerInterface $logger
     ) {
-        $this->pageInfoProvider = $pageInfoProvider;
         $this->pageInfo = $pageInfo;
         $this->requestInfo = $requestInfo;
         $this->connection = $connection;
         $this->logger = $logger;
+    }
+
+    public function setHumanScoreSettings(float $humanScoreDefault, int $humanScoreExpiryPeriod): self
+    {
+        $this->humanScoreDefault = $humanScoreDefault;
+        $this->humanScoreExpiryPeriod = $humanScoreExpiryPeriod;
+        return $this;
+    }
+
+    public function setPageRankSettings(float $pageRankDefault): self
+    {
+        $this->pageRankDefault = $pageRankDefault;
+        return $this;
     }
 
     /**
@@ -55,7 +65,7 @@ final class ApiController extends AbstractController
      */
     public function taxonomy(): Response
     {
-        return new JsonResponse($this->pageInfoProvider->getTaxonomy());
+        return new JsonResponse($this->pageInfo->getTaxonomy());
     }
 
     /**
@@ -160,12 +170,7 @@ final class ApiController extends AbstractController
         if (!UrlValidator::isValid($url)) {
             return new Response('Invalid URL', Response::HTTP_UNPROCESSABLE_ENTITY, $headers);
         }
-
-        $categories = $this->extractCategories(
-            $request->get('categories'),
-            SiteCategory::getCategoryValueToIncludedCategoriesValuesMap(SiteCategory::getTaxonomySiteCategories())
-        );
-        $pageRank = $this->getPageRankWithNote($url, $categories);
+        $pageRank = $this->pageInfo->getPageRankWithNote($url, $request->get('categories', []));
 
         $response = [
             'rank' => $pageRank['rank'],
@@ -178,7 +183,7 @@ final class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/page-rank/{url}",
+     * @Route("/page-rank",
      *     name="page_rank_batch",
      *     methods={"POST"}
      * )
@@ -197,15 +202,11 @@ final class ApiController extends AbstractController
             return new Response('Field `urls` must be an array', Response::HTTP_BAD_REQUEST);
         }
 
-        $categoriesMap = SiteCategory::getCategoryValueToIncludedCategoriesValuesMap(
-            SiteCategory::getTaxonomySiteCategories()
-        );
         $result = [];
         foreach ($urls as $id => $urlData) {
             $url = $urlData['url'] ?? null;
             if (UrlValidator::isValid($url)) {
-                $categories = $this->extractCategories($urlData['categories'] ?? null, $categoriesMap);
-                $pageRank = $this->getPageRankWithNote($url, $categories);
+                $pageRank = $this->pageInfo->getPageRankWithNote($url, $urlData['categories'] ?? []);
                 $result[$id] = [
                     'rank' => $pageRank['rank'],
                     'info' => $pageRank['info'],
@@ -228,8 +229,10 @@ final class ApiController extends AbstractController
      */
     public function reassessmentBatch(Request $request): Response
     {
-        $data = json_decode($request->getContent(), true);
-        return new JsonResponse($this->pageInfoProvider->reassessment($data));
+        if (null === ($data = json_decode($request->getContent(), true))) {
+            return new Response(json_last_error_msg(), Response::HTTP_BAD_REQUEST);
+        }
+        return new JsonResponse($this->pageInfo->reassessment($data));
     }
 
     private function getData(array $user, ParameterBag $params): array
@@ -268,17 +271,17 @@ final class ApiController extends AbstractController
 
         $scoreTime = $user['human_score_time'] ?? 0;
         $eventTime = $params->get('event_time', time());
-        $expiryPeriod = (int)$_ENV['ADUSER_HUMAN_SCORE_EXPIRY_PERIOD'] * 2;
+        $expiryPeriod = $this->humanScoreExpiryPeriod * 2;
 
         if ($eventTime - $scoreTime <= $expiryPeriod) {
-            $humanScore = $user['human_score'];
+            $humanScore = (float)$user['human_score'];
         }
 
         if ($this->requestInfo->isCrawler($params)) {
-            $humanScore = 0;
+            $humanScore = 0.0;
         }
 
-        return (float)($humanScore ?? $_ENV['ADUSER_DEFAULT_HUMAN_SCORE']);
+        return $humanScore ?? $this->humanScoreDefault;
     }
 
     private function getPageRank(ParameterBag $params): array
@@ -290,32 +293,13 @@ final class ApiController extends AbstractController
         }
 
         return [
-            'rank' => (float)($pageRank[0] ?? $_ENV['ADUSER_DEFAULT_PAGE_RANK']),
-            'info' => $pageRank[1] ?? PageInfo::INFO_UNKNOWN,
-            'categories' => $pageRank[2] ?? [Taxonomy::SITE_UNKNOWN],
-            'quality' => $pageRank[3] ?? Taxonomy::SITE_UNKNOWN,
+            'rank' => (float)($pageRank['rank'] ?? $this->pageRankDefault),
+            'info' => $pageRank['info'] ?? PageInfo::INFO_UNKNOWN,
+            'categories' => $pageRank['categories'] ?? [PageInfo::INFO_UNKNOWN],
+            'quality' => $pageRank['quality'] ?? PageInfo::INFO_UNKNOWN,
         ];
     }
 
-    private function getPageRankWithNote(string $url, array $categories): array
-    {
-        $pageRank = $this->pageInfo->getPageRank($url, true);
-        if ($pageRank === null) {
-            $this->pageInfo->noteDomain($url, $categories);
-            $pageRank = [
-                0,
-                PageInfo::INFO_UNKNOWN,
-                $categories,
-            ];
-        }
-
-        return [
-            'rank' => (float)($pageRank[0] ?? 0),
-            'info' => $pageRank[1] ?? PageInfo::INFO_UNKNOWN,
-            'categories' => $pageRank[2] ?? [Taxonomy::SITE_UNKNOWN],
-            'quality' => $pageRank[3] ?? Taxonomy::SITE_UNKNOWN,
-        ];
-    }
 
     private function getUsers(string $adserverId, array $trackingIds): array
     {
@@ -350,7 +334,8 @@ final class ApiController extends AbstractController
                     'country' => (string)$row['country'],
                     'languages' => json_decode($row['languages'], true),
                     'human_score' => $row['human_score'] !== null ? (float)$row['human_score'] : null,
-                    'human_score_time' => $row['human_score_time'] !== null ? strtotime($row['human_score_time'])
+                    'human_score_time' => $row['human_score_time'] !== null
+                        ? strtotime($row['human_score_time'])
                         : null,
                 ];
             }
@@ -359,29 +344,5 @@ final class ApiController extends AbstractController
         }
 
         return $users;
-    }
-
-    private function extractCategories($categories, array $categoriesMap): array
-    {
-        if (!is_array($categories)) {
-            return [Taxonomy::SITE_UNKNOWN];
-        }
-
-        $extractedCategories = [];
-        foreach ($categories as $category) {
-            if (Taxonomy::SITE_UNKNOWN === $category) {
-                return [Taxonomy::SITE_UNKNOWN];
-            }
-
-            if (isset($categoriesMap[$category])) {
-                array_push($extractedCategories, ...$categoriesMap[$category]);
-            }
-        }
-
-        if (empty($extractedCategories)) {
-            return [Taxonomy::SITE_UNKNOWN];
-        }
-
-        return array_values(array_unique($extractedCategories));
     }
 }

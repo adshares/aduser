@@ -31,14 +31,9 @@ final class Gitoku implements PageInfoProviderInterface
         });
     }
 
-    public function getInfo(string $url): array
+    public function getInfo(string $url, array $categories = []): array
     {
-        return $this->request('/page-rank/' . urlencode($url));
-    }
-
-    public function getBatchInfo(int $limit = 1000, int $offset = 0): array
-    {
-        return $this->request('/page-ranks/?' . http_build_query(['limit' => $limit, 'offset' => $offset]));
+        return $this->request('/page-rank/' . urlencode($url) . '?' . http_build_query(['categories' => $categories]));
     }
 
     public function reassessment(array $data): array

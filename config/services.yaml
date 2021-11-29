@@ -28,18 +28,10 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    App\Command\ScanDomainsCommand:
-        arguments:
-            $googleCx: '%env(GOOGLE_SEARCH_CX)%'
-            $googleKey: '%env(GOOGLE_SEARCH_KEY)%'
-
-
-    #App\Controller\ApiController:
-    #TAXONOMY_NAME
-    #TAXONOMY_VERSION
-    #ADUSER_HUMAN_SCORE_EXPIRY_PERIOD
-    #ADUSER_DEFAULT_HUMAN_SCORE
-    #ADUSER_DEFAULT_PAGE_RANK
+    App\Controller\ApiController:
+        calls:
+            - setHumanScoreSettings: ['%env(ADUSER_DEFAULT_HUMAN_SCORE)%', '%env(ADUSER_HUMAN_SCORE_EXPIRY_PERIOD)%']
+            - setPageRankSettings: ['%env(ADUSER_DEFAULT_PAGE_RANK)%']
 
     App\Controller\InfoController:
         calls:

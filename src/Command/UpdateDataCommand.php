@@ -17,17 +17,12 @@ class UpdateDataCommand extends Command
     use LockableTrait;
 
     protected static $defaultName = 'ops:update';
-
-    /** @var Browscap */
-    private $browscap;
-
-    /** @var Connection */
-    private $connection;
+    private Browscap $browscap;
+    private Connection $connection;
 
     public function __construct(Browscap $browscap, Connection $connection)
     {
         parent::__construct();
-
         $this->browscap = $browscap;
         $this->connection = $connection;
     }
@@ -39,14 +34,13 @@ class UpdateDataCommand extends Command
         );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
         if (!$this->lock()) {
             $io->warning('The command is already running in another process.');
-
-            return 1;
+            return self::FAILURE;
         }
 
         $io->comment('Updating Browscap...');
@@ -56,8 +50,8 @@ class UpdateDataCommand extends Command
         } else {
             $io->error('Browscap updated with errors');
         }
-        $this->release();
 
-        return 0;
+        $this->release();
+        return self::SUCCESS;
     }
 }
