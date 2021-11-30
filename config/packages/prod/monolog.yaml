@@ -2,7 +2,7 @@ monolog:
     handlers:
         main:
             type: fingers_crossed
-            action_level: error
+            action_level: '%env(LOG_LEVEL)%'
             handler: nested
             excluded_404s:
                 # regex: exclude all 404 errors from the logs
@@ -10,7 +10,7 @@ monolog:
             buffer_size: 50 # How many messages should be saved? Prevent memory leaks
         nested:
             type: stream
-            path: php://stderr
+            path: '%env(LOG_FILE_PATH)%'
             level: debug
             formatter: monolog.formatter.json
         console:
