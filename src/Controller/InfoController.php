@@ -24,6 +24,14 @@ final class InfoController extends AbstractController
     }
 
     /**
+     * @Route("/", name="index")
+     */
+    public function index(): Response
+    {
+        return $this->redirectToRoute('info');
+    }
+
+    /**
      * @Route("/info.{_format}",
      *     name="info",
      *     methods={"GET"},
