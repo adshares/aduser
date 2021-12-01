@@ -1,5 +1,6 @@
 parameters:
     env(DB_PERSISTENT): 'false'
+    env(DB_HOST): ~
     env(DB_SOCKET): ~
     env(DB_USERNAME): ''
     env(DB_PASSWORD): ''
@@ -13,6 +14,7 @@ doctrine:
         charset: utf8mb4
         persistent: '%env(bool:DB_PERSISTENT)%'
         unix_socket: '%env(resolve:DB_SOCKET)%'
+        host: '%env(resolve:DB_HOST)%'
         user: '%env(resolve:DB_USERNAME)%'
         password: '%env(resolve:DB_PASSWORD)%'
         dbname: '%env(resolve:DB_DATABASE)%'

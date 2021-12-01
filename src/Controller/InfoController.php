@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Service\Gitoku;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,6 +22,14 @@ final class InfoController extends AbstractController
     {
         $this->aduserDomains = $aduserDomains;
         return $this;
+    }
+
+    /**
+     * @Route("/", name="index")
+     */
+    public function index(): Response
+    {
+        return $this->redirectToRoute('info');
     }
 
     /**
@@ -57,6 +66,17 @@ final class InfoController extends AbstractController
         return new Response(
             $request->getRequestFormat() === 'txt' ? self::formatTxt($info) : self::formatJson($info)
         );
+    }
+
+    /**
+     * @Route("/panel.html", name="panel")
+     */
+    public function panel(Request $request): Response
+    {
+        if (null !== $qs = $request->getQueryString()) {
+            $qs = '?' . $qs;
+        }
+        return $this->redirect(Gitoku::GITOKU_URL . $request->getPathInfo() . $qs);
     }
 
     private static function generateRandomString($length = 8): string
