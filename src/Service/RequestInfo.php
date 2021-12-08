@@ -11,6 +11,7 @@ use stdClass;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use App\Utils\Cache\ApcuCache;
 
 final class RequestInfo
 {
@@ -22,11 +23,11 @@ final class RequestInfo
 
     public function __construct(
         Browscap $browscap,
-        CacheInterface $cache,
+        ApcuCache $cache,
         LoggerInterface $logger
     ) {
         $this->browscap = $browscap;
-        $this->cache = $cache;
+        $this->cache = new ApcuCache();
         $this->logger = $logger;
     }
 
@@ -88,13 +89,13 @@ final class RequestInfo
         }
         try {
             $key = 'browscap_info_' . sha1($userAgent);
-            return $this->cache->get(
+            return $this->cache->getOrGenerate(
                 $key,
-                function (ItemInterface $item) use ($userAgent) {
-                    $item->expiresAfter(300);
+                function () use ($userAgent) {
                     $this->logger->debug(sprintf('Info cache MISS for %s', $userAgent));
                     return $this->browscap->getInfo($userAgent);
-                }
+                },
+                300
             );
         } catch (InvalidArgumentException $exception) {
             $this->logger->error($exception->getMessage());

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Utils\Cache\ApcuCache;
 use App\Utils\UrlNormalizer;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
@@ -22,7 +23,7 @@ final class PageInfo
 
     protected Connection $connection;
 
-    protected CacheInterface $cache;
+    protected ApcuCache $cache;
 
     protected LoggerInterface $logger;
 
@@ -34,7 +35,7 @@ final class PageInfo
     ) {
         $this->pageInfoProvider = $pageInfoProvider;
         $this->connection = $connection;
-        $this->cache = $cache;
+        $this->cache = new ApcuCache();;
         $this->logger = $logger;
     }
 
@@ -54,12 +55,16 @@ final class PageInfo
         $pageRank = $this->fetchPageRank($url, true);
         if (null === $pageRank) {
             $key = 'page_info_domain_' . md5($url);
-            $pageRank = $this->cache->get($key, function (ItemInterface $item) use ($url, $categories) {
-                $item->expiresAfter(300);
-                $info = $this->pageInfoProvider->getInfo($url, $categories);
-                $this->savePageRank($url, $info);
-                return $info;
-            });
+            $pageRank = $this->cache->getOrGenerate(
+                $key,
+                function () use ($url, $categories) {
+                    $info = $this->pageInfoProvider->getInfo($url, $categories);
+                    $this->savePageRank($url, $info);
+                    return $info;
+                },
+                300,
+                1
+            );
         }
         return $pageRank;
     }
@@ -144,26 +149,30 @@ final class PageInfo
     private function fetchPageRanks(): array
     {
         try {
-            return $this->cache->get('page_info_page_ranks', function (ItemInterface $item) {
-                $item->expiresAfter(300);
-                $ranks = [];
-                $query = '
+            return $this->cache->getOrGenerate(
+                'page_info_page_ranks',
+                function () {
+                    $ranks = [];
+                    $query = '
                     SELECT url, rank, info, categories, quality
                     FROM page_ranks
                     WHERE rank IS NOT NULL
                     ORDER BY updated_at DESC
                 ';
-                foreach ($this->connection->fetchAllAssociative($query) as $row) {
-                    $ranks[$row['url']] = [
-                        'url' => $row['url'],
-                        'rank' => max(-1.0, min(1.0, (float)$row['rank'])),
-                        'info' => $row['info'],
-                        'categories' => json_decode($row['categories'] ?? '[]'),
-                        'quality' => $row['quality']
-                    ];
-                }
-                return $ranks;
-            });
+                    foreach ($this->connection->fetchAllAssociative($query) as $row) {
+                        $ranks[$row['url']] = [
+                            'url'        => $row['url'],
+                            'rank'       => max(-1.0, min(1.0, (float)$row['rank'])),
+                            'info'       => $row['info'],
+                            'categories' => json_decode($row['categories'] ?? '[]'),
+                            'quality'    => $row['quality']
+                        ];
+                    }
+                    return $ranks;
+                },
+                300,
+                2
+            );
         } catch (InvalidArgumentException | DBALException $exception) {
             $this->logger->error($exception->getMessage());
             return [];
