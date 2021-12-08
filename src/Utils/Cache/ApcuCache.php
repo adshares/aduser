@@ -15,32 +15,32 @@ class ApcuCache
 
     public function add($key, $value, $ttl = 0): bool
     {
-        return apc_add($this->namespace . '.' . $key, $value, $ttl);
+        return apcu_add($this->namespace . ':' . $key, $value, $ttl);
     }
 
     public function put($key, $value, $ttl = 0)
     {
-        return apc_store($this->namespace . '.' . $key, ($value), $ttl);
+        return apcu_store($this->namespace . ':' . $key, ($value), $ttl);
     }
 
     public function delete($key)
     {
-        return apc_delete($this->namespace . '.' . $key);
+        return apcu_delete($this->namespace . ':' . $key);
     }
 
     public function get($key)
     {
-        return apc_fetch($this->namespace . '.' . $key);
+        return apcu_fetch($this->namespace . ':' . $key);
     }
 
     public function inc($key)
     {
-        return apc_inc($this->namespace . '.' . $key);
+        return apcu_inc($this->namespace . ':' . $key);
     }
 
     public function dec($key)
     {
-        apc_dec($this->namespace . '.' . $key);
+        apcu_dec($this->namespace . ':' . $key);
     }
 
     public function putWithVersion($key, $version, $value, $ttl = 0)
