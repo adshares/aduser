@@ -17,13 +17,13 @@ final class RequestInfo
 {
     protected Browscap $browscap;
 
-    protected CacheInterface $cache;
+    protected ApcuCache $cache;
 
     protected LoggerInterface $logger;
 
     public function __construct(
         Browscap $browscap,
-        ApcuCache $cache,
+        CacheInterface $cache,
         LoggerInterface $logger
     ) {
         $this->browscap = $browscap;

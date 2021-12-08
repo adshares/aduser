@@ -35,7 +35,7 @@ final class PageInfo
     ) {
         $this->pageInfoProvider = $pageInfoProvider;
         $this->connection = $connection;
-        $this->cache = new ApcuCache();;
+        $this->cache = new ApcuCache();
         $this->logger = $logger;
     }
 
