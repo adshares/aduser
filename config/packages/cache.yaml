@@ -16,7 +16,4 @@ framework:
 
         # Namespaced pools use the above "app" backend by default
         #pools:
-        #    cache.apc:
-        #        adapter: cache.adapter.apcu
-        #        default_lifetime: 60
-        #        public: true
+            #my.dedicated.cache: null

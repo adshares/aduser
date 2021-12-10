@@ -10,6 +10,7 @@
 
     <rule ref="PHPCompatibility"/>
     <rule ref="PSR12">
+        <exclude-pattern>/public/index.php</exclude-pattern>
         <exclude-pattern>/src/Kernel.php</exclude-pattern>
         <exclude-pattern>/tests/bootstrap.php</exclude-pattern>
     </rule>
@@ -17,6 +18,7 @@
         <properties>
             <property name="spacesCountAroundEqualsSign" value="0"/>
         </properties>
+        <exclude-pattern>/public/index.php</exclude-pattern>
         <exclude-pattern>/src/Kernel.php</exclude-pattern>
         <exclude-pattern>/tests/bootstrap.php</exclude-pattern>
     </rule>
