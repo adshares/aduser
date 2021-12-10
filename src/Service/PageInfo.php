@@ -7,12 +7,11 @@ namespace App\Service;
 use App\Utils\UrlNormalizer;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception as DBALException;
-use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Throwable;
 
 final class PageInfo
 {
@@ -72,19 +71,17 @@ final class PageInfo
         if ($hostExactMatch) {
             $host = UrlNormalizer::normalizeHost($url);
             if (array_key_exists($host, $ranks)) {
-                return $ranks[$host];
+                return $this->mapPageRank($host, $ranks[$host]);
             }
-
             return null;
         }
 
         foreach (UrlNormalizer::explodeUrl($url) as $part) {
             $key = ltrim($part, '//');
             if (array_key_exists($key, $ranks)) {
-                return $ranks[$key];
+                return $this->mapPageRank($key, $ranks[$key]);
             }
         }
-
         return null;
     }
 
@@ -121,8 +118,8 @@ final class PageInfo
             }
             $categories = json_encode($info['categories'] ?? []);
             $this->connection->executeStatement(
-                'INSERT INTO page_ranks(url, rank, info, categories, quality) VALUES(?, ?, ?, ?, ?)
-                     ON DUPLICATE KEY UPDATE rank = ?, info = ?, categories = ?, quality = ?',
+                'INSERT INTO page_ranks(url, `rank`, info, categories, quality) VALUES(?, ?, ?, ?, ?)
+                     ON DUPLICATE KEY UPDATE `rank` = ?, info = ?, categories = ?, quality = ?',
                 [
                     $domain,
                     $info['rank'],
@@ -136,9 +133,21 @@ final class PageInfo
                 ]
             );
             $this->cache->delete('page_info_page_ranks');
-        } catch (Exception $exception) {
+        } catch (InvalidArgumentException | Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
+    }
+
+    private function mapPageRank(string $url, array $pageRank): array
+    {
+        return [
+            'url' => $url,
+            'rank' => $pageRank[0],
+            'info' => $pageRank[1],
+            'categories' => $pageRank[2],
+            'quality' => $pageRank[3],
+            'updated_at' => $pageRank[4],
+        ];
     }
 
     private function fetchPageRanks(): array
@@ -148,23 +157,23 @@ final class PageInfo
                 $item->expiresAfter(300);
                 $ranks = [];
                 $query = '
-                    SELECT url, rank, info, categories, quality
+                    SELECT url, `rank`, info, categories, quality
                     FROM page_ranks
-                    WHERE rank IS NOT NULL
+                    WHERE `rank` IS NOT NULL
                     ORDER BY updated_at DESC
                 ';
                 foreach ($this->connection->fetchAllAssociative($query) as $row) {
                     $ranks[$row['url']] = [
-                        'url' => $row['url'],
-                        'rank' => max(-1.0, min(1.0, (float)$row['rank'])),
-                        'info' => $row['info'],
-                        'categories' => json_decode($row['categories'] ?? '[]'),
-                        'quality' => $row['quality']
+                        max(-1.0, min(1.0, (float)$row['rank'])),
+                        $row['info'],
+                        json_decode($row['categories'] ?? '[]'),
+                        $row['quality'],
+                        $row['updated_at']
                     ];
                 }
                 return $ranks;
             });
-        } catch (InvalidArgumentException | DBALException $exception) {
+        } catch (InvalidArgumentException | Throwable $exception) {
             $this->logger->error($exception->getMessage());
             return [];
         }
