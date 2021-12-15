@@ -39,13 +39,13 @@ final class ReCaptcha
             return null;
         }
 
-        return $this->router->generate(
+        return 'https:' . $this->router->generate(
             'pixel_recaptcha',
             [
                 'tracking' => bin2hex($trackingId),
                 'nonce' => IdGenerator::generateNonce(),
             ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            UrlGeneratorInterface::NETWORK_PATH
         );
     }
 

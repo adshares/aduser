@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.3] - 2021-12-15
+### Fixed
+- Forcing HTTPS
+
 ## [3.0.2] - 2021-12-10
 ### Changed
 - Upgrade to Symfony 5.4
@@ -35,7 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-01
 
 
-[Unreleased]: https://github.com/adshares/aduser/compare/v3.0.2..HEAD
+[Unreleased]: https://github.com/adshares/aduser/compare/v3.0.3..HEAD
+[3.0.3]: https://github.com/adshares/aduser/compare/v3.0.2...v3.0.3
 [3.0.2]: https://github.com/adshares/aduser/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/adshares/aduser/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/adshares/aduser/compare/v2.0.0...v3.0.0
