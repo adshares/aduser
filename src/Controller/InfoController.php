@@ -50,7 +50,7 @@ final class InfoController extends AbstractController
             'pixelUrl' => str_replace(
                 ['_:', ':_', $request->getHost()],
                 ['{', '}', $this->getRandomDomain($request)],
-                $this->generateUrl(
+                'https:' . $this->generateUrl(
                     'pixel_register',
                     [
                         'slug' => self::generateRandomString(),
@@ -58,7 +58,7 @@ final class InfoController extends AbstractController
                         'tracking' => '_:tracking:_',
                         'nonce' => '_:nonce:_',
                     ],
-                    UrlGeneratorInterface::ABSOLUTE_URL
+                    UrlGeneratorInterface::NETWORK_PATH
                 )
             ),
         ];

@@ -24,13 +24,13 @@ final class Fingerprint
 
     public function getPageUrl(string $trackingId): string
     {
-        return $this->router->generate(
+        return 'https:' . $this->router->generate(
             'pixel_fingerprint',
             [
                 'tracking' => bin2hex($trackingId),
                 'nonce' => IdGenerator::generateNonce(),
             ],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            UrlGeneratorInterface::NETWORK_PATH
         );
     }
 
