@@ -32,7 +32,6 @@ final class Browscap
     public function update(): bool
     {
         $this->logger->info('Clearing cache');
-        $this->cache->clear();
         $this->logger->info(sprintf('Updating Browscap cache with remote file %s', $this->iniFile));
         $browscap = new BrowscapUpdater($this->cache, $this->logger);
         try {

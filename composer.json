@@ -31,7 +31,7 @@
         "ext-curl": "*",
         "ext-iconv": "*",
         "ext-json": "*",
-        "browscap/browscap-php": "^5.0",
+        "browscap/browscap-php": "^6.0",
         "doctrine/doctrine-bundle": "^2.5",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "io-developer/php-whois": "^4.1",
@@ -61,7 +61,13 @@
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "symfony/flex": true,
+            "symfony/runtime": true
+        }
     },
     "autoload": {
         "psr-4": {
