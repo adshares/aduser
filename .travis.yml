@@ -30,6 +30,7 @@ install:
 
 script:
   - composer qa-check
+  - sonar-scanner
 
 addons:
   sonarcloud:
