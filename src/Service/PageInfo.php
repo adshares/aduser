@@ -157,7 +157,7 @@ final class PageInfo
                 $item->expiresAfter(300);
                 $ranks = [];
                 $query = '
-                    SELECT url, `rank`, info, categories, quality
+                    SELECT url, `rank`, info, categories, quality, updated_at
                     FROM page_ranks
                     WHERE `rank` IS NOT NULL
                     ORDER BY updated_at DESC
