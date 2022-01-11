@@ -1,15 +1,35 @@
+dist: bionic
 language: php
+sudo: false
+#services: mysql
+git:
+  depth: false
+php:
+  - 7.4
+cache:
+  directories:
+    - $HOME/.composer/cache/files
 
-install: composer install
-script: true
+env:
+  global:
+    - APP_ENV=testing
+    - APP_DEBUG=true
+#    - DB_HOST=127.0.0.1
+#    - DB_PORT=3306
+#    - DB_DATABASE=aduser_test
+#    - DB_USERNAME=travis
+#    - DB_PASSWORD=
 
-notifications:
-  email: false
-  slack:
-    rooms:
-      secure: "O7gaiki4jX++eADjMM/REPHPfCpgbQvmkcGPETsrQw8Pj8xNnNLE4OzOeoxIsNoZjLRMGnRVp600UrnJlEE1SqJkgjevyzJnCz0fc5SM66S8W3vpdgJofR5jm5E0Kk5omfxGehp38iiM9FtECRTuKd3zP9sk0pK07b1ROCWFxkAxxoU+7d49fiFwKz7ikPEXvyT6FhbZaSK6sRqk1WR5jrOBupZQUBbOXfGDkba3/Vq87gWe4VP22/lgdh+tpA1hZ+QJW2+IETjXxwiQ05E39vNWJXyi6pRL4qusJR+mH0yqTBY9CDVmd0B4m45gNo9FzaXMkxmdorIf7ypJw/WAe7NNQpL6QoiaKs9FS1y1L8sqYUD4FqCBz60U9ffsL2d/K0XJ/qGCxuPPcVUkoo8Qkmmyos6Gw4JCGHoY1AGQboXhDQX3PyVPNmG+S38BJ55bd1M0rJAuz68nIDkkX91/yuN30VV7QewSGn2ltZ12SKnS7xuGkMr8q6zEuet7114eBL2lN79RTIgCdoYB/NBKtdkmeCD8Sx+VPBych1slepvGkUQIplIg32FXA0gozNitQ0xTwx+Crb1OK/9Z9ypN1wsXeplKiUv4KkBYPaKNXAOdLr/1KVGoP64EIxP0Cq4be1ZEua3ZhtVPmHIk43h4tXH+IfFangU60XqoRDQSTis="
-    on_success: change
-    on_failure: always
+before_install:
+  - composer self-update
+
+install:
+  - composer install --no-interaction
+#  - mysql -e 'CREATE DATABASE IF NOT EXISTS aduser_test;'
+#  - bin/console doctrine:migrations:migrate --no-interaction
+
+script:
+  - composer qa-check
 
 addons:
   sonarcloud:
