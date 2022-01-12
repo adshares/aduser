@@ -18,8 +18,7 @@ It accepts requests from [AdServer](https://github.com/adshares/adserver) intern
 [![Quality Status](https://sonarcloud.io/api/project_badges/measure?project=adshares-aduser&metric=alert_status)](https://sonarcloud.io/dashboard?id=adshares-aduser)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=adshares-aduser&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=adshares-aduser)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=adshares-aduser&metric=security_rating)](https://sonarcloud.io/dashboard?id=adshares-aduser)
-[![Build Status](https://travis-ci.org/adshares/aduser.svg?branch=master)](https://travis-ci.org/adshares/aduser)
-
+[![Build Status](https://app.travis-ci.com/adshares/aduser.svg?branch=master)](https://app.travis-ci.com/github/adshares/aduser)
 
 ## Quick Start
 
