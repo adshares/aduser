@@ -1,10 +1,30 @@
 <?php
 
+/**
+ * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ *
+ * This file is part of AdUser
+ *
+ * AdUser is free software: you can redistribute and/or modify it
+ * under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AdUser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AdServer. If not, see <https://www.gnu.org/licenses/>
+ */
+
 declare(strict_types=1);
 
 namespace App\Command;
 
 use App\Service\Browscap;
+use App\Service\Cleaner;
 use App\Service\PageInfo;
 use DateTimeImmutable;
 use Symfony\Component\Console\Command\Command;
@@ -21,12 +41,17 @@ class UpdateDataCommand extends Command
     protected static $defaultName = 'ops:update';
     private PageInfo $pageInfo;
     private Browscap $browscap;
+    private Cleaner $cleaner;
 
-    public function __construct(PageInfo $pageInfo, Browscap $browscap)
-    {
+    public function __construct(
+        PageInfo $pageInfo,
+        Browscap $browscap,
+        Cleaner $cleaner
+    ) {
         parent::__construct();
         $this->pageInfo = $pageInfo;
         $this->browscap = $browscap;
+        $this->cleaner = $cleaner;
     }
 
     protected function configure()
@@ -65,6 +90,14 @@ class UpdateDataCommand extends Command
             $io->success('Browscap successfully updated!');
         } else {
             $io->error('Browscap updated with errors');
+        }
+
+        $io->comment('Clearing database...');
+
+        if ($this->cleaner->clearDatabase()) {
+            $io->success('database successfully cleared!');
+        } else {
+            $io->error('Database cleared with errors');
         }
 
         $this->release();
