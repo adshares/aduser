@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.5] - 2022-01-12
+### Added
+- Clearing database
+
 ## [3.0.4] - 2022-01-11
 ### Fixed
 - Minor issues
@@ -43,7 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-01
 
 
-[Unreleased]: https://github.com/adshares/aduser/compare/v3.0.4..HEAD
+[Unreleased]: https://github.com/adshares/aduser/compare/v3.0.5..HEAD
+[3.0.5]: https://github.com/adshares/aduser/compare/v3.0.4...v3.0.5
 [3.0.4]: https://github.com/adshares/aduser/compare/v3.0.3...v3.0.4
 [3.0.3]: https://github.com/adshares/aduser/compare/v3.0.2...v3.0.3
 [3.0.2]: https://github.com/adshares/aduser/compare/v3.0.1...v3.0.2
