@@ -1,9 +1,7 @@
 dist: bionic
 language: php
 sudo: false
-#services: mysql
-git:
-  depth: false
+services: mysql
 php:
   - 7.4.22
 cache:
@@ -12,24 +10,20 @@ cache:
 
 env:
   global:
-    - APP_ENV=testing
-    - APP_DEBUG=true
-#    - DB_HOST=127.0.0.1
-#    - DB_PORT=3306
-#    - DB_DATABASE=aduser_test
-#    - DB_USERNAME=travis
-#    - DB_PASSWORD=
+    - MIN_PHP=7.4
+    - DATABASE_URL=mysql://travis@127.0.0.1:3306/aduser_test
 
 before_install:
   - composer self-update
 
 install:
   - composer install --no-interaction
-#  - mysql -e 'CREATE DATABASE IF NOT EXISTS aduser_test;'
-#  - bin/console doctrine:migrations:migrate --no-interaction
+  - php bin/console doctrine:database:create --env=test
+  - php bin/console doctrine:migrations:migrate -n --env=test
 
 script:
   - composer qa-check
+  - composer test-ci
   - sonar-scanner
 
 addons:
