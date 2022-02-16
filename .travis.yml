@@ -11,7 +11,9 @@ cache:
 env:
   global:
     - MIN_PHP=7.4
-    - DATABASE_URL=mysql://travis@127.0.0.1:3306/aduser_test
+    - DB_DATABASE=aduser_test
+    - DB_USERNAME=travis
+    - DB_PASSWORD=
 
 before_install:
   - composer self-update
