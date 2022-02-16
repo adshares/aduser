@@ -1,5 +1,24 @@
 <?php
 
+/**
+ * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ *
+ * This file is part of AdUser
+ *
+ * AdUser is free software: you can redistribute and/or modify it
+ * under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AdUser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AdServer. If not, see <https://www.gnu.org/licenses/>
+ */
+
 declare(strict_types=1);
 
 namespace App\Service;
@@ -14,7 +33,8 @@ final class Gitoku implements PageInfoProviderInterface
     public const GITOKU_URL = 'https://gitoku.com';
 
     private HttpClientInterface $client;
-    protected CacheInterface $cache;
+    private CacheInterface $cache;
+    private int $apiVersion = 1;
 
     public function __construct(
         HttpClientInterface $client,
@@ -24,9 +44,15 @@ final class Gitoku implements PageInfoProviderInterface
         $this->cache = $cache;
     }
 
+    public function version(int $apiVersion): PageInfoProviderInterface
+    {
+        $this->apiVersion = $apiVersion;
+        return $this;
+    }
+
     public function getTaxonomy(): array
     {
-        return $this->cache->get('', function (ItemInterface $item) {
+        return $this->cache->get('gitoku_taxonomy_' . $this->apiVersion, function (ItemInterface $item) {
             $item->expiresAfter(60);
             return $this->request('/taxonomy');
         });
@@ -58,7 +84,7 @@ final class Gitoku implements PageInfoProviderInterface
     {
         $response = $this->client->request(
             $method,
-            self::GITOKU_URL . '/api/v1' . $path,
+            self::GITOKU_URL . '/api/v' . $this->apiVersion . $path,
             null !== $data ? ['json' => $data] : []
         );
         return $response->toArray();
