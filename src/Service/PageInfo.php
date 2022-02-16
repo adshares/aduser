@@ -1,5 +1,24 @@
 <?php
 
+/**
+ * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ *
+ * This file is part of AdUser
+ *
+ * AdUser is free software: you can redistribute and/or modify it
+ * under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AdUser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AdServer. If not, see <https://www.gnu.org/licenses/>
+ */
+
 declare(strict_types=1);
 
 namespace App\Service;
@@ -18,12 +37,10 @@ final class PageInfo
     public const INFO_UNKNOWN = 'unknown';
 
     private PageInfoProviderInterface $pageInfoProvider;
-
     protected Connection $connection;
-
     protected CacheInterface $cache;
-
     protected LoggerInterface $logger;
+    private int $apiVersion = 1;
 
     public function __construct(
         PageInfoProviderInterface $pageInfoProvider,
@@ -37,11 +54,17 @@ final class PageInfo
         $this->logger = $logger;
     }
 
+    public function version(int $apiVersion): PageInfo
+    {
+        $this->apiVersion = $apiVersion;
+        $this->pageInfoProvider->version($this->apiVersion);
+        return $this;
+    }
+
     public function getTaxonomy(): array
     {
         return $this->pageInfoProvider->getTaxonomy();
     }
-
 
     public function reassessment(array $data): array
     {

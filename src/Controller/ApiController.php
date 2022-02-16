@@ -1,5 +1,24 @@
 <?php
 
+/**
+ * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ *
+ * This file is part of AdUser
+ *
+ * AdUser is free software: you can redistribute and/or modify it
+ * under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AdUser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AdServer. If not, see <https://www.gnu.org/licenses/>
+ */
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -20,7 +39,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/api/v{version}", name="api_", requirements={"version": "1"})
+ * @Route("/api/v{apiVersion}", name="api_", requirements={"apiVersion": "1|2"})
  */
 final class ApiController extends AbstractController
 {
@@ -63,8 +82,9 @@ final class ApiController extends AbstractController
      *     methods={"GET"}
      * )
      */
-    public function taxonomy(): Response
+    public function taxonomy(int $apiVersion): Response
     {
+        $this->pageInfo->version($apiVersion);
         return new JsonResponse($this->pageInfo->getTaxonomy());
     }
 
@@ -78,8 +98,9 @@ final class ApiController extends AbstractController
      *     }
      * )
      */
-    public function data(string $adserver, string $tracking, Request $request): Response
+    public function data(int $apiVersion, string $adserver, string $tracking, Request $request): Response
     {
+        $this->pageInfo->version($apiVersion);
         $headers = [
             'Access-Control-Allow-Origin' => '*',
             'Access-Control-Allow-Headers' => '*',
@@ -111,8 +132,9 @@ final class ApiController extends AbstractController
      *     }
      * )
      */
-    public function batch(string $adserver, Request $request): Response
+    public function batch(int $apiVersion, string $adserver, Request $request): Response
     {
+        $this->pageInfo->version($apiVersion);
         $data = json_decode($request->getContent(), true);
 
         if ($data === null) {
@@ -155,8 +177,9 @@ final class ApiController extends AbstractController
      *     }
      * )
      */
-    public function pageRank(string $url, Request $request): Response
+    public function pageRank(int $apiVersion, string $url, Request $request): Response
     {
+        $this->pageInfo->version($apiVersion);
         $headers = [
             'Access-Control-Allow-Origin' => '*',
             'Access-Control-Allow-Headers' => '*',
@@ -188,8 +211,9 @@ final class ApiController extends AbstractController
      *     methods={"POST"}
      * )
      */
-    public function pageRankBatch(Request $request): Response
+    public function pageRankBatch(int $apiVersion, Request $request): Response
     {
+        $this->pageInfo->version($apiVersion);
         $data = json_decode($request->getContent(), true);
         if ($data === null) {
             return new Response(json_last_error_msg(), Response::HTTP_BAD_REQUEST);
@@ -227,8 +251,9 @@ final class ApiController extends AbstractController
      *     methods={"POST"}
      * )
      */
-    public function reassessmentBatch(Request $request): Response
+    public function reassessmentBatch(int $apiVersion, Request $request): Response
     {
+        $this->pageInfo->version($apiVersion);
         if (null === ($data = json_decode($request->getContent(), true))) {
             return new Response(json_last_error_msg(), Response::HTTP_BAD_REQUEST);
         }

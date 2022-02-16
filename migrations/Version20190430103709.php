@@ -1,5 +1,24 @@
 <?php
 
+/**
+ * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ *
+ * This file is part of AdUser
+ *
+ * AdUser is free software: you can redistribute and/or modify it
+ * under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AdUser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AdServer. If not, see <https://www.gnu.org/licenses/>
+ */
+
 declare(strict_types=1);
 
 namespace DoctrineMigrations;
@@ -44,7 +63,7 @@ final class Version20190430103709 extends AbstractMigration
         $this->addSql(
             'UPDATE tracking t
             LEFT JOIN (
-                SELECT tracking_id, IF(country = "T1", "t1", ip) as ip FROM location GROUP BY tracking_id
+                SELECT tracking_id, IF(country = "T1", "t1", ip) as ip FROM location GROUP BY 1, 2
             ) c ON c.tracking_id = t.tracking_id
             SET t.last_ip = c.ip
             WHERE c.ip IS NOT NULL
