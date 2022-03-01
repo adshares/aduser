@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.7] - 2022-03-01
+### Fixed
+- Fix the Apple OS key
+
 ## [3.0.6] - 2022-02-16
 ### Added
 - Support data provider versioning
@@ -51,7 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-01
 
 
-[Unreleased]: https://github.com/adshares/aduser/compare/v3.0.6..HEAD
+[Unreleased]: https://github.com/adshares/aduser/compare/v3.0.7..HEAD
+[3.0.7]: https://github.com/adshares/aduser/compare/v3.0.6...v3.0.7
 [3.0.6]: https://github.com/adshares/aduser/compare/v3.0.5...v3.0.6
 [3.0.5]: https://github.com/adshares/aduser/compare/v3.0.4...v3.0.5
 [3.0.4]: https://github.com/adshares/aduser/compare/v3.0.3...v3.0.4
