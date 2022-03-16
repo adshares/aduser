@@ -70,6 +70,10 @@ class Cookie3
 
     public function getTags(string $address): ?array
     {
+        if (empty($this->apiKey)) {
+            return null;
+        }
+
         try {
             return $this->cache->get('cookie3_tags_' . $address, function (ItemInterface $item) use ($address) {
                 $item->expiresAfter(self::CACHE_EXPIRY_PERIOD);
@@ -97,6 +101,10 @@ class Cookie3
      */
     public function updateTags(string $address, bool $quickFetch = true, ?int $id = null): ?array
     {
+        if (empty($this->apiKey)) {
+            return null;
+        }
+
         try {
             $result = $this->request('/analysis/' . $address, $quickFetch);
         } catch (TimeoutExceptionInterface $exception) {
