@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Service\Cookie3;
 use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
@@ -33,29 +34,28 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Throwable;
 
-class MergeUsersCommand extends Command
+class UpdateCooke3Command extends Command
 {
     use LockableTrait;
 
-    private const DEFAULT_INTERVAL = 5;
+    private const DEFAULT_EXPIRATION = 3;
 
     private const DEFAULT_LIMIT = 500;
 
-    protected static $defaultName = 'ops:users:merge';
+    protected static $defaultName = 'ops:cookie3:update';
+
+    private Cookie3 $cookie3;
 
     private Connection $connection;
 
     private LoggerInterface $logger;
 
-    private string $currentTime;
-
-    private array $hashCache = [];
-
-    public function __construct(Connection $connection, LoggerInterface $logger)
+    public function __construct(Cookie3 $cookie3, Connection $connection, LoggerInterface $logger)
     {
+        $this->cookie3 = $cookie3;
         $this->connection = $connection;
-        $this->currentTime = (new DateTime())->format('Y-m-d H:i:s');
         $this->logger = $logger;
 
         parent::__construct();
@@ -64,20 +64,20 @@ class MergeUsersCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Merge users by hashes')
-            ->setHelp('This command is used to merge non unique users (different tracking_id) by hash')
+            ->setDescription('Update users\' tags from Cookie3')
+            ->setHelp('This command allows you to update users\' tags from Cookie3 service')
             ->addOption(
-                'interval',
-                'i',
+                'expiration',
+                't',
                 InputOption::VALUE_OPTIONAL,
-                'This parameter tells how many minutes we want to look back to the database to fetch trackings',
-                self::DEFAULT_INTERVAL
+                'Wallet tags expiration time (days)',
+                self::DEFAULT_EXPIRATION
             )
             ->addOption(
                 'package-limit',
                 'l',
                 InputOption::VALUE_OPTIONAL,
-                'How many trackings we want to fetch in one sql query?',
+                'How many wallets we want to fetch in one sql query?',
                 self::DEFAULT_LIMIT
             );
     }
@@ -91,36 +91,46 @@ class MergeUsersCommand extends Command
             return self::FAILURE;
         }
 
-        $interval = (int)$input->getOption('interval');
+        $expiration = (int)$input->getOption('expiration');
         $limit = (int)$input->getOption('package-limit');
-        $offset = 0;
-        $mergedUsers = 0;
-        $date = (new DateTime(sprintf('-%s minutes', $interval)))->format('Y-m-d H:i:s');
 
-        $io->comment(sprintf('Started merging users from %s...', $date));
+        $fetchedWallets = 0;
+        $updatedWallets = 0;
+        $date = (new DateTime(sprintf('-%s days', $expiration)))->format('Y-m-d H:i:s');
 
-        $fetchQuery = <<<SQL
-            SELECT id, fingerprint, human_score, human_score_time FROM users
-            WHERE mapped_user_id IS NULL AND fingerprint is NOT NULL AND fingerprint_time > :created_at            
-            LIMIT %d OFFSET %d
-SQL;
+        $io->info(sprintf('Started updating wallets older than %s...', $date));
+
+        $query = sprintf(
+            'SELECT id, address FROM cookie3_wallets
+            WHERE id > :id AND status = %d OR (status = %d AND updated_at < visited_at AND updated_at <= :updated_at)
+            ORDER BY id ASC
+            LIMIT %d',
+            Cookie3::STATUS_PENDING,
+            Cookie3::STATUS_READY,
+            $limit
+        );
 
         try {
+            $lastId = 0;
             do {
-                $query = sprintf($fetchQuery, $limit, $offset);
-
-                $this->logger->debug(sprintf('Merging WITH LIMIT %d, OFFSET %d.', $limit, $offset));
-                $rows = $this->connection->fetchAllAssociative($query, ['created_at' => $date]);
-                $users = $this->findUsersToMerge($rows);
-
-                if ($users) {
-                    foreach ($users as $userId => $data) {
-                        $mergedUsers += count($data);
-                        $this->updateUserId($userId, $data);
+                $info = sprintf('Fetching %d wallets (already fetched: %d).', $limit, $fetchedWallets);
+                $this->logger->debug($info);
+                if ($io->isVerbose()) {
+                    $io->comment($info);
+                }
+                $rows = $this->connection->fetchAllAssociative($query, ['id' => $lastId, 'updated_at' => $date]);
+                $fetchedWallets += count($rows);
+                foreach ($rows as $row) {
+                    $lastId = (int)$row['id'];
+                    try {
+                        if (null !== $this->cookie3->updateTags($row['address'], false, (int)$row['id'])) {
+                            ++$updatedWallets;
+                        }
+                    } catch (Throwable $exception) {
+                        $io->error($exception->getMessage());
+                        $this->logger->error(sprintf('[Cookie3] %s', $exception->getMessage()));
                     }
                 }
-
-                $offset += $limit;
             } while (count($rows) === $limit);
         } catch (DBALException $exception) {
             $io->error($exception->getMessage());
@@ -128,10 +138,10 @@ SQL;
             return self::FAILURE;
         }
 
-        if ($mergedUsers === 0) {
-            $io->warning('No users to merge.');
+        if ($fetchedWallets === 0) {
+            $io->warning('No wallets to update.');
         } else {
-            $io->success(sprintf('Merged %d users.', $mergedUsers));
+            $io->success(sprintf('Updated %d from %d wallets.', $updatedWallets, $fetchedWallets));
         }
         $this->release();
 

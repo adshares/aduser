@@ -265,7 +265,11 @@ final class ApiController extends AbstractController
         $pageRank = $this->getPageRank($params);
 
         $keywords = [
-            'user' => array_filter(['language' => $user['languages'] ?? null, 'country' => $user['country'] ?? null]),
+            'user' => array_filter([
+                'language' => $user['languages'] ?? null,
+                'country' => $user['country'] ?? null,
+                'cookie3-tag' => $this->requestInfo->getCookie3Tags($params),
+            ]),
             'device' => $this->requestInfo->getDeviceKeywords($params),
             'site' => $this->requestInfo->getSiteKeywords($params),
         ];
@@ -324,7 +328,6 @@ final class ApiController extends AbstractController
             'quality' => $pageRank['quality'] ?? PageInfo::INFO_UNKNOWN,
         ];
     }
-
 
     private function getUsers(string $adserverId, array $trackingIds): array
     {

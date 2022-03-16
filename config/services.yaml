@@ -53,6 +53,11 @@ services:
         arguments:
             $defaultInterval: '%env(CLEANER_DEFAULT_INTERVAL)%'
 
+    App\Service\Cookie3:
+        arguments:
+            $apiUrl: '%env(COOKIE3_API_URL)%'
+            $apiKey: '%env(COOKIE3_API_KEY)%'
+
     App\Service\ReCaptcha:
         arguments:
             $siteKey: '%env(RECAPTCHA_SITE_KEY)%'

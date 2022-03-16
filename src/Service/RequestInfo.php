@@ -1,5 +1,24 @@
 <?php
 
+/**
+ * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ *
+ * This file is part of AdUser
+ *
+ * AdUser is free software: you can redistribute and/or modify it
+ * under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AdUser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AdServer. If not, see <https://www.gnu.org/licenses/>
+ */
+
 declare(strict_types=1);
 
 namespace App\Service;
@@ -14,18 +33,19 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 final class RequestInfo
 {
-    protected Browscap $browscap;
-
-    protected CacheInterface $cache;
-
-    protected LoggerInterface $logger;
+    private Browscap $browscap;
+    private Cookie3 $cookie3;
+    private CacheInterface $cache;
+    private LoggerInterface $logger;
 
     public function __construct(
         Browscap $browscap,
+        Cookie3 $cookie3,
         CacheInterface $cache,
         LoggerInterface $logger
     ) {
         $this->browscap = $browscap;
+        $this->cookie3 = $cookie3;
         $this->cache = $cache;
         $this->logger = $logger;
     }
@@ -71,10 +91,19 @@ final class RequestInfo
         return $keywords;
     }
 
+    public function getCookie3Tags(ParameterBag $params): array
+    {
+        $account = $params->get('account');
+        if (empty($account) || !preg_match('/^0x[0-9a-f]{40}$/i', $account)) {
+            $this->logger->debug('Cannot find account', $params->all());
+            return [];
+        }
+        return $this->cookie3->getTags($account) ?? [];
+    }
+
     public function isCrawler(ParameterBag $params): bool
     {
         $info = $this->getInfo($params);
-
         return (bool)($info->crawler ?? false);
     }
 
