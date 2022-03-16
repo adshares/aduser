@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Cookie3 support
 
+
 ## [3.0.7] - 2022-03-01
 ### Fixed
 - Fix the Apple OS key
