@@ -91,7 +91,7 @@ class Cookie3
                 return $this->updateTags($address);
             });
         } catch (Throwable $exception) {
-            $this->logger->error(sprintf('[Cookie3] %s', $exception->getMessage()));
+            $this->logger->error($exception->getMessage());
             return null;
         }
     }
@@ -108,10 +108,10 @@ class Cookie3
         try {
             $result = $this->request('/analysis/' . $address, $quickFetch);
         } catch (TimeoutExceptionInterface $exception) {
-            $this->logger->warning(sprintf('[Cookie3] %s', $exception->getMessage()));
+            $this->logger->warning($exception->getMessage());
             $result = ['processing_status' => ['code' => self::STATUS_PENDING]];
         } catch (ExceptionInterface $exception) {
-            $this->logger->error(sprintf('[Cookie3] %s', $exception->getMessage()));
+            $this->logger->error($exception->getMessage());
         }
 
         $status = $result['processing_status']['code'] ?? self::STATUS_UNAVAILABLE;

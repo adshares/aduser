@@ -128,7 +128,7 @@ class UpdateCooke3Command extends Command
                         }
                     } catch (Throwable $exception) {
                         $io->error($exception->getMessage());
-                        $this->logger->error(sprintf('[Cookie3] %s', $exception->getMessage()));
+                        $this->logger->error($exception->getMessage());
                     }
                 }
             } while (count($rows) === $limit);

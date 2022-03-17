@@ -36,6 +36,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -191,7 +192,7 @@ final class ApiController extends AbstractController
         }
 
         if (!UrlValidator::isValid($url)) {
-            return new Response('Invalid URL', Response::HTTP_UNPROCESSABLE_ENTITY, $headers);
+            throw new UnprocessableEntityHttpException('Invalid URL');
         }
         $pageRank = $this->pageInfo->getPageRank($url, $request->get('categories', []));
 
@@ -216,14 +217,14 @@ final class ApiController extends AbstractController
         $this->pageInfo->version($apiVersion);
         $data = json_decode($request->getContent(), true);
         if ($data === null) {
-            return new Response(json_last_error_msg(), Response::HTTP_BAD_REQUEST);
+            throw new BadRequestHttpException(json_last_error_msg());
         }
         if (!isset($data['urls'])) {
-            return new Response('Field `urls` is required', Response::HTTP_BAD_REQUEST);
+            throw new BadRequestHttpException('Field `urls` is required');
         }
         $urls = $data['urls'];
         if (!is_array($urls)) {
-            return new Response('Field `urls` must be an array', Response::HTTP_BAD_REQUEST);
+            throw new BadRequestHttpException('Field `urls` must be an array');
         }
 
         $result = [];
@@ -255,7 +256,7 @@ final class ApiController extends AbstractController
     {
         $this->pageInfo->version($apiVersion);
         if (null === ($data = json_decode($request->getContent(), true))) {
-            return new Response(json_last_error_msg(), Response::HTTP_BAD_REQUEST);
+            throw new BadRequestHttpException(json_last_error_msg());
         }
         return new JsonResponse($this->pageInfo->reassessment($data));
     }
