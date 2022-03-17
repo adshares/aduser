@@ -93,10 +93,7 @@ final class PageInfo
 
         if ($hostExactMatch) {
             $host = UrlNormalizer::normalizeHost($url);
-            if (array_key_exists($host, $ranks)) {
-                return $this->mapPageRank($host, $ranks[$host]);
-            }
-            return null;
+            return array_key_exists($host, $ranks) ? $this->mapPageRank($host, $ranks[$host]) : null;
         }
 
         foreach (UrlNormalizer::explodeUrl($url) as $part) {
