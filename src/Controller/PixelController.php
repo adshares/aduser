@@ -86,7 +86,7 @@ final class PixelController extends AbstractController
     /**
      * @Route("/{slug}/{adserver}/{tracking}/{nonce}.{_format}",
      *     name="pixel_register",
-     *     methods={"GET"},
+     *     methods={"GET", "OPTIONS"},
      *     defaults={"_format": "html"},
      *     requirements={
      *         "slug": "[a-zA-Z0-9_:.-]{8}",
@@ -111,7 +111,18 @@ final class PixelController extends AbstractController
         $response = $this->getRegisterResponse($user);
 
         if ($request->headers->has('Origin')) {
+            if ('OPTIONS' === $request->getRealMethod()) {
+                $response = new Response();
+            }
             $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('Origin'));
+            $response->headers->set('Access-Control-Allow-Headers', '*');
+            $response->headers->set('Access-Control-Allow-Credentials', 'true');
+            $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+            if ('OPTIONS' === $request->getRealMethod()) {
+                $response->setStatusCode(Response::HTTP_NO_CONTENT);
+                $response->headers->set('Access-Control-Max-Age', 1728000);
+                return $response;
+            }
         }
 
         return $this->prepareResponse($user['tracking_id'], $response);
