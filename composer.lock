@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "de3851b8370fa137bf25c4c148042219",
+    "content-hash": "52333be52998666b52471fb2f3bd570f",
     "packages": [
         {
             "name": "browscap/browscap-php",
@@ -8009,7 +8009,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.4",
+        "php": "^7.4|^8.1",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-iconv": "*",
