@@ -104,7 +104,7 @@
             "phpcs -s"
         ],
         "test": "phpunit",
-        "test-coverage": "XDEBUG_MODE=coverage phpunit --coverage-text",
+        "test-coverage": "@php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text",
         "test-ci": "@test-coverage --coverage-clover ./var/phpunit/coverage.xml --log-junit ./var/phpunit/logfile.xml",
         "dev": [
             "Composer\\Config::disableProcessTimeout",
