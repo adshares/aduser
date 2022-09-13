@@ -9,7 +9,7 @@
     ·
     <a href="https://github.com/adshares/aduser/issues/new?template=feature_request.md&labels=New%20Feature">Request feature</a>
     ·
-    <a href="https://github.com/adshares/aduser/wiki">Wiki</a>
+    <a href="https://docs.adshares.net/protocol/">Docs</a>
 </p>
 
 AdUser is a back-end service for determining impression context.
