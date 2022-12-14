@@ -65,8 +65,11 @@ final class ApiController extends AbstractController
         $this->logger = $logger;
     }
 
-    public function setHumanScoreSettings(float $humanScoreDefault, int $humanScoreExpiryPeriod, float $humanScoreNoFingerprint): self
-    {
+    public function setHumanScoreSettings(
+        float $humanScoreDefault,
+        int $humanScoreExpiryPeriod,
+        float $humanScoreNoFingerprint
+    ): self {
         $this->humanScoreDefault = $humanScoreDefault;
         $this->humanScoreExpiryPeriod = $humanScoreExpiryPeriod;
         $this->humanScoreNoFingerprint = $humanScoreNoFingerprint;
