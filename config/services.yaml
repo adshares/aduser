@@ -32,7 +32,7 @@ services:
 
     App\Controller\ApiController:
         calls:
-            - setHumanScoreSettings: ['%env(ADUSER_DEFAULT_HUMAN_SCORE)%', '%env(ADUSER_HUMAN_SCORE_EXPIRY_PERIOD)%']
+            - setHumanScoreSettings: ['%env(ADUSER_DEFAULT_HUMAN_SCORE)%', '%env(ADUSER_HUMAN_SCORE_EXPIRY_PERIOD)%', '%env(ADUSER_NO_FINGERPRINT_HUMAN_SCORE)%']
             - setPageRankSettings: ['%env(ADUSER_DEFAULT_PAGE_RANK)%']
 
     App\Controller\InfoController:
