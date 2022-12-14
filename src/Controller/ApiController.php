@@ -50,6 +50,7 @@ final class ApiController extends AbstractController
     private LoggerInterface $logger;
     private float $humanScoreDefault = 0.48;
     private int $humanScoreExpiryPeriod = 3600;
+    private float $humanScoreNoFingerprint = 0.41;
     private float $pageRankDefault = 0.0;
 
     public function __construct(
@@ -64,10 +65,14 @@ final class ApiController extends AbstractController
         $this->logger = $logger;
     }
 
-    public function setHumanScoreSettings(float $humanScoreDefault, int $humanScoreExpiryPeriod): self
-    {
+    public function setHumanScoreSettings(
+        float $humanScoreDefault,
+        int $humanScoreExpiryPeriod,
+        float $humanScoreNoFingerprint
+    ): self {
         $this->humanScoreDefault = $humanScoreDefault;
         $this->humanScoreExpiryPeriod = $humanScoreExpiryPeriod;
+        $this->humanScoreNoFingerprint = $humanScoreNoFingerprint;
         return $this;
     }
 
@@ -307,6 +312,10 @@ final class ApiController extends AbstractController
             $humanScore = (float)$user['human_score'];
         }
 
+        if (empty($user['fingerprint'] ?? null)) {
+            $humanScore = min($humanScore ?? 1, $this->humanScoreNoFingerprint);
+        }
+
         if ($this->requestInfo->isCrawler($params)) {
             $humanScore = 0.0;
         }
@@ -343,7 +352,8 @@ final class ApiController extends AbstractController
                         u.country,
                         u.languages,
                         u.human_score,
-                        u.human_score_time
+                        u.human_score_time,
+                        u.fingerprint
                       FROM adserver_register r
                       JOIN users u ON u.id = r.user_id
                       WHERE r.adserver_id = ? AND r.tracking_id IN (?)',
@@ -366,6 +376,7 @@ final class ApiController extends AbstractController
                     'human_score_time' => $row['human_score_time'] !== null
                         ? strtotime($row['human_score_time'])
                         : null,
+                    'fingerprint' => $row['fingerprint']
                 ];
             }
         } catch (DBALException $e) {

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.2] - 2022-12-14
+### Changed
+- Max human score without fingerprint
+
 ## [3.2.1] - 2022-08-03
 ### Changed
 - Default human score
@@ -71,7 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-01
 
 
-[Unreleased]: https://github.com/adshares/aduser/compare/v3.2.1..HEAD
+[Unreleased]: https://github.com/adshares/aduser/compare/v3.2.2..HEAD
+[3.2.2]: https://github.com/adshares/aduser/compare/v3.2.1...v3.2.2
 [3.2.1]: https://github.com/adshares/aduser/compare/v3.2.0...v3.2.1
 [3.2.0]: https://github.com/adshares/aduser/compare/v3.1.1...v3.2.0
 [3.1.1]: https://github.com/adshares/aduser/compare/v3.1.0...v3.1.1
