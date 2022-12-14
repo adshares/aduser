@@ -44,13 +44,13 @@ final class Fingerprint
     public function getPageUrl(string $trackingId): string
     {
         return 'https:' . $this->router->generate(
-            'pixel_fingerprint',
-            [
-                'tracking' => bin2hex($trackingId),
-                'nonce' => IdGenerator::generateNonce(),
-            ],
-            UrlGeneratorInterface::NETWORK_PATH
-        );
+                'pixel_fingerprint',
+                [
+                    'tracking' => bin2hex($trackingId),
+                    'nonce' => IdGenerator::generateNonce(),
+                ],
+                UrlGeneratorInterface::NETWORK_PATH
+            );
     }
 
     public function getRegisterCode(): string
@@ -67,14 +67,24 @@ SCRIPT;
 
     public function getHash(string $trackingId, Request $request): ?string
     {
-        $country = $request->headers->get('cf-ipcountry', 'n/a');
-        $ip = mb_strtolower($country) === 't1' ? $country : $request->getClientIp();
         $visitorId = $request->get('visitorId');
         if (empty($visitorId)) {
             $this->logger->debug(sprintf('No fingerprint data for %s', bin2hex($trackingId)));
             return null;
         }
-        $hash = md5(sprintf('%s/%s', $visitorId, $ip), true);
+
+        $country = $request->headers->get('cf-ipcountry', 'n/a');
+        $ip = mb_strtolower($country) === 't1' ? $country : $request->getClientIp();
+
+        $data = [
+            $visitorId,
+            $ip,
+            $request->headers->get('user-agent'),
+            $request->headers->get('accept-encoding'),
+            $request->headers->get('accept-language')
+        ];
+
+        $hash = md5(implode('/', $data), true);
         $this->logger->debug(
             sprintf('Fingerprint for %s: %s', bin2hex($trackingId), bin2hex($hash)),
             $request->request->all()
