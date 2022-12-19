@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.2.2] - 2022-12-14
 ### Changed
 - Max human score without fingerprint
+- Update fingerprint library
 
 ## [3.2.1] - 2022-08-03
 ### Changed

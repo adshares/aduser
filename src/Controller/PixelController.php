@@ -48,7 +48,7 @@ final class PixelController extends AbstractController
     private ?string $cookieName = '__au';
     private int $cookieExpiryPeriod = 31536000;
     private int $humanScoreExpiryPeriod = 3600;
-    private int $fingerprintExpiryPeriod = 3600;
+    private int $fingerprintExpiryPeriod = 24 * 3600;
 
     public function __construct(
         IdGenerator $idGenerator,
@@ -151,7 +151,7 @@ final class PixelController extends AbstractController
     }
 
     /**
-     * @Route("/fg/{tracking}/{nonce}.html",
+     * @Route("/fp/{tracking}/{nonce}.html",
      *     name="pixel_fingerprint",
      *     methods={"GET","POST"},
      *     requirements={
