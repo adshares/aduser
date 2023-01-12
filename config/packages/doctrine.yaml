@@ -23,3 +23,18 @@ doctrine:
             collate: utf8mb4_unicode_ci
         options:
           !php/const PDO::ATTR_PERSISTENT: '%env(bool:DB_PERSISTENT)%'
+
+when@test:
+  doctrine:
+    dbal:
+      # "TEST_TOKEN" is typically set by ParaTest
+      dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+
+when@prod:
+  framework:
+    cache:
+      pools:
+        doctrine.result_cache_pool:
+          adapter: cache.app
+        doctrine.system_cache_pool:
+          adapter: cache.system
