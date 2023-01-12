@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ * Copyright (c) 2018-2023 Adshares sp. z o.o.
  *
  * This file is part of AdUser
  *
@@ -39,9 +39,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/api/v{apiVersion}", name="api_", requirements={"apiVersion": "1|2"})
- */
+#[Route('/api/v{apiVersion}', name: 'api_', requirements: ['apiVersion' => '1|2'])]
 final class ApiController extends AbstractController
 {
     private PageInfo $pageInfo;
@@ -82,28 +80,22 @@ final class ApiController extends AbstractController
         return $this;
     }
 
-    /**
-     * @Route("/taxonomy",
-     *     name="taxonomy",
-     *     methods={"GET"}
-     * )
-     */
+    #[Route('/taxonomy', name: 'taxonomy', methods: ['GET'])]
     public function taxonomy(int $apiVersion): Response
     {
         $this->pageInfo->version($apiVersion);
         return new JsonResponse($this->pageInfo->getTaxonomy());
     }
 
-    /**
-     * @Route("/data/{adserver}/{tracking}",
-     *     name="data",
-     *     methods={"GET", "POST", "OPTIONS"},
-     *     requirements={
-     *         "adserver": "[a-zA-Z0-9_:.-]+",
-     *         "tracking": "[a-zA-Z0-9_:.-]+"
-     *     }
-     * )
-     */
+    #[Route(
+        '/data/{adserver}/{tracking}',
+        name: 'data',
+        requirements: [
+            'adserver' => '[a-zA-Z0-9_:.-]+',
+            'tracking' => '[a-zA-Z0-9_:.-]+',
+        ],
+        methods: ['GET', 'POST', 'OPTIONS'],
+    )]
     public function data(int $apiVersion, string $adserver, string $tracking, Request $request): Response
     {
         $this->pageInfo->version($apiVersion);
@@ -129,15 +121,12 @@ final class ApiController extends AbstractController
         return new JsonResponse($data, Response::HTTP_OK, $headers);
     }
 
-    /**
-     * @Route("/data/{adserver}",
-     *     name="data_batch",
-     *     methods={"POST"},
-     *     requirements={
-     *         "adserver": "[a-zA-Z0-9_:.-]+"
-     *     }
-     * )
-     */
+    #[Route(
+        '/data/{adserver}',
+        name: 'data_batch',
+        requirements: ['adserver' => '[a-zA-Z0-9_:.-]+'],
+        methods: ['POST'],
+    )]
     public function batch(int $apiVersion, string $adserver, Request $request): Response
     {
         $this->pageInfo->version($apiVersion);
@@ -174,15 +163,7 @@ final class ApiController extends AbstractController
         return new JsonResponse($response);
     }
 
-    /**
-     * @Route("/page-rank/{url}",
-     *     name="page_rank",
-     *     methods={"GET", "OPTIONS"},
-     *     requirements={
-     *         "url": ".+"
-     *     }
-     * )
-     */
+    #[Route('/page-rank/{url}', name: 'page_rank', requirements: ['url' => '.+'], methods: ['GET', 'OPTIONS'])]
     public function pageRank(int $apiVersion, string $url, Request $request): Response
     {
         $this->pageInfo->version($apiVersion);
@@ -211,12 +192,7 @@ final class ApiController extends AbstractController
         return new JsonResponse($response, Response::HTTP_OK, $headers);
     }
 
-    /**
-     * @Route("/page-rank",
-     *     name="page_rank_batch",
-     *     methods={"POST"}
-     * )
-     */
+    #[Route('/page-rank', name: 'page_rank_batch', methods: ['POST'])]
     public function pageRankBatch(int $apiVersion, Request $request): Response
     {
         $this->pageInfo->version($apiVersion);
@@ -251,12 +227,7 @@ final class ApiController extends AbstractController
         return new JsonResponse($result);
     }
 
-    /**
-     * @Route("/reassessment",
-     *     name="reassessment_batch",
-     *     methods={"POST"}
-     * )
-     */
+    #[Route('/reassessment', name: 'reassessment_batch', methods: ['POST'])]
     public function reassessmentBatch(int $apiVersion, Request $request): Response
     {
         $this->pageInfo->version($apiVersion);
