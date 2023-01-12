@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.2.3] - 2023-01-12
 ### Fixed
 - Invalidate cache during bulk update
 
@@ -78,7 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-01
 
 
-[Unreleased]: https://github.com/adshares/aduser/compare/v3.2.2..HEAD
+[Unreleased]: https://github.com/adshares/aduser/compare/v3.2.3..HEAD
+[3.2.3]: https://github.com/adshares/aduser/compare/v3.2.2...v3.2.3
 [3.2.2]: https://github.com/adshares/aduser/compare/v3.2.1...v3.2.2
 [3.2.1]: https://github.com/adshares/aduser/compare/v3.2.0...v3.2.1
 [3.2.0]: https://github.com/adshares/aduser/compare/v3.1.1...v3.2.0
