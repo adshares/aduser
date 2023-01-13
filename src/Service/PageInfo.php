@@ -114,16 +114,17 @@ final class PageInfo
         do {
             $list = $this->pageInfoProvider->getBatchInfo($limit, $offset, $changedAfter)['page_ranks'];
             foreach ($list as $info) {
-                $this->savePageRank($info['url'], $info);
+                $this->savePageRank($info['url'], $info, false);
             }
             $offset += $limit;
         } while (count($list) === $limit);
+        $this->invalidateCache();
 
         $this->logger->info('Updating pages info finished');
         return true;
     }
 
-    private function savePageRank(string $url, array $info): void
+    private function savePageRank(string $url, array $info, bool $invalidateCache = true): void
     {
         try {
             $domain = UrlNormalizer::normalizeHost($url);
@@ -152,8 +153,10 @@ final class PageInfo
                     $info['quality'] ?? self::INFO_UNKNOWN,
                 ]
             );
-            $this->cache->delete('page_info_page_ranks');
-        } catch (InvalidArgumentException | Throwable $exception) {
+            if ($invalidateCache) {
+                $this->invalidateCache();
+            }
+        } catch (Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
     }
@@ -168,6 +171,15 @@ final class PageInfo
             'quality' => $pageRank[3],
             'updated_at' => $pageRank[4],
         ];
+    }
+
+    private function invalidateCache(): void
+    {
+        try {
+            $this->cache->delete('page_info_page_ranks');
+        } catch (InvalidArgumentException $exception) {
+            $this->logger->error($exception->getMessage());
+        }
     }
 
     private function fetchPageRanks(): array
@@ -193,7 +205,7 @@ final class PageInfo
                 }
                 return $ranks;
             });
-        } catch (InvalidArgumentException | Throwable $exception) {
+        } catch (Throwable $exception) {
             $this->logger->error($exception->getMessage());
             return [];
         }
