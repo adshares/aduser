@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ * Copyright (c) 2018-2023 Adshares sp. z o.o.
  *
  * This file is part of AdUser
  *
@@ -83,20 +83,19 @@ final class PixelController extends AbstractController
         return $this;
     }
 
-    /**
-     * @Route("/{slug}/{adserver}/{tracking}/{nonce}.{_format}",
-     *     name="pixel_register",
-     *     methods={"GET", "OPTIONS"},
-     *     defaults={"_format": "html"},
-     *     requirements={
-     *         "slug": "[a-zA-Z0-9_:.-]{8}",
-     *         "adserver": "[a-zA-Z0-9_:.-]+",
-     *         "tracking": "[a-zA-Z0-9_:.-]+",
-     *         "nonce": "[a-zA-Z0-9_:.-]+",
-     *         "_format": "html|htm"
-     *     }
-     * )
-     */
+    #[Route(
+        '/{slug}/{adserver}/{tracking}/{nonce}.{_format}',
+        name: 'pixel_register',
+        requirements: [
+            'slug' => '[a-zA-Z0-9_:.-]{8}',
+            'adserver' => '[a-zA-Z0-9_:.-]+',
+            'tracking' => '[a-zA-Z0-9_:.-]+',
+            'nonce' => '[a-zA-Z0-9_:.-]+',
+            '_format' => 'html|htm',
+        ],
+        defaults: ['_format' => 'html'],
+        methods: ['GET', 'OPTIONS'],
+    )]
     public function register(string $adserver, string $tracking, Request $request): Response
     {
         $cookieTrackingId = $this->getTrackingCookie($request);
@@ -120,7 +119,7 @@ final class PixelController extends AbstractController
             $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
             if ('OPTIONS' === $request->getRealMethod()) {
                 $response->setStatusCode(Response::HTTP_NO_CONTENT);
-                $response->headers->set('Access-Control-Max-Age', 1728000);
+                $response->headers->set('Access-Control-Max-Age', '1728000');
                 return $response;
             }
         }
@@ -128,16 +127,14 @@ final class PixelController extends AbstractController
         return $this->prepareResponse($user['tracking_id'], $response);
     }
 
-    /**
-     * @Route("/re/{tracking}/{nonce}.html",
-     *     name="pixel_recaptcha",
-     *     methods={"GET","POST"},
-     *     requirements={
-     *         "tracking": "[0-9a-f]+",
-     *         "nonce": "[0-9a-f]+"
-     *     }
-     * )
-     */
+    #[Route(
+        '/re/{tracking}/{nonce}.html',
+        name: 'pixel_recaptcha',
+        requirements: [
+            'tracking' => '[0-9a-f]+',
+            'nonce' => '[0-9a-f]+',
+        ],
+    )]
     public function recaptchaRegister(string $tracking, Request $request): ?Response
     {
         $trackingId = hex2bin($tracking);
@@ -150,16 +147,14 @@ final class PixelController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Route("/fp/{tracking}/{nonce}.html",
-     *     name="pixel_fingerprint",
-     *     methods={"GET","POST"},
-     *     requirements={
-     *         "tracking": "[0-9a-f]+",
-     *         "nonce": "[0-9a-f]+"
-     *     }
-     * )
-     */
+    #[Route(
+        '/fp/{tracking}/{nonce}.html',
+        name: 'pixel_fingerprint',
+        requirements: [
+            'tracking' => '[0-9a-f]+',
+            'nonce' => '[0-9a-f]+',
+        ],
+    )]
     public function fingerprintRegister($tracking, Request $request): Response
     {
         $trackingId = hex2bin($tracking);
