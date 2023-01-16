@@ -1,5 +1,24 @@
 <?php
 
+/**
+ * Copyright (c) 2018-2023 Adshares sp. z o.o.
+ *
+ * This file is part of AdUser
+ *
+ * AdUser is free software: you can redistribute and/or modify it
+ * under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AdUser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AdServer. If not, see <https://www.gnu.org/licenses/>
+ */
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -24,22 +43,19 @@ final class InfoController extends AbstractController
         return $this;
     }
 
-    /**
-     * @Route("/", name="index")
-     */
+    #[Route('/', name: 'index')]
     public function index(): Response
     {
         return $this->redirectToRoute('info');
     }
 
-    /**
-     * @Route("/info.{_format}",
-     *     name="info",
-     *     methods={"GET"},
-     *     defaults={"_format": "json"},
-     *     requirements={"_format": "json|txt"}
-     * )
-     */
+    #[Route(
+        '/info.{_format}',
+        name: 'info',
+        requirements: ['_format' => 'json|txt'],
+        defaults: ['_format' => 'json'],
+        methods: ['GET'],
+    )]
     public function info(string $appName, string $appVersion, Request $request): Response
     {
         srand(crc32($request->getClientIp() . date('-d-m-Y-h')));
@@ -68,9 +84,7 @@ final class InfoController extends AbstractController
         );
     }
 
-    /**
-     * @Route("/panel.html", name="panel")
-     */
+    #[Route('/panel.html', name: 'panel')]
     public function panel(Request $request): Response
     {
         if (null !== $qs = $request->getQueryString()) {
