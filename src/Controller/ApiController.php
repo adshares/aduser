@@ -116,7 +116,7 @@ final class ApiController extends AbstractController
         $this->logger->info(sprintf('Fetching data for %s:%s', $adserver, $tracking), $params->all());
         $this->logger->debug(sprintf('User: %s', $user['id'] ?? 'unknown'), $user);
 
-        $data = $this->getData($user, $params);
+        $data = $this->getData($user, new ParameterBag($params->all()));
 
         return new JsonResponse($data, Response::HTTP_OK, $headers);
     }
