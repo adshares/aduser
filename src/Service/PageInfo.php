@@ -26,6 +26,7 @@ namespace App\Service;
 use App\Utils\UrlNormalizer;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception as DBALException;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -73,36 +74,38 @@ final class PageInfo
 
     public function getPageRank(string $url, array $categories): array
     {
-        $pageRank = $this->fetchPageRank($url, true);
-        if (null === $pageRank) {
-            $key = 'page_info_domain_' . md5($url);
-            $pageRank = $this->cache->get($key, function (ItemInterface $item) use ($url, $categories) {
+        $host = UrlNormalizer::normalizeHost(UrlNormalizer::normalize($url));
+        $key = 'page_info_domain_' . md5($host);
+        try {
+            return $this->cache->get($key, function (ItemInterface $item) use ($url, $host, $categories) {
                 $item->expiresAfter(300);
+                if (null !== ($pageRank = $this->fetchPageRank($host))) {
+                    return $pageRank;
+                }
                 $info = $this->pageInfoProvider->getInfo($url, $categories);
                 $this->savePageRank($url, $info);
                 return $info;
             });
+        } catch (InvalidArgumentException $exception) {
+            $this->logger->error($exception->getMessage());
+            throw $exception;
         }
-        return $pageRank;
     }
 
-    public function fetchPageRank(string $requestUrl, bool $hostExactMatch = false): ?array
+    private function fetchPageRank(string $url): ?array
     {
-        $url = UrlNormalizer::normalize($requestUrl);
-        $ranks = $this->fetchPageRanks();
-
-        if ($hostExactMatch) {
-            $host = UrlNormalizer::normalizeHost($url);
-            return array_key_exists($host, $ranks) ? $this->mapPageRank($host, $ranks[$host]) : null;
+        $query = '
+            SELECT `rank`, info, categories, quality, updated_at
+            FROM page_ranks
+            WHERE url = :url
+        ';
+        try {
+            $result = $this->connection->fetchAssociative($query, ['url' => $url]);
+        } catch (DBALException $exception) {
+            $this->logger->error($exception->getMessage());
+            return null;
         }
-
-        foreach (UrlNormalizer::explodeUrl($url) as $part) {
-            $key = ltrim($part, '//');
-            if (array_key_exists($key, $ranks)) {
-                return $this->mapPageRank($key, $ranks[$key]);
-            }
-        }
-        return null;
+        return false !== $result ? $result : null;
     }
 
     public function update(DateTimeInterface $changedAfter = null): bool
@@ -114,17 +117,16 @@ final class PageInfo
         do {
             $list = $this->pageInfoProvider->getBatchInfo($limit, $offset, $changedAfter)['page_ranks'];
             foreach ($list as $info) {
-                $this->savePageRank($info['url'], $info, false);
+                $this->savePageRank($info['url'], $info);
             }
             $offset += $limit;
         } while (count($list) === $limit);
-        $this->invalidateCache();
 
         $this->logger->info('Updating pages info finished');
         return true;
     }
 
-    private function savePageRank(string $url, array $info, bool $invalidateCache = true): void
+    private function savePageRank(string $url, array $info): void
     {
         try {
             $domain = UrlNormalizer::normalizeHost($url);
@@ -153,61 +155,8 @@ final class PageInfo
                     $info['quality'] ?? self::INFO_UNKNOWN,
                 ]
             );
-            if ($invalidateCache) {
-                $this->invalidateCache();
-            }
         } catch (Throwable $exception) {
             $this->logger->error($exception->getMessage());
-        }
-    }
-
-    private function mapPageRank(string $url, array $pageRank): array
-    {
-        return [
-            'url' => $url,
-            'rank' => $pageRank[0],
-            'info' => $pageRank[1],
-            'categories' => $pageRank[2],
-            'quality' => $pageRank[3],
-            'updated_at' => $pageRank[4],
-        ];
-    }
-
-    private function invalidateCache(): void
-    {
-        try {
-            $this->cache->delete('page_info_page_ranks');
-        } catch (InvalidArgumentException $exception) {
-            $this->logger->error($exception->getMessage());
-        }
-    }
-
-    private function fetchPageRanks(): array
-    {
-        try {
-            return $this->cache->get('page_info_page_ranks', function (ItemInterface $item) {
-                $item->expiresAfter(300);
-                $ranks = [];
-                $query = '
-                    SELECT url, `rank`, info, categories, quality, updated_at
-                    FROM page_ranks
-                    WHERE `rank` IS NOT NULL
-                    ORDER BY updated_at DESC
-                ';
-                foreach ($this->connection->fetchAllAssociative($query) as $row) {
-                    $ranks[$row['url']] = [
-                        max(-1.0, min(1.0, (float)$row['rank'])),
-                        $row['info'],
-                        json_decode($row['categories'] ?? '[]'),
-                        $row['quality'],
-                        $row['updated_at']
-                    ];
-                }
-                return $ranks;
-            });
-        } catch (Throwable $exception) {
-            $this->logger->error($exception->getMessage());
-            return [];
         }
     }
 }

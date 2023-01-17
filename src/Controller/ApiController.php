@@ -297,7 +297,7 @@ final class ApiController extends AbstractController
     private function getPageRank(ParameterBag $params): array
     {
         if (($requestUrl = $params->get('url')) !== null) {
-            $pageRank = $this->pageInfo->fetchPageRank($requestUrl);
+            $pageRank = $this->pageInfo->getPageRank($requestUrl, []);
         } else {
             $this->logger->debug('Cannot find URL', $params->all());
         }
