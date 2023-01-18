@@ -101,11 +101,19 @@ final class PageInfo
         ';
         try {
             $result = $this->connection->fetchAssociative($query, ['url' => $url]);
+            if (false !== $result) {
+                return [
+                    'rank' => max(-1.0, min(1.0, (float)$result['rank'])),
+                    'info' => (string)$result['info'],
+                    'categories' => json_decode($result['categories'] ?? '[]'),
+                    'quality' => (string)$result['quality'],
+                    'updated_at' => (string)$result['updated_at']
+                ];
+            }
         } catch (DBALException $exception) {
             $this->logger->error($exception->getMessage());
-            return null;
         }
-        return false !== $result ? $result : null;
+        return null;
     }
 
     public function update(DateTimeInterface $changedAfter = null): bool
