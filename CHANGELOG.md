@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.3] - 2023-02-27
+### Changed
+- Add `noindex` header
+
 ## [3.3.2] - 2023-01-18
 ### Fixed
 - Cast page data
@@ -94,7 +98,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-01
 
 
-[Unreleased]: https://github.com/adshares/aduser/compare/v3.3.2..HEAD
+[Unreleased]: https://github.com/adshares/aduser/compare/v3.3.3..HEAD
+[3.3.3]: https://github.com/adshares/aduser/compare/v3.3.2...v3.3.3
 [3.3.2]: https://github.com/adshares/aduser/compare/v3.3.1...v3.3.2
 [3.3.1]: https://github.com/adshares/aduser/compare/v3.3.0...v3.3.1
 [3.3.0]: https://github.com/adshares/aduser/compare/v3.2.3...v3.3.0
