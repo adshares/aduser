@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ * Copyright (c) 2018-2023 Adshares sp. z o.o.
  *
  * This file is part of AdUser
  *
@@ -28,6 +28,7 @@ use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,6 +37,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
+#[AsCommand(name: 'ops:cookie3:update')]
 class UpdateCooke3Command extends Command
 {
     use LockableTrait;
@@ -44,20 +46,11 @@ class UpdateCooke3Command extends Command
 
     private const DEFAULT_LIMIT = 500;
 
-    protected static $defaultName = 'ops:cookie3:update';
-
-    private Cookie3 $cookie3;
-
-    private Connection $connection;
-
-    private LoggerInterface $logger;
-
-    public function __construct(Cookie3 $cookie3, Connection $connection, LoggerInterface $logger)
-    {
-        $this->cookie3 = $cookie3;
-        $this->connection = $connection;
-        $this->logger = $logger;
-
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly Cookie3 $cookie3,
+        private readonly LoggerInterface $logger,
+    ) {
         parent::__construct();
     }
 

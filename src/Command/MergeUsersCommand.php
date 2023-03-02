@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ * Copyright (c) 2018-2023 Adshares sp. z o.o.
  *
  * This file is part of AdUser
  *
@@ -27,6 +27,7 @@ use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,6 +35,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(name: 'ops:users:merge')]
 class MergeUsersCommand extends Command
 {
     use LockableTrait;
@@ -42,21 +44,13 @@ class MergeUsersCommand extends Command
 
     private const DEFAULT_LIMIT = 500;
 
-    protected static $defaultName = 'ops:users:merge';
-
-    private Connection $connection;
-
-    private LoggerInterface $logger;
-
     private string $currentTime;
 
     private array $hashCache = [];
 
-    public function __construct(Connection $connection, LoggerInterface $logger)
+    public function __construct(private readonly Connection $connection, private readonly LoggerInterface $logger)
     {
-        $this->connection = $connection;
         $this->currentTime = (new DateTime())->format('Y-m-d H:i:s');
-        $this->logger = $logger;
 
         parent::__construct();
     }
