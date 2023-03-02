@@ -113,9 +113,9 @@ final class PixelController extends AbstractController
 
         $cookieTrackingId = $this->getTrackingCookie($request);
         $adserverUserId = $this->loadAdserverUserId($adserver, $tracking);
-        $externalAccountId = $this->getExternalAccountId($request);
-        if (null === ($user = $this->loadUser($cookieTrackingId, $adserverUserId, $externalAccountId))) {
-            $user = $this->createUser($request, $externalAccountId);
+        $externalUserId = $this->getExternalUserId($request);
+        if (null === ($user = $this->loadUser($cookieTrackingId, $adserverUserId, $externalUserId))) {
+            $user = $this->createUser($request, $externalUserId);
         }
 
         if ($user['id'] !== null) {
@@ -200,7 +200,7 @@ final class PixelController extends AbstractController
         }
     }
 
-    private function loadUser(?string $trackingId, ?int $userId, ?string $externalAccountId): ?array
+    private function loadUser(?string $trackingId, ?int $userId, ?string $externalUserId): ?array
     {
         if ($trackingId !== null && !$this->idGenerator->validTrackingId($trackingId)) {
             $trackingId = null;
@@ -221,10 +221,10 @@ final class PixelController extends AbstractController
             if ($trackingId !== null) {
                 $user = $this->connection->fetchAssociative($query . ' WHERE tracking_id = ? LIMIT 1', [$trackingId]);
             }
-            if (false === $user && null !== $externalAccountId) {
+            if (false === $user && null !== $externalUserId) {
                 $user = $this->connection->fetchAssociative(
-                    $query . ' WHERE external_account_id = ? LIMIT 1',
-                    [$externalAccountId]
+                    $query . ' WHERE external_user_id = ? LIMIT 1',
+                    [$externalUserId]
                 );
             }
             if ($user === false && $userId !== null) {
@@ -260,7 +260,7 @@ final class PixelController extends AbstractController
         return null;
     }
 
-    private function createUser(Request $request, ?string $externalAccountId): array
+    private function createUser(Request $request, ?string $externalUserId): array
     {
         $trackingId = $this->idGenerator->generateTrackingId($request);
         $country = $this->getCountry($request);
@@ -273,13 +273,13 @@ final class PixelController extends AbstractController
                     'tracking_id' => $trackingId,
                     'country' => $country,
                     'languages' => $languages,
-                    'external_account_id' => $externalAccountId,
+                    'external_user_id' => $externalUserId,
                 ],
                 [
                     'tracking_id' => Types::BINARY,
                     'country' => Types::STRING,
                     'languages' => Types::JSON,
-                    'external_account_id' => Types::STRING,
+                    'external_user_id' => Types::STRING,
                 ]
             );
             $userId = (int)$this->connection->lastInsertId();
@@ -436,7 +436,7 @@ final class PixelController extends AbstractController
         return $value !== null ? base64_decode($value) : null;
     }
 
-    private function getExternalAccountId(Request $request): ?string
+    private function getExternalUserId(Request $request): ?string
     {
         if (null === ($header = $request->headers->get('x-identity-auth-chain-0'))) {
             return null;
