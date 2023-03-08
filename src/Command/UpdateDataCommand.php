@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ * Copyright (c) 2018-2023 Adshares sp. z o.o.
  *
  * This file is part of AdUser
  *
@@ -27,6 +27,7 @@ use App\Service\Browscap;
 use App\Service\Cleaner;
 use App\Service\PageInfo;
 use DateTimeImmutable;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,24 +35,17 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(name: 'ops:update')]
 class UpdateDataCommand extends Command
 {
     use LockableTrait;
 
-    protected static $defaultName = 'ops:update';
-    private PageInfo $pageInfo;
-    private Browscap $browscap;
-    private Cleaner $cleaner;
-
     public function __construct(
-        PageInfo $pageInfo,
-        Browscap $browscap,
-        Cleaner $cleaner
+        private readonly Browscap $browscap,
+        private readonly Cleaner $cleaner,
+        private readonly PageInfo $pageInfo,
     ) {
         parent::__construct();
-        $this->pageInfo = $pageInfo;
-        $this->browscap = $browscap;
-        $this->cleaner = $cleaner;
     }
 
     protected function configure()
