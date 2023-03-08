@@ -243,6 +243,7 @@ final class ApiController extends AbstractController
 
         $keywords = [
             'user' => array_filter([
+                'external_user_id' => $user['external_user_id'] ?? null,
                 'language' => $user['languages'] ?? null,
                 'country' => $user['country'] ?? null,
                 'cookie3-tag' => $this->requestInfo->getCookie3Tags($params),
@@ -324,7 +325,8 @@ final class ApiController extends AbstractController
                         u.languages,
                         u.human_score,
                         u.human_score_time,
-                        u.fingerprint
+                        u.fingerprint,
+                        u.external_user_id
                       FROM adserver_register r
                       JOIN users u ON u.id = r.user_id
                       WHERE r.adserver_id = ? AND r.tracking_id IN (?)',
@@ -347,7 +349,8 @@ final class ApiController extends AbstractController
                     'human_score_time' => $row['human_score_time'] !== null
                         ? strtotime($row['human_score_time'])
                         : null,
-                    'fingerprint' => $row['fingerprint']
+                    'fingerprint' => $row['fingerprint'],
+                    'external_user_id' => $row['external_user_id'],
                 ];
             }
         } catch (DBALException $e) {
