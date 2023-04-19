@@ -373,7 +373,7 @@ final class PixelController extends AbstractController
         }
 
         if (
-            $user['fingerprint'] === null
+            empty($user['fingerprint'])
             || $user['fingerprint_time'] < time() - $this->fingerprintExpiryPeriod
         ) {
             $pages[] = $this->fingerprint->getPageUrl($trackingId);
