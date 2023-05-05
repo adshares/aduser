@@ -216,7 +216,8 @@ final class PixelController extends AbstractController
                     human_score_time,
                     fingerprint,
                     fingerprint_time,
-                    mapped_user_id
+                    mapped_user_id,
+                    external_user_id
                 FROM users';
             if ($trackingId !== null) {
                 $user = $this->connection->fetchAssociative($query . ' WHERE tracking_id = ? LIMIT 1', [$trackingId]);
@@ -246,6 +247,14 @@ final class PixelController extends AbstractController
         }
 
         if ($user !== false) {
+            if (null === $user['external_user_id'] && null !== $externalUserId) {
+                try {
+                    $this->connection->update('users', ['external_user_id' => $externalUserId], ['id' => $user['id']]);
+                } catch (DBALException $exception) {
+                    $this->logger->error(sprintf('Updating external_user_id failed: %s', $exception->getMessage()));
+                }
+            }
+
             $user['id'] = (int)$user['id'];
             $user['human_score'] = $user['human_score'] !== null ? (float)$user['human_score'] : null;
             $user['human_score_time'] =
