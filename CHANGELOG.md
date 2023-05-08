@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.7] - 2023-05-08
+### Fixed
+- Update external_user_id
+
 ## [3.3.6] - 2023-03-19
 ### Changed
 - Update robots.txt
@@ -108,7 +112,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-01
 
 
-[Unreleased]: https://github.com/adshares/aduser/compare/v3.3.6..HEAD
+[Unreleased]: https://github.com/adshares/aduser/compare/v3.3.7..HEAD
+[3.3.7]: https://github.com/adshares/aduser/compare/v3.3.6...v3.3.7
 [3.3.6]: https://github.com/adshares/aduser/compare/v3.3.5...v3.3.6
 [3.3.5]: https://github.com/adshares/aduser/compare/v3.3.3...v3.3.5
 [3.3.3]: https://github.com/adshares/aduser/compare/v3.3.2...v3.3.3
