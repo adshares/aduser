@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
@@ -83,7 +84,7 @@ final class DclHeadersVerifier
         }
 
         $payload = $authorizationData['payload'];
-        if ($this->isSignatureValid($payload, $authorizationData['signature'], $delegateAddress)) {
+        if (!$this->isSignatureValid($payload, $authorizationData['signature'], $delegateAddress)) {
             return false;
         }
 
@@ -122,7 +123,13 @@ final class DclHeadersVerifier
 
     private function isSignatureValid(string $message, string $signature, string $publicKey): bool
     {
-        return $publicKey !== personal_ecRecover($message, $signature);
+        try {
+            $recoveredPublicKey = personal_ecRecover($message, $signature);
+        } catch (Exception $exception) {
+            $this->logger->debug('DCL signature failed', ['exception' => $exception]);
+            return false;
+        }
+        return $publicKey === $recoveredPublicKey;
     }
 
     private function getDelegateId(HeaderBag $headers, string $userAddress): ?string
@@ -140,7 +147,7 @@ final class DclHeadersVerifier
         }
 
         $payload = $delegationData['payload'];
-        if ($this->isSignatureValid($payload, $delegationData['signature'], $userAddress)) {
+        if (!$this->isSignatureValid($payload, $delegationData['signature'], $userAddress)) {
             return null;
         }
 
@@ -161,7 +168,7 @@ final class DclHeadersVerifier
         try {
             $response = $this->client->request('GET', $url)->toArray();
         } catch (ExceptionInterface $exception) {
-            $this->logger->warning('Failed to verify DCL headers', ['exception' => $exception]);
+            $this->logger->error('DCL user verification failed', ['exception' => $exception]);
             return false;
         }
 
@@ -171,6 +178,7 @@ final class DclHeadersVerifier
             true !== $response['ok'] ||
             !is_array($response['peers'])
         ) {
+            $this->logger->error('DCL user verification failed: Invalid response');
             return false;
         }
 
@@ -179,6 +187,7 @@ final class DclHeadersVerifier
                 continue;
             }
             if (!isset($peer['parcel']) || !is_array($peer['parcel']) || 2 !== count($peer['parcel'])) {
+                $this->logger->error('DCL user verification failed: Invalid response parcel format');
                 return false;
             }
             if (
@@ -187,6 +196,7 @@ final class DclHeadersVerifier
             ) {
                 return true;
             }
+            return false;
         }
 
         return false;
