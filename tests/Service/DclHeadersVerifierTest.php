@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * Copyright (c) 2018-2023 Adshares sp. z o.o.
  *
  * This file is part of AdUser
@@ -72,25 +72,50 @@ final class DclHeadersVerifierTest extends TestCase
 
     public function testVerify(): void
     {
+        $userAddress = '0x05cf6d580d994d6eda7fd065b2cd239b08e2fd68';
+        $timestamp = (string)1683288224211;
+        $expiration = '2023-05-12T12:03:16.012Z';
+
+        $delegateAddress = '0x6B8f0CFB4F47A9b55f741439F8FFbB02f7241140';
+        $delegationPayload = sprintf(
+            'Decentraland Login\nEphemeral address: %s\nExpiration: %s',
+            $delegateAddress,
+            $expiration,
+        );
+        $delegationSignature = '0x36ab3c95c0d75f77cde66255feb3947f499d38ab69a7aae319020da498d5c3150cbfee806df3186584c795e1faaab3885d0830a12ea227c1906c9383695297211c';
+
+        $metadata = '{"origin":"https://play.decentraland.org","sceneId":"bafkreicj6onw4r34ouwafqigovb27rowajhmsddrkcuaapypydldelsawu","parcel":"-53,20","tld":"org","network":"mainnet","isGuest":false,"realm":{"hostname":"peer-eu1.decentraland.org","protocol":"v3","serverName":"baldr"},"signer":"decentraland-kernel-scene"}';
+        $authorizationPayload = sprintf(
+            'get:/supply/register:%s:%s',
+            $timestamp,
+            $this->encodeMetadata($metadata)
+        );
+        $authorizationSignature = '0xf56a4fcce2f9f36a8d800379997537847cd54ac81213f0201106c8e06383713014791c0285ee44d8dae2002a788f0240a3be208db4225ed18f79a15a12d576ce1b';
+
         $headers = new HeaderBag();
         $headers->set('referer', 'https://play.decentraland.org/');
         $headers->set(
             'x-identity-auth-chain-0',
-            '{"type":"SIGNER","payload":"0x05cf6d580d994d6eda7fd065b2cd239b08e2fd68","signature":""}'
+            sprintf('{"type":"SIGNER","payload":"%s","signature":""}', $userAddress),
         );
         $headers->set(
             'x-identity-auth-chain-1',
-            '{"type":"ECDSA_EPHEMERAL","payload":"Decentraland Login\nEphemeral address: 0x6B8f0CFB4F47A9b55f741439F8FFbB02f7241140\nExpiration: 2023-05-12T12:03:16.012Z","signature":"0x36ab3c95c0d75f77cde66255feb3947f499d38ab69a7aae319020da498d5c3150cbfee806df3186584c795e1faaab3885d0830a12ea227c1906c9383695297211c"}'
+            sprintf(
+                '{"type":"ECDSA_EPHEMERAL","payload":"%s","signature":"%s"}',
+                $delegationPayload,
+                $delegationSignature,
+            ),
         );
         $headers->set(
             'x-identity-auth-chain-2',
-            '{"type":"ECDSA_SIGNED_ENTITY","payload":"get:/supply/register:1683288224211:{\"origin\":\"https://play.decentraland.org\",\"sceneid\":\"bafkreicj6onw4r34ouwafqigovb27rowajhmsddrkcuaapypydldelsawu\",\"parcel\":\"-53,20\",\"tld\":\"org\",\"network\":\"mainnet\",\"isguest\":false,\"realm\":{\"hostname\":\"peer-eu1.decentraland.org\",\"protocol\":\"v3\",\"servername\":\"baldr\"},\"signer\":\"decentraland-kernel-scene\"}","signature":"0xf56a4fcce2f9f36a8d800379997537847cd54ac81213f0201106c8e06383713014791c0285ee44d8dae2002a788f0240a3be208db4225ed18f79a15a12d576ce1b"}'
+            sprintf(
+                '{"type":"ECDSA_SIGNED_ENTITY","payload":"%s","signature":"%s"}',
+                $authorizationPayload,
+                $authorizationSignature,
+            ),
         );
-        $headers->set(
-            'x-identity-metadata',
-            '{"origin":"https://play.decentraland.org","sceneId":"bafkreicj6onw4r34ouwafqigovb27rowajhmsddrkcuaapypydldelsawu","parcel":"-53,20","tld":"org","network":"mainnet","isGuest":false,"realm":{"hostname":"peer-eu1.decentraland.org","protocol":"v3","serverName":"baldr"},"signer":"decentraland-kernel-scene"}'
-        );
-        $headers->set('x-identity-timestamp', '1683288224211');
+        $headers->set('x-identity-metadata', $metadata);
+        $headers->set('x-identity-timestamp', $timestamp);
 
         $result = (new DclHeadersVerifier($this->mockClient(), new NullLogger()))->verify($headers);
 
@@ -134,5 +159,27 @@ JSON
             ),
         ];
         return new MockHttpClient($responses);
+    }
+
+    private function encodeMetadata(string $metadata): string
+    {
+        return str_replace(
+            ['"', '\/'],
+            ['\\"', '/'],
+            json_encode(
+                $this->lowerJsonKeys(
+                    json_decode($metadata, true)
+                )
+            )
+        );
+    }
+
+    private function lowerJsonKeys(array $data): array
+    {
+        $result = [];
+        foreach ($data as $key => $value) {
+            $result[strtolower($key)] = is_array($value) ? $this->lowerJsonKeys($value) : $value;
+        }
+        return $result;
     }
 }
