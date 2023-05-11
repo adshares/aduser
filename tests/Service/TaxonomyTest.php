@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 
 final class TaxonomyTest extends TestCase
 {
-    public static function testGetCountries(): void
+    public function testGetCountries(): void
     {
         $countries = Taxonomy::getCountries();
 
@@ -36,7 +36,7 @@ final class TaxonomyTest extends TestCase
         self::assertEquals('South Georgia and the South Sandwich Islands', $countries['gs']);
     }
 
-    public static function testGetLanguages(): void
+    public function testGetLanguages(): void
     {
         $languages = Taxonomy::getLanguages();
 
@@ -44,7 +44,7 @@ final class TaxonomyTest extends TestCase
         self::assertEquals('Swedish', $languages['sv']);
     }
 
-    public static function testGetDeviceTypes(): void
+    public function testGetDeviceTypes(): void
     {
         $deviceTypes = Taxonomy::getDeviceTypes();
 
@@ -52,14 +52,14 @@ final class TaxonomyTest extends TestCase
         self::assertEquals('Mobile', $deviceTypes['mobile']);
     }
 
-    public static function testMapDeviceType(): void
+    public function testMapDeviceType(): void
     {
         $deviceType = Taxonomy::mapDeviceType('Mobile Device');
 
         self::assertEquals('mobile', $deviceType);
     }
 
-    public static function testGetOperatingSystems(): void
+    public function testGetOperatingSystems(): void
     {
         $operatingSystems = Taxonomy::getOperatingSystems();
 
@@ -67,14 +67,14 @@ final class TaxonomyTest extends TestCase
         self::assertEquals('Apple OS', $operatingSystems['apple-os']);
     }
 
-    public static function testMapOperatingSystem(): void
+    public function testMapOperatingSystem(): void
     {
         $operatingSystem = Taxonomy::mapOperatingSystem('Android for GoogleTV');
 
         self::assertEquals('android', $operatingSystem);
     }
 
-    public static function testGetBrowsers(): void
+    public function testGetBrowsers(): void
     {
         $operatingSystems = Taxonomy::getBrowsers();
 
@@ -82,14 +82,14 @@ final class TaxonomyTest extends TestCase
         self::assertEquals('Opera', $operatingSystems['opera']);
     }
 
-    public static function testMapBrowser(): void
+    public function testMapBrowser(): void
     {
         $browser = Taxonomy::mapBrowser('Safari');
 
         self::assertEquals('safari', $browser);
     }
 
-    public static function testGetExtensions(): void
+    public function testGetExtensions(): void
     {
         $extensions = Taxonomy::getExtensions();
 
@@ -100,7 +100,7 @@ final class TaxonomyTest extends TestCase
     /**
      * @dataProvider mapExtensionsProvider
      */
-    public static function testMapExtensions(array $expectedExtensions, array $data): void
+    public function testMapExtensions(array $expectedExtensions, array $data): void
     {
         $extensions = Taxonomy::mapExtensions($data);
 
