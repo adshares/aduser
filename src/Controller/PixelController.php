@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Service\DclHeadersVerifier;
+use App\Service\DclHeadersVerifierInterface;
 use App\Service\Fingerprint;
 use App\Service\ReCaptcha;
 use App\Service\Taxonomy;
@@ -51,7 +51,7 @@ final class PixelController extends AbstractController
         private readonly ReCaptcha $reCaptcha,
         private readonly Fingerprint $fingerprint,
         private readonly Connection $connection,
-        private readonly DclHeadersVerifier $dclHeadersVerifier,
+        private readonly DclHeadersVerifierInterface $dclHeadersVerifier,
         private readonly LoggerInterface $logger
     ) {
     }

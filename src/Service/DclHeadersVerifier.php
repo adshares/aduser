@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class DclHeadersVerifier
+final class DclHeadersVerifier implements DclHeadersVerifierInterface
 {
     private const COORDINATES_MARGIN = 2;
     private const HEADER_IDENTIFICATION = 'x-identity-auth-chain-0';

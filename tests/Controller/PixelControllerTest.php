@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Service\DclHeadersVerifier;
+use App\Service\DclHeadersVerifierInterface;
 use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -60,10 +60,14 @@ final class PixelControllerTest extends WebTestCase
     public function testRegisterDclUser(): void
     {
         $client = static::createClient();
-        $dclHeadersVerifier = self::createMock(DclHeadersVerifier::class);
-        $dclHeadersVerifier->method('verify')->willReturn(true);
-        $dclHeadersVerifier->method('getUserId')->willReturn('0x05cf6d580d994d6eda7fd065b1cd239b08e2fd67');
-        static::getContainer()->set(DclHeadersVerifier::class, $dclHeadersVerifier);
+        $dclHeadersVerifier = self::createMock(DclHeadersVerifierInterface::class);
+        $dclHeadersVerifier->expects(self::once())
+            ->method('verify')
+            ->willReturn(true);
+        $dclHeadersVerifier->expects(self::once())
+            ->method('getUserId')
+            ->willReturn('0x05cf6d580d994d6eda7fd065b1cd239b08e2fd67');
+        static::getContainer()->set('test.App\Service\DclHeadersVerifierInterface', $dclHeadersVerifier);
 
         $client->request('GET', self::URI_REGISTER);
 
