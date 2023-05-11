@@ -176,7 +176,7 @@ final class PixelController extends AbstractController
     private function updateAdserverUserId(int $userId, string $adserverId, string $trackingId): void
     {
         try {
-            $this->connection->executeUpdate(
+            $this->connection->executeStatement(
                 'INSERT INTO adserver_register(adserver_id, tracking_id, user_id)
                     VALUES (?, ?, ?)
                     ON DUPLICATE KEY UPDATE user_id = ?',
