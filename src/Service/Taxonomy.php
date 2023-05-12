@@ -485,19 +485,13 @@ final class Taxonomy
 
     public static function mapDeviceType($device): string
     {
-        switch ($device) {
-            case 'Desktop':
-                return 'desktop';
-            case 'Mobile Device':
-            case 'Mobile Phone':
-                return 'mobile';
-            case 'Tablet':
-                return 'tablet';
-            case 'TV Device':
-                return 'tv';
-            default:
-                return 'other';
-        }
+        return match ($device) {
+            'Desktop' => 'desktop',
+            'Mobile Device', 'Mobile Phone' => 'mobile',
+            'Tablet' => 'tablet',
+            'TV Device' => 'tv',
+            default => 'other',
+        };
     }
 
     public static function getOperatingSystems(): array
@@ -513,72 +507,18 @@ final class Taxonomy
 
     public static function mapOperatingSystem($os): string
     {
-        switch ($os) {
-            case 'Android':
-            case 'Android for GoogleTV':
-                return 'android';
-            case 'iOS':
-            case 'macOS':
-            case 'MacOSX':
-                return 'apple-os';
-            case 'AIX':
-            case 'Linux':
-            case 'BSD':
-            case 'Chromecast OS':
-            case 'ChromeOS':
-            case 'Darwin':
-            case 'Debian':
-            case 'DragonFly BSD':
-            case 'Fedora':
-            case 'FirefoxOS':
-            case 'FreeBSD':
-            case 'HP-UX':
-            case 'IRIX64':
-            case 'KaiOS':
-            case 'Maemo':
-            case 'MeeGo':
-            case 'NetBSD':
-            case 'OpenBSD':
-            case 'Red Hat':
-            case 'Solaris':
-            case 'SunOS':
-            case 'Tizen':
-            case 'Ubuntu':
-            case 'Ubuntu Touch':
-            case 'Unix':
-                return 'unix';
-            case 'Win10':
-            case 'Win16':
-            case 'Win2000':
-            case 'Win31':
-            case 'Win32':
-            case 'Win64':
-            case 'Win7':
-            case 'Win8':
-            case 'Win8.1':
-            case 'Win95':
-            case 'Win98':
-            case 'WinCE':
-            case 'WinME':
-            case 'WinMobile':
-            case 'WinNT':
-            case 'WinPhone':
-            case 'WinPhone10':
-            case 'WinPhone6':
-            case 'WinPhone7':
-            case 'WinPhone7.10':
-            case 'WinPhone7.5':
-            case 'WinPhone7.8':
-            case 'WinPhone8':
-            case 'WinPhone8.1':
-            case 'WinRT8':
-            case 'WinRT8.1':
-            case 'WinVista':
-            case 'WinXP':
-                return 'windows';
-            default:
-                return 'other';
-        }
+        return match ($os) {
+            'Android', 'Android for GoogleTV' => 'android',
+            'iOS', 'macOS', 'MacOSX' => 'apple-os',
+            'AIX', 'Linux', 'BSD', 'Chromecast OS', 'ChromeOS', 'Darwin', 'Debian', 'DragonFly BSD', 'Fedora',
+            'FirefoxOS', 'FreeBSD', 'HP-UX', 'IRIX64', 'KaiOS', 'Maemo', 'MeeGo', 'NetBSD', 'OpenBSD', 'Red Hat',
+            'Solaris', 'SunOS', 'Tizen', 'Ubuntu', 'Ubuntu Touch', 'Unix' => 'unix',
+            'Win10', 'Win16', 'Win2000', 'Win31', 'Win32', 'Win64', 'Win7', 'Win8', 'Win8.1', 'Win95', 'Win98', 'WinCE',
+            'WinME', 'WinMobile', 'WinNT', 'WinPhone', 'WinPhone10', 'WinPhone6', 'WinPhone7', 'WinPhone7.10',
+            'WinPhone7.5', 'WinPhone7.8', 'WinPhone8', 'WinPhone8.1', 'WinRT8', 'WinRT8.1', 'WinVista', 'WinXP'
+            => 'windows',
+            default => 'other',
+        };
     }
 
     public static function getBrowsers(): array
@@ -596,34 +536,15 @@ final class Taxonomy
 
     public static function mapBrowser($device): string
     {
-        switch ($device) {
-            case 'Chrome':
-            case 'ChromePlus':
-            case 'Chromium':
-                return 'chrome';
-            case 'Edge':
-            case 'Edge Mobile':
-                return 'edge';
-            case 'Firefox':
-            case 'Firefox Focus':
-            case 'Firefox for iOS':
-            case 'Mozilla':
-                return 'firefox';
-            case 'IE':
-            case 'IEMobile':
-                return 'msie';
-            case 'Opera':
-            case 'Opera Mini':
-            case 'Opera Mobile':
-            case 'Opera Neon':
-            case 'Opera Touch':
-                return 'opera';
-            case 'Mobile Safari UIWebView':
-            case 'Safari':
-                return 'safari';
-            default:
-                return 'other';
-        }
+        return match ($device) {
+            'Chrome', 'ChromePlus', 'Chromium' => 'chrome',
+            'Edge', 'Edge Mobile' => 'edge',
+            'Firefox', 'Firefox Focus', 'Firefox for iOS', 'Mozilla' => 'firefox',
+            'IE', 'IEMobile' => 'msie',
+            'Opera', 'Opera Mini', 'Opera Mobile', 'Opera Neon', 'Opera Touch' => 'opera',
+            'Mobile Safari UIWebView', 'Safari' => 'safari',
+            default => 'other',
+        };
     }
 
     public static function getExtensions(): array

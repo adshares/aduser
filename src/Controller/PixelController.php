@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Service\DclHeadersVerifierInterface;
 use App\Service\Fingerprint;
 use App\Service\ReCaptcha;
 use App\Service\Taxonomy;
@@ -40,28 +41,19 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class PixelController extends AbstractController
 {
-    private IdGenerator $idGenerator;
-    private ReCaptcha $reCaptcha;
-    private Fingerprint $fingerprint;
-    private Connection $connection;
-    private LoggerInterface $logger;
     private ?string $cookieName = '__au';
     private int $cookieExpiryPeriod = 31536000;
     private int $humanScoreExpiryPeriod = 3600;
     private int $fingerprintExpiryPeriod = 24 * 3600;
 
     public function __construct(
-        IdGenerator $idGenerator,
-        ReCaptcha $reCaptcha,
-        Fingerprint $fingerprint,
-        Connection $connection,
-        LoggerInterface $logger
+        private readonly IdGenerator $idGenerator,
+        private readonly ReCaptcha $reCaptcha,
+        private readonly Fingerprint $fingerprint,
+        private readonly Connection $connection,
+        private readonly DclHeadersVerifierInterface $dclHeadersVerifier,
+        private readonly LoggerInterface $logger
     ) {
-        $this->idGenerator = $idGenerator;
-        $this->reCaptcha = $reCaptcha;
-        $this->fingerprint = $fingerprint;
-        $this->connection = $connection;
-        $this->logger = $logger;
     }
 
     public function setCookieSettings(?string $cookieName, int $cookieExpiryPeriod): self
@@ -184,7 +176,7 @@ final class PixelController extends AbstractController
     private function updateAdserverUserId(int $userId, string $adserverId, string $trackingId): void
     {
         try {
-            $this->connection->executeUpdate(
+            $this->connection->executeStatement(
                 'INSERT INTO adserver_register(adserver_id, tracking_id, user_id)
                     VALUES (?, ?, ?)
                     ON DUPLICATE KEY UPDATE user_id = ?',
@@ -447,12 +439,9 @@ final class PixelController extends AbstractController
 
     private function getExternalUserId(Request $request): ?string
     {
-        if (null === ($header = $request->headers->get('x-identity-auth-chain-0'))) {
-            return null;
+        if ($this->dclHeadersVerifier->verify($request->headers)) {
+            return $this->dclHeadersVerifier->getUserId($request->headers);
         }
-        if (null === ($decoded = json_decode($header))) {
-            return null;
-        }
-        return $decoded->payload ?? null;
+        return null;
     }
 }
