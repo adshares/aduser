@@ -65,3 +65,12 @@ services:
     App\Utils\IdGenerator:
         arguments:
             $trackingSecret: '%env(ADUSER_TRACKING_SECRET)%'
+
+    App\Service\DclHeadersVerifierInterface: '@App\Service\DclHeadersVerifier'
+
+when@test:
+    services:
+        _defaults:
+            public: true
+
+        test.App\Service\DclHeadersVerifierInterface: '@App\Service\DclHeadersVerifierInterface'
