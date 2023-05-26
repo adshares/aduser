@@ -24,8 +24,15 @@ declare(strict_types=1);
 namespace App\Service;
 
 use DateTimeInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class Gitoku implements PageInfoProviderInterface
@@ -34,14 +41,17 @@ final class Gitoku implements PageInfoProviderInterface
 
     private HttpClientInterface $client;
     private CacheInterface $cache;
+    private LoggerInterface $logger;
     private int $apiVersion = 1;
 
     public function __construct(
         HttpClientInterface $client,
-        CacheInterface $cache
+        CacheInterface $cache,
+        LoggerInterface $logger,
     ) {
         $this->client = $client;
         $this->cache = $cache;
+        $this->logger = $logger;
     }
 
     public function version(int $apiVersion): PageInfoProviderInterface
@@ -60,7 +70,13 @@ final class Gitoku implements PageInfoProviderInterface
 
     public function getInfo(string $url, array $categories = []): array
     {
-        return $this->request('/page-rank/' . urlencode($url) . '?' . http_build_query(['categories' => $categories]));
+        $path = '/page-rank/' . urlencode($url) . '?' . http_build_query(['categories' => $categories]);
+        try {
+            return $this->request($path);
+        } catch (ExceptionInterface $exception) {
+            $this->logger->error('Gitoku getInfo failed', ['exception' => $exception]);
+            return [];
+        }
     }
 
     public function getBatchInfo(int $limit = 1000, int $offset = 0, DateTimeInterface $changedAfter = null): array
@@ -80,6 +96,13 @@ final class Gitoku implements PageInfoProviderInterface
         return $this->request('/reassessment', 'POST', $data);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     private function request(string $path, string $method = 'GET', ?array $data = null): array
     {
         $response = $this->client->request(

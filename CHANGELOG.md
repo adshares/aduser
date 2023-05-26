@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fix
-- URL validator regular expression for urlencoded characters 
+- URL validator regular expression for urlencoded characters
+- Gitoku error handling while fetching page rank
 
 ## [3.3.8] - 2023-05-15
 ### Changed
