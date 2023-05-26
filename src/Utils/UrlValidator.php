@@ -26,13 +26,13 @@ namespace App\Utils;
 final class UrlValidator
 {
     private const URL_PATTERN = '~^
-        https?://                                                                        # protocol
-        (((?:[\_\.\pL\pN-]|%%[0-9A-Fa-f]{2})+:)?((?:[\_\.\pL\pN-]|%%[0-9A-Fa-f]{2})+)@)? # basic auth
-        ([\pL\pN\pS\-\_\.])+(\.?([\pL\pN]|xn\-\-[\pL\pN-]+)+\.?)                         # a domain name
-        (:[0-9]+)?                                                                       # a port (optional)
-        (?:/ (?:[\pL\pN\-._\~!$&\'()*+,;=:@]|%%[0-9A-Fa-f]{2})* )*                       # a path
-        (?:\? (?:[\pL\pN\-._\~!$&\'\[\]()*+,;=:@/?]|%%[0-9A-Fa-f]{2})* )?                # a query (optional)
-        (?:\# (?:[\pL\pN\-._\~!$&\'()*+,;=:@/?]|%%[0-9A-Fa-f]{2})* )?                    # a fragment (optional)
+        https?://                                                                # protocol
+        (((?:[\_\.\pL\pN-]|%[0-9A-F]{2})+:)?((?:[\_\.\pL\pN-]|%[0-9A-F]{2})+)@)? # basic auth (optional)
+        ([\pL\pN\pS\-\_\.])+(\.?([\pL\pN]|xn\-\-[\pL\pN-]+)+\.?)                 # a domain name
+        (:[0-9]+)?                                                               # a port (optional)
+        (?:/ (?:[\pL\pN\-._\~!$&\'()*+,;=:@]|%[0-9A-F]{2})* )*                   # a path (optional)
+        (?:\? (?:[\pL\pN\-._\~!$&\'\[\]()*+,;=:@/?]|%[0-9A-F]{2})* )?            # a query (optional)
+        (?:\# (?:[\pL\pN\-._\~!$&\'()*+,;=:@/?]|%[0-9A-F]{2})* )?                # a fragment (optional)
     $~ixu';
 
     /**
