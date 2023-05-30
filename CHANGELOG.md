@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.9] - 2023-05-30
+### Fix
+- URL validator regular expression for urlencoded characters
+- Gitoku error handling while fetching page rank
+
 ## [3.3.8] - 2023-05-15
 ### Changed
 - Verify Decentraland user signatures
@@ -116,7 +121,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-01
 
 
-[Unreleased]: https://github.com/adshares/aduser/compare/v3.3.8..HEAD
+[Unreleased]: https://github.com/adshares/aduser/compare/v3.3.9..HEAD
+[3.3.9]: https://github.com/adshares/aduser/compare/v3.3.8...v3.3.9
 [3.3.8]: https://github.com/adshares/aduser/compare/v3.3.7...v3.3.8
 [3.3.7]: https://github.com/adshares/aduser/compare/v3.3.6...v3.3.7
 [3.3.6]: https://github.com/adshares/aduser/compare/v3.3.5...v3.3.6
