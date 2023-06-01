@@ -98,7 +98,10 @@ final class DclHeadersVerifier implements DclHeadersVerifierInterface
         }
         $host = $metadata['realm']['hostname'] ?? null;
         $parcel = $metadata['parcel'] ?? null;
-        if (!is_string($host) || !str_ends_with($host, '.decentraland.org') || !is_string($parcel)) {
+        if (
+            !is_string($host) || !is_string($parcel) ||
+            (!str_ends_with($host, '.decentraland.org') && !str_ends_with($host, '.decentral.io'))
+        ) {
             return false;
         }
         $coordinates = explode(',', $parcel);
