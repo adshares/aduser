@@ -36,8 +36,10 @@ use Throwable;
 final class PageInfo
 {
     public const INFO_UNKNOWN = 'unknown';
+    private const JSON_PATH_MATCH_REGEXP = '(\[\?\(@\.[^=]+=[^]]+\)]|\.[^.\[]+|\[]$)';
 
     private PageInfoProviderInterface $pageInfoProvider;
+    private string $taxonomyChangesFile;
     protected Connection $connection;
     protected CacheInterface $cache;
     protected LoggerInterface $logger;
@@ -45,11 +47,13 @@ final class PageInfo
 
     public function __construct(
         PageInfoProviderInterface $pageInfoProvider,
+        string $taxonomyChangesFile,
         Connection $connection,
         CacheInterface $cache,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->pageInfoProvider = $pageInfoProvider;
+        $this->taxonomyChangesFile = $taxonomyChangesFile;
         $this->connection = $connection;
         $this->cache = $cache;
         $this->logger = $logger;
@@ -64,7 +68,7 @@ final class PageInfo
 
     public function getTaxonomy(): array
     {
-        return $this->pageInfoProvider->getTaxonomy();
+        return $this->taxonomyChanges($this->pageInfoProvider->getTaxonomy());
     }
 
     public function reassessment(array $data): array
@@ -166,5 +170,93 @@ final class PageInfo
         } catch (Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
+    }
+
+    private function taxonomyChanges(array $taxonomy): array
+    {
+        if (empty($this->taxonomyChangesFile)) {
+            return $taxonomy;
+        }
+
+        if (false === $content = @file_get_contents($this->taxonomyChangesFile)) {
+            throw new \RuntimeException(sprintf('Cannot read file `%s`.', $this->taxonomyChangesFile));
+        }
+        if (null === $changes = @json_decode($content, true)) {
+            throw new \RuntimeException(sprintf('Cannot parse file `%s`.', $this->taxonomyChangesFile));
+        }
+
+        foreach ($changes as $change) {
+            $taxonomy = self::applyJsonChange(
+                $taxonomy,
+                self::parseJsonPath($change['path']),
+                $change['value'],
+            );
+        }
+dump($taxonomy);exit;
+        return $taxonomy;
+    }
+
+    private static function parseJsonPath(string $path): array
+    {
+        $matches = [];
+        $result = preg_match_all('/' . self::JSON_PATH_MATCH_REGEXP . '/', $path, $matches);
+        if (false === $result || $result < 1) {
+            throw new \InvalidArgumentException(sprintf('Path `%s` is invalid.', $path));
+        }
+        $addValue = false;
+        $pathFragments = $matches[1];
+        if ($pathFragments[count($pathFragments) - 1] === '[]') {
+            $addValue = true;
+            array_pop($pathFragments);
+        }
+        $pathFragments = array_map(
+            fn($fragment) => $fragment[0] === '.' ? substr($fragment, 1) : $fragment,
+            $pathFragments
+        );
+
+        return [
+            'add_value' => $addValue,
+            'path_fragments' => $pathFragments,
+        ];
+    }
+
+    private static function applyJsonChange(
+        array $baseData,
+        array $pathParsingResult,
+        ?array $value
+    ): array {
+        $temp = &$baseData;
+        $parent = null;
+        $parentKey = null;
+        foreach ($pathParsingResult['path_fragments'] as $pathFragment) {
+            if (str_starts_with($pathFragment, '[?(@.') && str_ends_with($pathFragment, ')]')) {
+                [$k, $v] = explode('=', substr($pathFragment, strlen('[?(@.'), -strlen(')]')), 2);
+                for ($i = 0; $i < count($temp); $i++) {
+                    if (($temp[$i][$k] ?? '') === $v) {
+                        $pathFragment = $i;
+                        break;
+                    }
+                }
+            }
+            if (!array_key_exists($pathFragment, $temp)) {
+                throw new \InvalidArgumentException(sprintf('Path fragment `%s` is invalid.', $pathFragment));
+            }
+            $parentKey = $pathFragment;
+            $parent = &$temp;
+            $temp = &$temp[$pathFragment];
+        }
+        if ($pathParsingResult['add_value']) {
+            $temp[] = $value;
+        } elseif (null === $value && null !== $parent) {
+            unset($parent[$parentKey]);
+            if (is_int($parentKey)) {
+                $parent = array_values($parent);
+            }
+        } else {
+            $temp = $value;
+        }
+        unset($temp);
+
+        return $baseData;
     }
 }

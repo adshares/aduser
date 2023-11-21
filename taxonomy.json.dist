@@ -1,0 +1,13 @@
+[
+	{
+		"path": "$.media[?(@.name=web)].formats[?(@.type=image)].mimes",
+		"value": [
+			"image/gif",
+			"image/jpeg"
+		]
+	},
+	{
+		"path": "$.media[?(@.name=metaverse)]",
+		"value": null
+	}
+]

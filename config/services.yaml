@@ -57,6 +57,10 @@ services:
             $apiUrl: '%env(COOKIE3_API_URL)%'
             $apiKey: '%env(COOKIE3_API_KEY)%'
 
+    App\Service\PageInfo:
+        arguments:
+            $taxonomyChangesFile: '%env(TAXONOMY_CHANGES_FILE)%'
+
     App\Service\ReCaptcha:
         arguments:
             $siteKey: '%env(RECAPTCHA_SITE_KEY)%'
