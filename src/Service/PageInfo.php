@@ -192,7 +192,7 @@ final class PageInfo
                 $change['value'],
             );
         }
-dump($taxonomy);exit;
+
         return $taxonomy;
     }
 
