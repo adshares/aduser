@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.4.0] - 2023-12-06
+### Added
+- Local taxonomy changes
+
 ## [3.3.10] - 2023-06-01
 ### Fixed
 - Decentraland API hosts
@@ -125,7 +129,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-01
 
 
-[Unreleased]: https://github.com/adshares/aduser/compare/v3.3.10..HEAD
+[Unreleased]: https://github.com/adshares/aduser/compare/v3.4.0..HEAD
+[3.4.0]: https://github.com/adshares/aduser/compare/v3.3.10...v3.4.0
 [3.3.10]: https://github.com/adshares/aduser/compare/v3.3.9...v3.3.10
 [3.3.9]: https://github.com/adshares/aduser/compare/v3.3.8...v3.3.9
 [3.3.8]: https://github.com/adshares/aduser/compare/v3.3.7...v3.3.8
