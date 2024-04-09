@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2018-2022 Adshares sp. z o.o.
+ * Copyright (c) 2018-2024 Adshares sp. z o.o.
  *
  * This file is part of AdUser
  *
@@ -29,6 +29,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Throwable;
@@ -174,15 +175,15 @@ final class PageInfo
 
     private function taxonomyChanges(array $taxonomy): array
     {
-        if (empty($this->taxonomyChangesFile)) {
+        if (empty($this->taxonomyChangesFile) || 1 === $this->apiVersion) {
             return $taxonomy;
         }
 
         if (false === $content = @file_get_contents($this->taxonomyChangesFile)) {
-            throw new \RuntimeException(sprintf('Cannot read file `%s`.', $this->taxonomyChangesFile));
+            throw new RuntimeException(sprintf('Cannot read file `%s`.', $this->taxonomyChangesFile));
         }
         if (null === $changes = @json_decode($content, true)) {
-            throw new \RuntimeException(sprintf('Cannot parse file `%s`.', $this->taxonomyChangesFile));
+            throw new RuntimeException(sprintf('Cannot parse file `%s`.', $this->taxonomyChangesFile));
         }
 
         foreach ($changes as $change) {
